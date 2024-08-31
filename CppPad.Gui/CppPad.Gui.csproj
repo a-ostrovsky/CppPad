@@ -11,7 +11,6 @@
   <ItemGroup>
     <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
-    <Folder Include="AutoCompletion\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,8 +38,6 @@
     <ProjectReference Include="..\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj" />
     <ProjectReference Include="..\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj" />
     <ProjectReference Include="..\CppPad.FileSystem\CppPad.FileSystem.csproj" />
-    <ProjectReference Include="..\CppPad.LanguageServer.ClangD\CppPad.LanguageServer.ClangD.csproj" />
-    <ProjectReference Include="..\CppPad.LanguageServer.Interface\CppPad.LanguageServer.Interface.csproj" />
   </ItemGroup>
 
   <ItemGroup>

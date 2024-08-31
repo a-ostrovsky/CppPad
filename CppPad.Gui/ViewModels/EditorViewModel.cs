@@ -6,7 +6,6 @@ using CppPad.Common;
 using CppPad.CompilerAdapter.Msvc;
 using CppPad.FileSystem;
 using CppPad.Gui.Routing;
-using CppPad.LanguageServer.Interface;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using ReactiveUI;
@@ -54,12 +53,10 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private ToolsetViewModel? _toolset;
 
     public EditorViewModel(
-        ILanguageServer languageServer,
         ILoggerFactory loggerFactory,
         IRouter router,
         DiskFileSystem fileSystem)
     {
-        LanguageServer = languageServer;
         _loggerFactory = loggerFactory;
         _fileSystem = fileSystem;
         _router = router;
@@ -68,10 +65,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
     }
 
-    public ILanguageServer LanguageServer { get; }
 
     public static EditorViewModel DesignInstance { get; } = new(
-        new LanguageServer.ClangD.LanguageServer(NullLoggerFactory.Instance),
         NullLoggerFactory.Instance,
         new DummyRouter(),
         new DiskFileSystem()

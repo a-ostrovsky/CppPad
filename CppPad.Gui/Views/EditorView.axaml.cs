@@ -1,7 +1,6 @@
 using Avalonia.Controls;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
-using CppPad.Gui.AutoCompletion;
 using CppPad.Gui.ViewModels;
 using System;
 using System.Diagnostics;
@@ -12,7 +11,6 @@ namespace CppPad.Gui.Views;
 public partial class EditorView : UserControl
 {
     private bool _isInternalChange;
-    private AutoCompletionProvider? _autoCompletionProvider;
 
     public EditorView()
     {
@@ -60,8 +58,6 @@ public partial class EditorView : UserControl
             textEditor.Text = ((EditorViewModel)DataContext!).SourceCode;
         };
         textEditor.Text = vm.SourceCode;
-
-        _autoCompletionProvider = new AutoCompletionProvider(textEditor, vm.LanguageServer);
     }
 
     private void TextEditor_TextChanged(object? sender, EventArgs e)

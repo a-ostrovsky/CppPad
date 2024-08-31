@@ -41,7 +41,7 @@ public class ConfigurationStore(
     private async Task<Config> LoadConfigurationAsync()
     {
         var settingsFileName = settingsFile.GetOrCreateFile();
-        if (!fileSystem.Exists(settingsFileName))
+        if (!fileSystem.FileExists(settingsFileName))
         {
             return new Config();
         }
@@ -54,7 +54,7 @@ public class ConfigurationStore(
     private Config LoadConfiguration()
     {
         var settingsFileName = settingsFile.GetOrCreateFile();
-        if (!fileSystem.Exists(settingsFileName))
+        if (!fileSystem.FileExists(settingsFileName))
         {
             return new Config();
         }

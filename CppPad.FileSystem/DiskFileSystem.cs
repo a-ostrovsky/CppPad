@@ -42,6 +42,26 @@ public class DiskFileSystem
         return File.ReadAllText(path);
     }
 
+    public virtual string[] ReadAllLines(string path)
+    {
+        return File.ReadAllLines(path);
+    }
+
+    public virtual Task<string[]> ReadAllLinesAsync(string path)
+    {
+        return File.ReadAllLinesAsync(path);
+    }
+
+    public virtual void WriteAllLines(string path, string[] contents)
+    {
+        File.WriteAllLines(path, contents);
+    }
+
+    public virtual Task WriteAllLinesAsync(string path, string[] contents)
+    {
+        return File.WriteAllLinesAsync(path, contents);
+    }
+
     public virtual void WriteAllText(string path, string contents)
     {
         File.WriteAllText(path, contents);
@@ -62,7 +82,7 @@ public class DiskFileSystem
         return Directory.GetFiles(path);
     }
 
-    public virtual bool Exists(string path)
+    public virtual bool FileExists(string path)
     {
         return File.Exists(path);
     }

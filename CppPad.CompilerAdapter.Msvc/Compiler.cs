@@ -19,7 +19,7 @@ public class Compiler : ICompiler
         DiskFileSystem fileSystem,
         ILoggerFactory loggerFactory)
     {
-        if (!fileSystem.Exists(clExePath))
+        if (!fileSystem.FileExists(clExePath))
         {
             throw new ArgumentException($"File '{clExePath}' does not exist.");
         }

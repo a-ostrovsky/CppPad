@@ -1,7 +1,6 @@
 using CppPad.Common;
 using CppPad.Configuration.Interface;
 using CppPad.Gui.Routing;
-using CppPad.LanguageServer.Interface;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -11,23 +10,20 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace CppPad.Gui.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase, IReactiveObject, IInstallCallbacks
+public class MainWindowViewModel : ViewModelBase, IReactiveObject
 {
     public static MainWindowViewModel DesignInstance { get; } =
         new(
-            new DummyLanguageServer(),
             new DummyEditorViewModelFactory(),
             new DummyRouter(),
             new DummyConfigurationStore()
         );
 
     private readonly ObservableAsPropertyHelper<ToolsetViewModel?> _defaultToolset;
-    private readonly ILanguageServer _languageServer;
     private readonly IEditorViewModelFactory _editorViewModelFactory;
     private readonly IRouter _router;
     private readonly IConfigurationStore _configurationStore;
@@ -44,8 +40,6 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject, IInstallCallb
     public ReactiveCommand<EditorViewModel, Unit> CloseEditorCommand { get; }
 
     public ReactiveCommand<Unit, Unit> ExitCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> InstallAutoCompletionServerCommand { get; }
 
     public ObservableCollection<ToolsetViewModel> Toolsets { get; } = [];
 
@@ -69,15 +63,13 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject, IInstallCallb
         set => SetProperty(ref _progressMessage, value);
     }
 
-    public ToolsetViewModel? DefaultToolset => _defaultToolset?.Value;
+    public ToolsetViewModel? DefaultToolset => _defaultToolset.Value;
 
     public MainWindowViewModel(
-        ILanguageServer languageServer,
         IEditorViewModelFactory editorViewModelFactory,
         IRouter router,
         IConfigurationStore configurationStore)
     {
-        _languageServer = languageServer;
         _editorViewModelFactory = editorViewModelFactory;
         _router = router;
         _configurationStore = configurationStore;
@@ -87,7 +79,6 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject, IInstallCallb
         ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
         CreateNewFileCommand = ReactiveCommand.Create(CreateNewFile);
         CloseEditorCommand = ReactiveCommand.Create<EditorViewModel>(CloseEditor);
-        InstallAutoCompletionServerCommand = ReactiveCommand.CreateFromTask(InstallAutoCompletionServerAsync);
 
         Editors.Add(_editorViewModelFactory.Create());
         CurrentEditor = Editors.FirstOrDefault();
@@ -109,20 +100,6 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject, IInstallCallb
                     editor.Toolset = toolset;
                 }
             });
-    }
-
-    private async Task InstallAutoCompletionServerAsync(CancellationToken arg)
-    {
-        try
-        {
-            ShouldShowProgressDialog = true;
-            await _languageServer.InstallAsync(this, arg);
-            ProgressMessage = string.Empty;
-        }
-        finally
-        {
-            ShouldShowProgressDialog = false;
-        }
     }
 
     private void CloseEditor(EditorViewModel editor)
@@ -197,15 +174,5 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject, IInstallCallb
     public void RaisePropertyChanged(PropertyChangedEventArgs args)
     {
         this.RaisePropertyChanged(args.PropertyName);
-    }
-
-    public void OnProgress(string message)
-    {
-        ProgressMessage = message;
-    }
-
-    public Task<bool> ConfirmInstallationAsync(string message)
-    {
-        return _router.AskUserAsync("Confirm installation", message);
     }
 }

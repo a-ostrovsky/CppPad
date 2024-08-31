@@ -30,9 +30,6 @@
                         <MenuItem Header="Save _As..."
                                   Command="{Binding CurrentEditor.SaveAsCommand, FallbackValue={x:Null}}"/>
                         <Separator />
-                        <MenuItem Header="_Install Autocompletion Server"
-                                  Command="{Binding InstallAutoCompletionServerCommand}"/>
-                        <Separator />                    
                         <MenuItem Header="E_xit (Alt+F4)"
                                   Command="{Binding ExitCommand}"/>
                     </MenuItem>
