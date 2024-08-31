@@ -1,0 +1,69 @@
+namespace CppPad.FileSystem;
+
+public class DiskFileSystem
+{
+    public virtual Task<string> ReadAllTextAsync(string path)
+    {
+        return File.ReadAllTextAsync(path);
+    }
+
+    public virtual Task WriteAllTextAsync(string path, string contents)
+    {
+        return File.WriteAllTextAsync(path, contents);
+    }
+
+    public virtual Task<Stream> OpenReadAsync(string path)
+    {
+        return Task.FromResult<Stream>(File.OpenRead(path));
+    }
+
+    public virtual Task<Stream> OpenWriteAsync(string path)
+    {
+        return Task.FromResult<Stream>(File.OpenWrite(path));
+    }
+
+    public virtual Task<string[]> ListFilesAsync(string path)
+    {
+        return Task.Run(() => Directory.GetFiles(path));
+    }
+
+    public virtual Task CreateDirectoryAsync(string path)
+    {
+        return Task.Run(() => Directory.CreateDirectory(path));
+    }
+
+    public virtual void CreateDirectory(string path)
+    {
+        Directory.CreateDirectory(path);
+    }
+
+    public virtual string ReadAllText(string path)
+    {
+        return File.ReadAllText(path);
+    }
+
+    public virtual void WriteAllText(string path, string contents)
+    {
+        File.WriteAllText(path, contents);
+    }
+
+    public virtual Stream OpenRead(string path)
+    {
+        return File.OpenRead(path);
+    }
+
+    public virtual Stream OpenWrite(string path)
+    {
+        return File.OpenWrite(path);
+    }
+
+    public virtual string[] ListFiles(string path)
+    {
+        return Directory.GetFiles(path);
+    }
+
+    public virtual bool Exists(string path)
+    {
+        return File.Exists(path);
+    }
+}

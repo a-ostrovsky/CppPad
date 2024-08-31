@@ -1,0 +1,54 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:CppPad.Gui.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="CppPad.Gui.ToolsetEditorWindow"
+        x:DataType="vm:ToolsetEditorWindowViewModel"
+        Title="Toolset Editor"
+        d:DataContext="{x:Static vm:ToolsetEditorWindowViewModel.DesignInstance}" >
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto">
+            <ListBox ItemsSource="{CompiledBinding Toolsets}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150" />
+                                <ColumnDefinition Width="250" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding Type}" />
+                            <TextBlock Grid.Column="1"
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding Name}" />
+                            <TextBlock Grid.Column="2"
+                                       VerticalAlignment="Center"
+                                       Text="{CompiledBinding ExecutablePath}" />
+                        </Grid>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </ScrollViewer>
+        <UniformGrid Grid.Row="1" Columns="3">
+            <Button Content="Auto Detect"
+                    HorizontalContentAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Command="{CompiledBinding AutodetectToolsetsCommand}"/>
+            <Button Content="Add"
+                    HorizontalContentAlignment="Center"
+                    HorizontalAlignment="Stretch" />
+            <Button Content="Remove"
+                    HorizontalContentAlignment="Center"
+                    HorizontalAlignment="Stretch" />
+        </UniformGrid>
+    </Grid>
+</Window>

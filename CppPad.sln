@@ -1,0 +1,94 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35208.52
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Gui", "CppPad.Gui\CppPad.Gui.csproj", "{7AFD83D9-6AAB-4567-A053-C9F79EFD4BD8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.CompilerAdapter.Interface", "CppPad.CompilerAdapter.Interface\CppPad.CompilerAdapter.Interface.csproj", "{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.CompilerAdapter.Msvc", "CppPad.CompilerAdapter.Msvc\CppPad.CompilerAdapter.Msvc.csproj", "{169FDE59-CD53-4F57-B27E-553FDA156AFF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Configuration.Interface", "CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj", "{944A87F0-7E5E-40BB-9327-1AA838C39E57}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Configuration.Json", "CppPad.Configuration.Json\CppPad.Configuration.Json.csproj", "{482F25EE-D534-4869-9B5A-255CBBE556C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{4E8D3ED7-0CD1-4F84-BE62-34270B8501FD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CompilerAdapter", "CompilerAdapter", "{FB339FAC-9F68-4CBC-9411-EB104DCBBEBB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.FileSystem", "CppPad.FileSystem\CppPad.FileSystem.csproj", "{8D7D93C7-50E3-4291-BA11-FA9C2F2CB608}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Common", "CppPad.Common\CppPad.Common.csproj", "{03C928C7-A3E7-4A96-9B07-385B8A5378A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LanguageServer", "LanguageServer", "{D2D95746-9106-4C09-BC6A-72B2A74AC4F8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.LanguageServer.Interface", "CppPad.LanguageServer.Interface\CppPad.LanguageServer.Interface.csproj", "{9291E6F2-54CB-4CEB-AA7A-DA230BB0DAEB}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.LanguageServer.ClangD", "CppPad.LanguageServer.ClangD\CppPad.LanguageServer.ClangD.csproj", "{769F907C-9A95-4C53-B952-A3BEFCB20E05}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.LanguageServerAdapter", "CppPad.LanguageServerAdapter\CppPad.LanguageServerAdapter.csproj", "{F384BF02-109F-4B25-836A-26398F2305B1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7AFD83D9-6AAB-4567-A053-C9F79EFD4BD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7AFD83D9-6AAB-4567-A053-C9F79EFD4BD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7AFD83D9-6AAB-4567-A053-C9F79EFD4BD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7AFD83D9-6AAB-4567-A053-C9F79EFD4BD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{169FDE59-CD53-4F57-B27E-553FDA156AFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{169FDE59-CD53-4F57-B27E-553FDA156AFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{169FDE59-CD53-4F57-B27E-553FDA156AFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{169FDE59-CD53-4F57-B27E-553FDA156AFF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{944A87F0-7E5E-40BB-9327-1AA838C39E57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{944A87F0-7E5E-40BB-9327-1AA838C39E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{944A87F0-7E5E-40BB-9327-1AA838C39E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{944A87F0-7E5E-40BB-9327-1AA838C39E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{482F25EE-D534-4869-9B5A-255CBBE556C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{482F25EE-D534-4869-9B5A-255CBBE556C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{482F25EE-D534-4869-9B5A-255CBBE556C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{482F25EE-D534-4869-9B5A-255CBBE556C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D7D93C7-50E3-4291-BA11-FA9C2F2CB608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D7D93C7-50E3-4291-BA11-FA9C2F2CB608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D7D93C7-50E3-4291-BA11-FA9C2F2CB608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D7D93C7-50E3-4291-BA11-FA9C2F2CB608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{03C928C7-A3E7-4A96-9B07-385B8A5378A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{03C928C7-A3E7-4A96-9B07-385B8A5378A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{03C928C7-A3E7-4A96-9B07-385B8A5378A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{03C928C7-A3E7-4A96-9B07-385B8A5378A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9291E6F2-54CB-4CEB-AA7A-DA230BB0DAEB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9291E6F2-54CB-4CEB-AA7A-DA230BB0DAEB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9291E6F2-54CB-4CEB-AA7A-DA230BB0DAEB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9291E6F2-54CB-4CEB-AA7A-DA230BB0DAEB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{769F907C-9A95-4C53-B952-A3BEFCB20E05}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{769F907C-9A95-4C53-B952-A3BEFCB20E05}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{769F907C-9A95-4C53-B952-A3BEFCB20E05}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{769F907C-9A95-4C53-B952-A3BEFCB20E05}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F384BF02-109F-4B25-836A-26398F2305B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F384BF02-109F-4B25-836A-26398F2305B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F384BF02-109F-4B25-836A-26398F2305B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F384BF02-109F-4B25-836A-26398F2305B1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1} = {FB339FAC-9F68-4CBC-9411-EB104DCBBEBB}
+		{169FDE59-CD53-4F57-B27E-553FDA156AFF} = {FB339FAC-9F68-4CBC-9411-EB104DCBBEBB}
+		{944A87F0-7E5E-40BB-9327-1AA838C39E57} = {4E8D3ED7-0CD1-4F84-BE62-34270B8501FD}
+		{482F25EE-D534-4869-9B5A-255CBBE556C8} = {4E8D3ED7-0CD1-4F84-BE62-34270B8501FD}
+		{9291E6F2-54CB-4CEB-AA7A-DA230BB0DAEB} = {D2D95746-9106-4C09-BC6A-72B2A74AC4F8}
+		{769F907C-9A95-4C53-B952-A3BEFCB20E05} = {D2D95746-9106-4C09-BC6A-72B2A74AC4F8}
+		{F384BF02-109F-4B25-836A-26398F2305B1} = {D2D95746-9106-4C09-BC6A-72B2A74AC4F8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69390040-E36B-43D6-B587-A8E6B7C3C67A}
+	EndGlobalSection
+EndGlobal
