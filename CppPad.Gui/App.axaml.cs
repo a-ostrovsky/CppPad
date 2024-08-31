@@ -24,22 +24,30 @@ public class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        try
         {
-            var services = new Bootstrapper().Initialize();
+            if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                var services = await new Bootstrapper().InitializeAsync();
 
-            var window = services.GetRequiredService<MainWindow>();
-            DataTemplates.Add(services.GetRequiredService<ViewLocator>());
+                var window = services.GetRequiredService<MainWindow>();
+                DataTemplates.Add(services.GetRequiredService<ViewLocator>());
 
-            _logger = services.GetRequiredService<ILoggerFactory>().CreateLogger<App>();
+                _logger = services.GetRequiredService<ILoggerFactory>().CreateLogger<App>();
 
-            desktop.MainWindow = window;
-            desktop.Exit += Desktop_Exit;
+                desktop.MainWindow = window;
+                desktop.Exit += Desktop_Exit;
+            }
+
+            base.OnFrameworkInitializationCompleted();
         }
-
-        base.OnFrameworkInitializationCompleted();
+        catch (Exception ex)
+        {
+            _logger?.LogCritical(ex, "Failed to initialize application.");
+            throw;
+        }
     }
 
     private void Desktop_Exit(object? sender, ControlledApplicationLifetimeExitEventArgs e)

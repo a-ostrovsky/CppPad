@@ -14,12 +14,13 @@ using Microsoft.Extensions.Logging;
 using MsBox.Avalonia;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace CppPad.Gui.Bootstrapping;
 
-public class Bootstrapper()
+public class Bootstrapper
 {
-    public IServiceProvider Initialize()
+    public async Task<IServiceProvider> InitializeAsync()
     {
         try
         {
@@ -27,8 +28,8 @@ public class Bootstrapper()
         }
         catch (Exception ex)
         {
-            var box = MessageBoxManager.GetMessageBoxStandard("Error", "Failed to clear temp folder: " + ex);
-            box.ShowAsync().RunSynchronously();
+            var box = MessageBoxManager.GetMessageBoxStandard("Error", $"Failed to clear temp folder: {ex}");
+            await box.ShowAsync();
             Environment.Exit(1);
         }
 
@@ -36,32 +37,59 @@ public class Bootstrapper()
         // Without this line you will get duplicate validations from both Avalonia and CT
         BindingPlugins.DataValidators.RemoveAt(0);
 
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", false, true)
-            .Build();
-
         var collection = new ServiceCollection();
-        collection.AddCommonServices();
-        collection.AddLogging(builder => builder.AddDebug());
-        collection.AddSingleton<SettingsFile>();
-        collection.AddSingleton<IConfiguration>(configuration);
-        collection.AddSingleton<IConfigurationStore, ConfigurationStore>();
-        collection.AddSingleton<IEditorViewModelFactory, EditorViewModelFactory>();
-        collection.AddTransient<EditorViewModel>();
-        collection.AddTransient<EditorView>();
-        collection.AddSingleton<DiskFileSystem>();
-        collection.AddSingleton<MainWindow>();
-        collection.AddSingleton<MainWindowViewModel>();
-        collection.AddTransient<ToolsetEditorWindow>();
-        collection.AddTransient<ToolsetEditorWindowViewModel>();
-        collection.AddSingleton<IRouter, Router>();
-        collection.AddSingleton<ViewLocator>();
-        collection.AddSingleton<IVsWhereAdapter, VsWhereAdapter>();
-        collection.AddSingleton<IToolsetDetector, ToolsetDetector>();
+
+        AddCommonServices(collection);
+        AddConfigurationServices(collection);
+        AddViewModelsAndViews(collection);
+        AddCompilerAdapterServices(collection);
+        AddStorage(collection);
 
         var services = collection.BuildServiceProvider();
 
         return services;
+    }
+
+    private void AddCommonServices(IServiceCollection collection)
+    {
+        collection.AddCommonServices();
+        collection.AddLogging(builder => builder.AddDebug());
+    }
+
+    private void AddConfigurationServices(IServiceCollection collection)
+    {
+        var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .Build();
+        collection.AddSingleton<IConfiguration>(configuration);
+        collection.AddSingleton<IConfigurationStore, ConfigurationStore>();
+        collection.AddSingleton<SettingsFile>();
+    }
+
+    private void AddViewModelsAndViews(IServiceCollection collection)
+    {
+        collection.AddSingleton<MainWindowViewModel>();
+        collection.AddTransient<EditorViewModel>();
+        collection.AddTransient<ToolsetEditorWindowViewModel>();
+
+        collection.AddSingleton<MainWindow>();
+        collection.AddTransient<EditorView>();
+        collection.AddTransient<ToolsetEditorWindow>();
+
+        collection.AddSingleton<IEditorViewModelFactory, EditorViewModelFactory>();
+        collection.AddSingleton<IRouter, Router>();
+        collection.AddSingleton<ViewLocator>();
+    }
+
+    private void AddCompilerAdapterServices(IServiceCollection collection)
+    {
+        collection.AddSingleton<IVsWhereAdapter, VsWhereAdapter>();
+        collection.AddSingleton<IToolsetDetector, ToolsetDetector>();
+    }
+
+    private void AddStorage(IServiceCollection collection)
+    {
+        collection.AddSingleton<DiskFileSystem>();
     }
 }
