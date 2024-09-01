@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using AvaloniaEdit.Utils;
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
+using CppPad.Configuration.Interface;
 using CppPad.FileSystem;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
@@ -11,6 +12,7 @@ using ReactiveUI;
 using System;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 
@@ -254,10 +256,18 @@ public class DummyEditorViewModelFactory : IEditorViewModelFactory
     }
 }
 
-public class EditorViewModelFactory(IServiceProvider provider) : IEditorViewModelFactory
+public class EditorViewModelFactory(
+    IServiceProvider provider,
+    IConfigurationStore configurationStore) : IEditorViewModelFactory
 {
     public EditorViewModel Create()
     {
-        return provider.GetService<EditorViewModel>();
+        var vm = provider.GetService<EditorViewModel>();
+        var config = configurationStore.GetToolsetConfiguration();
+        var defaultToolset =
+            config.Toolsets.SingleOrDefault(toolset => toolset.Id == config.DefaultToolsetId);
+        var toolsetViewModel = defaultToolset != null ? new ToolsetViewModel(defaultToolset) : null;
+        vm.Toolset = toolsetViewModel;
+        return vm;
     }
 }

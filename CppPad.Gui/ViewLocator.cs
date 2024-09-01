@@ -1,9 +1,7 @@
-using System;
-
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
-
 using CppPad.Gui.ViewModels;
+using System;
 
 namespace CppPad.Gui
 {
@@ -12,14 +10,16 @@ namespace CppPad.Gui
         public Control? Build(object? data)
         {
             if (data is null)
+            {
                 return null;
+            }
 
             var name = data.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
             var type = Type.GetType(name);
 
             if (type != null)
             {
-                var control = (Control) provider.GetService(type)!;
+                var control = (Control)provider.GetService(type)!;
                 return control;
             }
 
