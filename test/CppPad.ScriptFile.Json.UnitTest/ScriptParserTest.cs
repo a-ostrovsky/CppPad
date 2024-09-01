@@ -1,5 +1,9 @@
+#region
+
 using CppPad.ScriptFile.Interface;
 using Microsoft.Extensions.Logging.Abstractions;
+
+#endregion
 
 namespace CppPad.ScriptFile.Json.UnitTest;
 
@@ -22,7 +26,6 @@ public class ScriptParserTest
         // Act & Assert
         Assert.Throws<ParsingException>(() => _scriptParser.Parse(invalidJsonContent));
     }
-
 
     [Fact]
     public void SerializeAndDeserialize_ValidScript_ReturnsSameScript()
@@ -49,7 +52,6 @@ public class ScriptParserTest
 
         // Act & Assert
         Assert.Throws<ParsingException>(() => _scriptParser.Parse(json));
-
     }
 
     [Fact]
