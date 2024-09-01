@@ -147,6 +147,26 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         return Task.FromResult(ListFiles(path));
     }
 
+    public override string CreateTempFile(string? extensions)
+    {
+        var tempFolder = AppConstants.TempFolder;
+        CreateDirectory(tempFolder);
+
+        var guid = Guid.NewGuid().ToString();
+
+        var fileName = Path.Combine(tempFolder,
+            extensions == null
+                ? $"{guid}"
+                : $"{guid}.{extensions}");
+        _files[fileName] = string.Empty;
+        return fileName;
+    }
+
+    public override void DeleteFile(string path)
+    {
+        _files.TryRemove(path, out _);
+    }
+
     private void EnsureFileExists(string filePath)
     {
         EnsureDirectoryExists(Path.GetDirectoryName(filePath)!);

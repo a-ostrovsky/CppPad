@@ -1,4 +1,6 @@
-﻿namespace CppPad.CompilerAdapter.Msvc.UnitTest.Mocks;
+﻿using CppPad.CompilerAdapter.Msvc.Interface;
+
+namespace CppPad.CompilerAdapter.Msvc.UnitTest.Mocks;
 
 public class VsWhereAdapterMock : IVsWhereAdapter
 {

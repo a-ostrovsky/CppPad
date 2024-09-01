@@ -22,10 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Mocks\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\CppPad.CompilerAdapter.Msvc\CppPad.CompilerAdapter.Msvc.csproj" />
     <ProjectReference Include="..\CppPad.MockFileSystem\CppPad.MockFileSystem.csproj" />
   </ItemGroup>

@@ -1,11 +1,12 @@
 ﻿#region
 
+using CppPad.CompilerAdapter.Msvc.Interface;
 using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 #endregion
 
-namespace CppPad.CompilerAdapter.Msvc;
+namespace CppPad.CompilerAdapter.Msvc.Impl;
 
 public class VsWhereAdapter(ILoggerFactory loggerFactory)
     : IVsWhereAdapter

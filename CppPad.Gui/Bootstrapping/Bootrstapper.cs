@@ -1,7 +1,8 @@
 ﻿using Avalonia.Data.Core.Plugins;
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
-using CppPad.CompilerAdapter.Msvc;
+using CppPad.CompilerAdapter.Msvc.Impl;
+using CppPad.CompilerAdapter.Msvc.Interface;
 using CppPad.Configuration.Interface;
 using CppPad.Configuration.Json;
 using CppPad.FileSystem;
@@ -50,13 +51,13 @@ public class Bootstrapper
         return services;
     }
 
-    private void AddCommonServices(IServiceCollection collection)
+    private static void AddCommonServices(IServiceCollection collection)
     {
         collection.AddCommonServices();
         collection.AddLogging(builder => builder.AddDebug());
     }
 
-    private void AddConfigurationServices(IServiceCollection collection)
+    private static void AddConfigurationServices(IServiceCollection collection)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -67,7 +68,7 @@ public class Bootstrapper
         collection.AddSingleton<SettingsFile>();
     }
 
-    private void AddViewModelsAndViews(IServiceCollection collection)
+    private static void AddViewModelsAndViews(IServiceCollection collection)
     {
         collection.AddSingleton<MainWindowViewModel>();
         collection.AddTransient<EditorViewModel>();
@@ -82,13 +83,16 @@ public class Bootstrapper
         collection.AddSingleton<ViewLocator>();
     }
 
-    private void AddCompilerAdapterServices(IServiceCollection collection)
+    private static void AddCompilerAdapterServices(IServiceCollection collection)
     {
+        collection.AddSingleton<ICommandLineBuilder, CommandLineBuilder>();
+        collection.AddSingleton<ICompilerProcessExecutor, CompilerProcessExecutor>();
         collection.AddSingleton<IVsWhereAdapter, VsWhereAdapter>();
         collection.AddSingleton<IToolsetDetector, ToolsetDetector>();
+        collection.AddSingleton<ICompiler, Compiler>();
     }
 
-    private void AddStorage(IServiceCollection collection)
+    private static void AddStorage(IServiceCollection collection)
     {
         collection.AddSingleton<DiskFileSystem>();
     }

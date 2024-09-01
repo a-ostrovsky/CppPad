@@ -3,11 +3,9 @@
 using Avalonia.Threading;
 using AvaloniaEdit.Utils;
 using CppPad.Common;
-using CppPad.CompilerAdapter.Msvc;
+using CppPad.CompilerAdapter.Interface;
 using CppPad.FileSystem;
 using CppPad.Gui.Routing;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
 using ReactiveUI;
 using System;
 using System.ComponentModel;
@@ -27,9 +25,10 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         Application = 1
     }
 
+    private readonly ICompiler _compiler;
+
     private readonly DiskFileSystem _fileSystem;
 
-    private readonly ILoggerFactory _loggerFactory;
     private readonly IRouter _router;
     private string? _applicationOutput;
     private int _applicationOutputCaretIndex;
@@ -53,13 +52,13 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private ToolsetViewModel? _toolset;
 
     public EditorViewModel(
-        ILoggerFactory loggerFactory,
         IRouter router,
+        ICompiler compiler,
         DiskFileSystem fileSystem)
     {
-        _loggerFactory = loggerFactory;
         _fileSystem = fileSystem;
         _router = router;
+        _compiler = compiler;
         RunCommand = ReactiveCommand.CreateFromTask(RunAsync);
         SaveAsCommand = ReactiveCommand.CreateFromTask(SaveAsAsync);
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
@@ -67,8 +66,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
 
     public static EditorViewModel DesignInstance { get; } = new(
-        NullLoggerFactory.Instance,
         new DummyRouter(),
+        new DummyCompiler(),
         new DiskFileSystem()
     );
 
@@ -174,8 +173,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     private async Task RunAsync()
     {
-        var executablePath = Toolset?.ExecutablePath;
-        if (executablePath == null)
+        if (Toolset == null)
         {
             return;
         }
@@ -183,10 +181,14 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         SelectedOutputIndex = OutputIndex.Compiler;
         CompilerOutput = string.Empty;
         ApplicationOutput = string.Empty;
-        var compiler = new Compiler(
-            executablePath, _fileSystem, _loggerFactory);
-        compiler.CompilerMessage += (_, args) => WriteCompilerOutput("  >>" + args.Message);
-        var executable = await compiler.BuildAsync(SourceCode, "/EHsc");
+        _compiler.CompilerMessageReceived += OnCompilerOnCompilerMessageReceived;
+        var buildArgs = new BuildArgs
+        {
+            SourceCode = SourceCode,
+            AdditionalBuildArgs = "/EHsc"
+        };
+        var executable = await _compiler.BuildAsync(Toolset.ToCompilerToolset(), buildArgs);
+        _compiler.CompilerMessageReceived -= OnCompilerOnCompilerMessageReceived;
         executable.OutputReceived += (_, args) => WriteApplicationOutput(args.Output);
         executable.ErrorReceived += (_, args) => WriteApplicationOutput(args.Error);
         executable.ProcessExited += (_, args) => WriteApplicationOutput(
@@ -194,6 +196,11 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         WriteCompilerOutput(string.Empty);
         SelectedOutputIndex = OutputIndex.Application;
         await executable.RunAsync();
+    }
+
+    private void OnCompilerOnCompilerMessageReceived(object? _, CompilerMessageEventArgs args)
+    {
+        WriteCompilerOutput(args.Message);
     }
 
     private void WriteApplicationOutput(string text)

@@ -1,17 +1,17 @@
 #region
 
-using System.Diagnostics;
-
 using CppPad.CompilerAdapter.Interface;
-
+using CppPad.FileSystem;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 #endregion
 
-namespace CppPad.CompilerAdapter.Msvc;
+namespace CppPad.CompilerAdapter.Msvc.Impl;
 
 public class Executable(
     string fileName,
+    DiskFileSystem fileSystem,
     ILoggerFactory loggerFactory) : IExecutable
 {
     private readonly ILogger<Executable> _logger =
@@ -71,6 +71,8 @@ public class Executable(
                 "Process exited with code: {ExitCode}", process.ExitCode);
             ProcessExited?.Invoke(this,
                 new ProcessExitedEventArgs(process.ExitCode));
+
+            fileSystem.DeleteFile(fileName);
         }
         catch (Exception ex)
         {

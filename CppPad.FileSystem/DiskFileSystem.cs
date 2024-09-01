@@ -1,3 +1,5 @@
+using CppPad.Common;
+
 namespace CppPad.FileSystem;
 
 public class DiskFileSystem
@@ -85,5 +87,22 @@ public class DiskFileSystem
     public virtual bool FileExists(string path)
     {
         return File.Exists(path);
+    }
+
+    public virtual string CreateTempFile(string? extensions)
+    {
+        var tempFolder = AppConstants.TempFolder;
+        Directory.CreateDirectory(AppConstants.TempFolder);
+        var fileName = Path.Combine(tempFolder,
+            extensions == null
+                ? $"{Guid.NewGuid()}"
+                : $"{Guid.NewGuid()}.{extensions}");
+        File.WriteAllText(fileName, string.Empty);
+        return fileName;
+    }
+
+    public virtual void DeleteFile(string path)
+    {
+        File.Delete(path);
     }
 }

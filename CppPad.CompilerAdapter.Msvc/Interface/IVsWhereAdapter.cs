@@ -1,4 +1,4 @@
-﻿namespace CppPad.CompilerAdapter.Msvc;
+﻿namespace CppPad.CompilerAdapter.Msvc.Interface;
 
 public interface IVsWhereAdapter
 {

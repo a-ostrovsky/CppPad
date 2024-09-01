@@ -1,5 +1,6 @@
 #region
 
+using CppPad.CompilerAdapter.Msvc.Impl;
 using CppPad.CompilerAdapter.Msvc.UnitTest.Mocks;
 using CppPad.MockFileSystem;
 using Microsoft.Extensions.Logging;

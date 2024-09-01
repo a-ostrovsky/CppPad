@@ -1,12 +1,13 @@
 #region
 
 using CppPad.CompilerAdapter.Interface;
+using CppPad.CompilerAdapter.Msvc.Interface;
 using CppPad.FileSystem;
 using Microsoft.Extensions.Logging;
 
 #endregion
 
-namespace CppPad.CompilerAdapter.Msvc;
+namespace CppPad.CompilerAdapter.Msvc.Impl;
 
 public class ToolsetDetector(
     DiskFileSystem fileSystem,

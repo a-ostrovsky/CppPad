@@ -54,7 +54,7 @@ public class App : Application
     {
         try
         {
-            Directory.Delete(AppConstants.TempFolder);
+            Directory.Delete(AppConstants.TempFolder, true);
         }
         catch (Exception ex)
         {
