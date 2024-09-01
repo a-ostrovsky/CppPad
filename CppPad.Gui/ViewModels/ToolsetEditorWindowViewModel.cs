@@ -1,5 +1,6 @@
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Configuration.Interface;
+using CppPad.Gui.ErrorHandling;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
@@ -45,44 +46,56 @@ public class ToolsetEditorWindowViewModel : ViewModelBase
             ReactiveCommand.CreateFromTask<ToolsetViewModel>(SetDefaultToolsetAsync);
     }
 
-    private async Task AutodetectToolsetsAsync()
+    private Task AutodetectToolsetsAsync()
     {
-        var toolsets = await _toolsetDetector.GetToolsetsAsync();
-        Toolsets.Clear();
-        foreach (var toolset in toolsets)
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            Toolsets.Add(new ToolsetViewModel(toolset));
-        }
-        if (Toolsets.Count > 0)
-        {
-            await SetDefaultToolsetAsync(Toolsets[0]);
-        }
+            var toolsets = await _toolsetDetector.GetToolsetsAsync();
+            Toolsets.Clear();
+            foreach (var toolset in toolsets)
+            {
+                Toolsets.Add(new ToolsetViewModel(toolset));
+            }
+
+            if (Toolsets.Count > 0)
+            {
+                await SetDefaultToolsetAsync(Toolsets[0]);
+            }
+        });
     }
 
     public Task SetDefaultToolsetAsync(ToolsetViewModel toolset)
     {
-        if (_defaultToolset != null)
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(() =>
         {
-            _defaultToolset.IsDefault = false;
-        }
-        _defaultToolset = toolset;
-        _defaultToolset.IsDefault = true;
-        return SaveConfigAsync();
+            if (_defaultToolset != null)
+            {
+                _defaultToolset.IsDefault = false;
+            }
+
+            _defaultToolset = toolset;
+            _defaultToolset.IsDefault = true;
+            return SaveConfigAsync();
+        });
     }
 
-    private async Task SaveConfigAsync()
+    private Task SaveConfigAsync()
     {
-        var config = await _configurationStore.GetToolsetConfigurationAsync();
-        config.Toolsets.Clear();
-        foreach (var toolset in Toolsets)
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            var configToolset = toolset.ToConfigToolset();
-            config.Toolsets.Add(configToolset);
-            if (toolset.IsDefault)
+            var config = await _configurationStore.GetToolsetConfigurationAsync();
+            config.Toolsets.Clear();
+            foreach (var toolset in Toolsets)
             {
-                config.DefaultToolsetId = configToolset.Id;
+                var configToolset = toolset.ToConfigToolset();
+                config.Toolsets.Add(configToolset);
+                if (toolset.IsDefault)
+                {
+                    config.DefaultToolsetId = configToolset.Id;
+                }
             }
-        }
-        await _configurationStore.SaveToolsetConfigurationAsync(config);
+
+            await _configurationStore.SaveToolsetConfigurationAsync(config);
+        });
     }
 }

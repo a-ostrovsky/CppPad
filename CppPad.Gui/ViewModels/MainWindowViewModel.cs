@@ -1,5 +1,6 @@
 using CppPad.Common;
 using CppPad.Configuration.Interface;
+using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
 using DynamicData;
 using DynamicData.Binding;
@@ -160,10 +161,13 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
             new PropertyChangedEventArgs(nameof(DefaultToolset)));
     }
 
-    private async Task EditToolsetsAsync()
+    private Task EditToolsetsAsync()
     {
-        await _router.ShowDialogAsync<ToolsetEditorWindowViewModel>();
-        ReloadToolsets();
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
+        {
+            await _router.ShowDialogAsync<ToolsetEditorWindowViewModel>();
+            ReloadToolsets();
+        });
     }
 
     public void RaisePropertyChanging(PropertyChangingEventArgs args)

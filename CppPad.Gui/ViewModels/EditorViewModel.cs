@@ -5,6 +5,7 @@ using AvaloniaEdit.Utils;
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.FileSystem;
+using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
 using ReactiveUI;
 using System;
@@ -141,28 +142,34 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         this.RaisePropertyChanged(args.PropertyName);
     }
 
-    private async Task SaveAsync()
+    private Task SaveAsync()
     {
-        if (CurrentFileUri == null)
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            await SaveAsAsync();
-            return;
-        }
+            if (CurrentFileUri == null)
+            {
+                await SaveAsAsync();
+                return;
+            }
 
-        await _fileSystem.WriteAllTextAsync(CurrentFileUri.AbsolutePath, SourceCode);
+            await _fileSystem.WriteAllTextAsync(CurrentFileUri.AbsolutePath, SourceCode);
+        });
     }
 
-    private async Task SaveAsAsync()
+    private Task SaveAsAsync()
     {
-        var uri = await _router.ShowSaveFileDialogAsync(AppConstants.FileFilter);
-        var filePath = uri?.AbsolutePath;
-        if (filePath == null)
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            return;
-        }
+            var uri = await _router.ShowSaveFileDialogAsync(AppConstants.FileFilter);
+            var filePath = uri?.AbsolutePath;
+            if (filePath == null)
+            {
+                return;
+            }
 
-        await _fileSystem.WriteAllTextAsync(filePath, SourceCode);
-        SetCurrentFilePath(uri!);
+            await _fileSystem.WriteAllTextAsync(filePath, SourceCode);
+            SetCurrentFilePath(uri!);
+        });
     }
 
     private void SetCurrentFilePath(Uri uri)
@@ -171,31 +178,34 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         Title = Path.GetFileName(uri.AbsolutePath);
     }
 
-    private async Task RunAsync()
+    private Task RunAsync()
     {
         if (Toolset == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        SelectedOutputIndex = OutputIndex.Compiler;
-        CompilerOutput = string.Empty;
-        ApplicationOutput = string.Empty;
-        _compiler.CompilerMessageReceived += OnCompilerOnCompilerMessageReceived;
-        var buildArgs = new BuildArgs
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            SourceCode = SourceCode,
-            AdditionalBuildArgs = "/EHsc"
-        };
-        var executable = await _compiler.BuildAsync(Toolset.ToCompilerToolset(), buildArgs);
-        _compiler.CompilerMessageReceived -= OnCompilerOnCompilerMessageReceived;
-        executable.OutputReceived += (_, args) => WriteApplicationOutput(args.Output);
-        executable.ErrorReceived += (_, args) => WriteApplicationOutput(args.Error);
-        executable.ProcessExited += (_, args) => WriteApplicationOutput(
-            $"Process exited with code: {args.ExitCode}");
-        WriteCompilerOutput(string.Empty);
-        SelectedOutputIndex = OutputIndex.Application;
-        await executable.RunAsync();
+            SelectedOutputIndex = OutputIndex.Compiler;
+            CompilerOutput = string.Empty;
+            ApplicationOutput = string.Empty;
+            _compiler.CompilerMessageReceived += OnCompilerOnCompilerMessageReceived;
+            var buildArgs = new BuildArgs
+            {
+                SourceCode = SourceCode,
+                AdditionalBuildArgs = "/EHsc"
+            };
+            var executable = await _compiler.BuildAsync(Toolset.ToCompilerToolset(), buildArgs);
+            _compiler.CompilerMessageReceived -= OnCompilerOnCompilerMessageReceived;
+            executable.OutputReceived += (_, args) => WriteApplicationOutput(args.Output);
+            executable.ErrorReceived += (_, args) => WriteApplicationOutput(args.Error);
+            executable.ProcessExited += (_, args) => WriteApplicationOutput(
+                $"Process exited with code: {args.ExitCode}");
+            WriteCompilerOutput(string.Empty);
+            SelectedOutputIndex = OutputIndex.Application;
+            await executable.RunAsync();
+        });
     }
 
     private void OnCompilerOnCompilerMessageReceived(object? _, CompilerMessageEventArgs args)
@@ -221,10 +231,13 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         });
     }
 
-    public async Task LoadSourceCodeAsync(Uri uri)
+    public Task LoadSourceCodeAsync(Uri uri)
     {
-        SourceCode = await _fileSystem.ReadAllTextAsync(uri.AbsolutePath);
-        SetCurrentFilePath(uri);
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
+        {
+            SourceCode = await _fileSystem.ReadAllTextAsync(uri.AbsolutePath);
+            SetCurrentFilePath(uri);
+        });
     }
 }
 
