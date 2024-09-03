@@ -11,7 +11,9 @@ namespace CppPad.Gui.Routing;
 
 public interface IRouter
 {
-    Task ShowDialogAsync<T>() where T : ViewModelBase;
+    Task<T?> ShowDialogAsync<T>() where T : ViewModelBase;
+
+    Task<T> ShowDialogAsync<T>(T viewModel) where T : ViewModelBase;
 
     Task<Uri?> ShowSaveFileDialogAsync(string filter);
 
@@ -24,9 +26,14 @@ public interface IRouter
 
 public class DummyRouter : IRouter
 {
-    public Task ShowDialogAsync<T>() where T : ViewModelBase
+    public Task<T?> ShowDialogAsync<T>() where T : ViewModelBase
     {
-        return Task.CompletedTask;
+        return Task.FromResult(default(T));
+    }
+
+    public Task<T> ShowDialogAsync<T>(T viewModel) where T : ViewModelBase
+    {
+        return Task.FromResult(viewModel);
     }
 
     public Task<bool> AskUserAsync(string title, string text)

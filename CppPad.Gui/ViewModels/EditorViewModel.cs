@@ -5,12 +5,14 @@ using AvaloniaEdit.Utils;
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Configuration.Interface;
-using CppPad.FileSystem;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
+using CppPad.ScriptFile.Interface;
+using CppPad.ScriptFileLoader.Interface;
 using ReactiveUI;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reactive;
@@ -29,16 +31,16 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     }
 
     private readonly ICompiler _compiler;
-
-    private readonly DiskFileSystem _fileSystem;
-
     private readonly IRouter _router;
+    private readonly IScriptLoader _scriptLoader;
+
     private string? _applicationOutput;
     private int _applicationOutputCaretIndex;
     private string? _compilerOutput;
     private int _compilerOutputCaretIndex;
 
     private Uri? _currentFilePath;
+    private ScriptSettingsViewModel _scriptSettings = new();
     private OutputIndex _selectedOutputIndex;
 
     private string _sourceCode =
@@ -57,21 +59,21 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     public EditorViewModel(
         IRouter router,
         ICompiler compiler,
-        DiskFileSystem fileSystem)
+        IScriptLoader scriptLoader)
     {
-        _fileSystem = fileSystem;
         _router = router;
         _compiler = compiler;
+        _scriptLoader = scriptLoader;
         RunCommand = ReactiveCommand.CreateFromTask(RunAsync);
         SaveAsCommand = ReactiveCommand.CreateFromTask(SaveAsAsync);
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
+        EditScriptSettingsCommand = ReactiveCommand.CreateFromTask(EditScriptSettingsAsync);
     }
-
 
     public static EditorViewModel DesignInstance { get; } = new(
         new DummyRouter(),
         new DummyCompiler(),
-        new DiskFileSystem()
+        new DummyScriptLoader()
     );
 
     public string Title
@@ -126,12 +128,20 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> EditScriptSettingsCommand { get; }
+
     public ReactiveCommand<Unit, Unit> SaveAsCommand { get; }
 
     public ToolsetViewModel? Toolset
     {
         get => _toolset;
         set => SetProperty(ref _toolset, value);
+    }
+
+    public ScriptSettingsViewModel ScriptSettings
+    {
+        get => _scriptSettings;
+        set => SetProperty(ref _scriptSettings, value);
     }
 
     public void RaisePropertyChanging(PropertyChangingEventArgs args)
@@ -154,7 +164,23 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 return;
             }
 
-            await _fileSystem.WriteAllTextAsync(CurrentFileUri.AbsolutePath, SourceCode);
+            var script = GetScript();
+            await _scriptLoader.SaveAsync(CurrentFileUri.AbsolutePath, script);
+        });
+    }
+
+    private Task EditScriptSettingsAsync()
+    {
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
+        {
+            var settings = Cloner.DeepCopy(ScriptSettings);
+            Debug.Assert(settings != null);
+            var vm = new ScriptSettingsWindowViewModel(settings);
+            await _router.ShowDialogAsync(vm);
+            if (vm.ShouldApplySettings)
+            {
+                ScriptSettings = vm.ScriptSettings;
+            }
         });
     }
 
@@ -162,14 +188,15 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            var uri = await _router.ShowSaveFileDialogAsync(AppConstants.FileFilter);
+            var uri = await _router.ShowSaveFileDialogAsync(AppConstants.SaveFileFilter);
             var filePath = uri?.AbsolutePath;
             if (filePath == null)
             {
                 return;
             }
 
-            await _fileSystem.WriteAllTextAsync(filePath, SourceCode);
+            var script = GetScript();
+            await _scriptLoader.SaveAsync(filePath, script);
             SetCurrentFilePath(uri!);
         });
     }
@@ -193,11 +220,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             CompilerOutput = string.Empty;
             ApplicationOutput = string.Empty;
             _compiler.CompilerMessageReceived += OnCompilerOnCompilerMessageReceived;
-            var buildArgs = new BuildArgs
-            {
-                SourceCode = SourceCode,
-                AdditionalBuildArgs = "/EHsc"
-            };
+            var buildArgs = GetBuildArgs();
             var executable = await _compiler.BuildAsync(Toolset.ToCompilerToolset(), buildArgs);
             _compiler.CompilerMessageReceived -= OnCompilerOnCompilerMessageReceived;
             executable.OutputReceived += (_, args) => WriteApplicationOutput(args.Output);
@@ -237,9 +260,40 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            SourceCode = await _fileSystem.ReadAllTextAsync(uri.AbsolutePath);
+            var script = await _scriptLoader.LoadAsync(uri.AbsolutePath);
+            SourceCode = script.Content;
+            ScriptSettings.CppStandard = script.CppStandard;
+            ScriptSettings.AdditionalBuildArgs = script.AdditionalBuildArgs;
+            ScriptSettings.AdditionalIncludeDirs = string.Join(Environment.NewLine, script.AdditionalIncludeDirs);
+            ScriptSettings.OptimizationLevel = script.OptimizationLevel;
             SetCurrentFilePath(uri);
         });
+    }
+
+    private Script GetScript()
+    {
+        return new Script
+        {
+            Content = SourceCode,
+            CppStandard = ScriptSettings.CppStandard,
+            AdditionalBuildArgs = ScriptSettings.AdditionalBuildArgs,
+            AdditionalIncludeDirs = ScriptSettings.AdditionalIncludeDirsArray,
+            OptimizationLevel = ScriptSettings.OptimizationLevel
+        };
+    }
+
+    private BuildArgs GetBuildArgs()
+    {
+        var buildArgs = new BuildArgs
+        {
+            SourceCode = SourceCode,
+            AdditionalBuildArgs = ScriptSettings.AdditionalBuildArgs + " /EHsc",
+            CppStandard = ScriptSettings.CppStandard,
+            OptimizationLevel = ScriptSettings.OptimizationLevel,
+            AdditionalIncludeDirs = ScriptSettings.AdditionalIncludeDirsArray,
+            PreBuildCommand = ScriptSettings.PreBuildCommand
+        };
+        return buildArgs;
     }
 }
 

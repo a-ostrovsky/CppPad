@@ -1,4 +1,6 @@
-﻿namespace CppPad.CompilerAdapter.Msvc.Interface;
+﻿using CppPad.CompilerAdapter.Interface;
+
+namespace CppPad.CompilerAdapter.Msvc.Interface;
 
 public record BuildBatchFileArgs
 {
@@ -9,4 +11,10 @@ public record BuildBatchFileArgs
     public IReadOnlyList<string> AdditionalIncludeDirs { get; init; } = [];
 
     public string AdditionalBuildArgs { get; init; } = string.Empty;
+
+    public OptimizationLevel OptimizationLevel { get; init; } = OptimizationLevel.Unspecified;
+
+    public CppStandard CppStandard { get; init; } = CppStandard.Unspecified;
+
+    public string PreBuildCommand { get; init; } = string.Empty;
 }

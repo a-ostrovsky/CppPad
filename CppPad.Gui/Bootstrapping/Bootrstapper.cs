@@ -9,6 +9,10 @@ using CppPad.FileSystem;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
 using CppPad.Gui.Views;
+using CppPad.ScriptFile.Interface;
+using CppPad.ScriptFile.Json;
+using CppPad.ScriptFileLoader.Interface;
+using CppPad.ScriptFileLoader.OnFileSystem;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -42,9 +46,10 @@ public class Bootstrapper
 
         AddCommonServices(collection);
         AddConfigurationServices(collection);
-        AddViewModelsAndViews(collection);
+        AddGui(collection);
         AddCompilerAdapterServices(collection);
         AddStorage(collection);
+        AddScriptFileHandling(collection);
 
         var services = collection.BuildServiceProvider();
 
@@ -68,15 +73,17 @@ public class Bootstrapper
         collection.AddSingleton<SettingsFile>();
     }
 
-    private static void AddViewModelsAndViews(IServiceCollection collection)
+    private static void AddGui(IServiceCollection collection)
     {
         collection.AddSingleton<MainWindowViewModel>();
         collection.AddTransient<EditorViewModel>();
         collection.AddTransient<ToolsetEditorWindowViewModel>();
+        collection.AddTransient<ScriptSettingsWindowViewModel>();
 
         collection.AddSingleton<MainWindow>();
         collection.AddTransient<EditorView>();
         collection.AddTransient<ToolsetEditorWindow>();
+        collection.AddTransient<ScriptSettingsWindow>();
 
         collection.AddSingleton<IEditorViewModelFactory, EditorViewModelFactory>();
         collection.AddSingleton<IRouter, Router>();
@@ -95,5 +102,11 @@ public class Bootstrapper
     private static void AddStorage(IServiceCollection collection)
     {
         collection.AddSingleton<DiskFileSystem>();
+    }
+
+    private static void AddScriptFileHandling(IServiceCollection collection)
+    {
+        collection.AddSingleton<IScriptParser, ScriptParser>();
+        collection.AddSingleton<IScriptLoader, ScriptLoader>();
     }
 }

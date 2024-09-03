@@ -2,6 +2,7 @@
 
 public enum CppStandard
 {
+    Unspecified,
     Cpp11,
     Cpp14,
     Cpp17,

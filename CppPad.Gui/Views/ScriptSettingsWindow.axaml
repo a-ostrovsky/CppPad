@@ -1,0 +1,58 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:CppPad.Gui.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="510"
+        Width="800" Height="510"
+        CanResize="False"
+        x:Class="CppPad.Gui.Views.ScriptSettingsWindow"
+        x:DataType="vm:ScriptSettingsWindowViewModel"
+        Title="Script Settings"
+        d:DataContext="{x:Static vm:ScriptSettingsWindowViewModel.DesignInstance}">
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Escape" Command="{CompiledBinding CancelCommand}" />
+    </Window.KeyBindings>
+
+    <Grid RowDefinitions="Auto,*,Auto">
+        <StackPanel Grid.Row="0" Orientation="Vertical" Margin="10">
+            <TextBlock Text="Pre-Build Command:" />
+            <TextBox Text="{CompiledBinding ScriptSettings.PreBuildCommand}" AcceptsReturn="True" MinHeight="100" />
+
+            <TextBlock Text="Additional Build Arguments:" Margin="0,10,0,0" />
+            <TextBox Text="{CompiledBinding ScriptSettings.AdditionalBuildArgs}" AcceptsReturn="True" MinHeight="100" />
+
+            <Grid Margin="0,10,0,0" ColumnDefinitions="*,*">
+                <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0,0,10,0">
+                    <TextBlock Text="C++ Standard:" />
+                    <ComboBox ItemsSource="{CompiledBinding CppStandards}"
+                              SelectedItem="{CompiledBinding ScriptSettings.CppStandard}" 
+                              Width="300"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,0,0">
+                    <TextBlock Text="Optimization Level:" />
+                    <ComboBox ItemsSource="{CompiledBinding OptimizationLevels}"
+                              SelectedItem="{CompiledBinding ScriptSettings.OptimizationLevel}"
+                              Width="300"/>
+                </StackPanel>
+            </Grid>
+
+            <TextBlock Text="Additional Include Directories (one per line):" Margin="0,10,0,0" />
+            <TextBox Text="{CompiledBinding ScriptSettings.AdditionalIncludeDirs}" AcceptsReturn="True" MinHeight="100" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+            <Button Content="OK" 
+                    Command="{Binding OkCommand}" 
+                    Margin="5,0" 
+                    Width="100" 
+                    HorizontalContentAlignment="Center" />
+            <Button Content="Cancel" 
+                    Command="{Binding CancelCommand}" 
+                    Margin="5,0" 
+                    Width="100" 
+                    HorizontalContentAlignment="Center" />
+        </StackPanel>
+    </Grid>
+</Window>

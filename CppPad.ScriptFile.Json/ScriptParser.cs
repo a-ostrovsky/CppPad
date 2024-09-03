@@ -8,12 +8,17 @@ public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
 {
     private readonly ILogger _logger = loggerFactory.CreateLogger<ScriptParser>();
 
+    private static readonly JsonSerializerOptions SerializerOptions = new()
+    {
+        WriteIndented = true
+    };
+
     public Script Parse(string content)
     {
         _logger.LogInformation("Parsing script content.");
         try
         {
-            var script = JsonSerializer.Deserialize<Script>(content);
+            var script = JsonSerializer.Deserialize<Script>(content, SerializerOptions);
             if (script == null)
             {
                 throw new ParsingException("Failed to parse script content.");
@@ -46,7 +51,7 @@ public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
     {
         try
         {
-            var json = JsonSerializer.Serialize(script);
+            var json = JsonSerializer.Serialize(script, SerializerOptions);
             return json;
         }
         catch (Exception ex)

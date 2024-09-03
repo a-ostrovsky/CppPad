@@ -19,7 +19,7 @@ public class Router(IServiceProvider serviceProvider) : IRouter
 {
     private Window? _mainWindow;
 
-    public Task ShowDialogAsync<T>() where T : ViewModelBase
+    public async Task<T?> ShowDialogAsync<T>() where T : ViewModelBase
     {
         var viewModelType = typeof(T);
         var windowTypeName = viewModelType.Name.Replace("ViewModel", string.Empty);
@@ -41,7 +41,35 @@ public class Router(IServiceProvider serviceProvider) : IRouter
         }
 
         window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
-        return window.ShowDialog(_mainWindow);
+        await window.ShowDialog(_mainWindow);
+        return window.DataContext as T;
+    }
+
+    public async Task<T> ShowDialogAsync<T>(T viewModel) where T : ViewModelBase
+    {
+        var viewModelType = typeof(T);
+        var windowTypeName = viewModelType.Name.Replace("ViewModel", string.Empty);
+
+        var windowType = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.GetTypes())
+            .SingleOrDefault(t => t.Name == windowTypeName);
+
+        if (windowType == null)
+        {
+            throw new ArgumentException(
+                $"No such window: {windowTypeName}. Did you forget to create the window?");
+        }
+
+        var window = (Window)serviceProvider.GetRequiredService(windowType);
+        if (_mainWindow == null)
+        {
+            throw new InvalidOperationException("Main window is not set.");
+        }
+
+        window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+        window.DataContext = viewModel;
+        await window.ShowDialog(_mainWindow);
+        return viewModel;
     }
 
     public void SetMainWindow(Window window)

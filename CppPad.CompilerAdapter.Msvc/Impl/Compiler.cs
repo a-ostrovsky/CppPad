@@ -37,6 +37,8 @@ public class Compiler : ICompiler
 
     public event EventHandler<CompilerMessageEventArgs>? CompilerMessageReceived;
 
+    // TODO: Path for obj files!
+
     public async Task<IExecutable> BuildAsync(Toolset toolset, BuildArgs args)
     {
         _logger.LogInformation("Build process started. Toolset: {toolset}. Args: {args}", toolset, args);
@@ -61,7 +63,11 @@ public class Compiler : ICompiler
             {
                 SourceFilePath = tempSourceFilePath,
                 TargetFilePath = tempExeFilePath,
-                AdditionalBuildArgs = args.AdditionalBuildArgs
+                AdditionalBuildArgs = args.AdditionalBuildArgs,
+                OptimizationLevel = args.OptimizationLevel,
+                CppStandard = args.CppStandard,
+                AdditionalIncludeDirs = args.AdditionalIncludeDirs,
+                PreBuildCommand = args.PreBuildCommand
             });
 
             await _fileSystem.WriteAllTextAsync(tempBatchFileName, tempBatchFileContent);

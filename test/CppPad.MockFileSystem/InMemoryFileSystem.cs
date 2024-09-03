@@ -38,7 +38,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
 
     public override void WriteAllText(string path, string contents)
     {
-        EnsureDirectoryExists(path);
+        EnsureDirectoryOfFileExists(path);
         _files[path] = contents;
     }
 
@@ -169,14 +169,14 @@ public sealed class InMemoryFileSystem : DiskFileSystem
 
     private void EnsureFileExists(string filePath)
     {
-        EnsureDirectoryExists(Path.GetDirectoryName(filePath)!);
+        EnsureDirectoryOfFileExists(filePath);
         if (!_files.TryGetValue(filePath, out _))
         {
             throw new FileNotFoundException($"The file '{filePath}' was not found.");
         }
     }
 
-    private void EnsureDirectoryExists(string filePath)
+    private void EnsureDirectoryOfFileExists(string filePath)
     {
         var directory = Path.GetDirectoryName(filePath)!;
         if (_alwaysCreateDirectoriesIfNotExist)

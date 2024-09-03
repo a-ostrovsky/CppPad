@@ -6,11 +6,15 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Icon.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -38,6 +42,10 @@
     <ProjectReference Include="..\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj" />
     <ProjectReference Include="..\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj" />
     <ProjectReference Include="..\CppPad.FileSystem\CppPad.FileSystem.csproj" />
+    <ProjectReference Include="..\CppPad.ScriptFile.Interface\CppPad.ScriptFile.Interface.csproj" />
+    <ProjectReference Include="..\CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj" />
+    <ProjectReference Include="..\CppPad.ScriptFileLoader.Interface\CppPad.ScriptFileLoader.Interface.csproj" />
+    <ProjectReference Include="..\CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj" />
   </ItemGroup>
 
   <ItemGroup>

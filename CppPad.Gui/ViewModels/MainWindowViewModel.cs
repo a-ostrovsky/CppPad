@@ -1,3 +1,5 @@
+#region
+
 using CppPad.Common;
 using CppPad.Configuration.Interface;
 using CppPad.Gui.ErrorHandling;
@@ -13,58 +15,20 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 
+#endregion
+
 namespace CppPad.Gui.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase, IReactiveObject
 {
-    public static MainWindowViewModel DesignInstance { get; } =
-        new(
-            new DummyEditorViewModelFactory(),
-            new DummyRouter(),
-            new DummyConfigurationStore()
-        );
+    private readonly IConfigurationStore _configurationStore;
 
     private readonly ObservableAsPropertyHelper<ToolsetViewModel?> _defaultToolset;
     private readonly IEditorViewModelFactory _editorViewModelFactory;
     private readonly IRouter _router;
-    private readonly IConfigurationStore _configurationStore;
     private EditorViewModel? _currentEditor;
-    private bool _shouldShowProgressDialog;
     private string _progressMessage = string.Empty;
-
-    public ReactiveCommand<Unit, Unit> NavigateToToolsetEditorCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> OpenFileCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> CreateNewFileCommand { get; }
-
-    public ReactiveCommand<EditorViewModel, Unit> CloseEditorCommand { get; }
-
-    public ReactiveCommand<Unit, Unit> ExitCommand { get; }
-
-    public ObservableCollection<ToolsetViewModel> Toolsets { get; } = [];
-
-    public ObservableCollection<EditorViewModel> Editors { get; } = [];
-
-    public EditorViewModel? CurrentEditor
-    {
-        get => _currentEditor;
-        set => SetProperty(ref _currentEditor, value);
-    }
-
-    public bool ShouldShowProgressDialog
-    {
-        get => _shouldShowProgressDialog;
-        set => SetProperty(ref _shouldShowProgressDialog, value);
-    }
-
-    public string ProgressMessage
-    {
-        get => _progressMessage;
-        set => SetProperty(ref _progressMessage, value);
-    }
-
-    public ToolsetViewModel? DefaultToolset => _defaultToolset.Value;
+    private bool _shouldShowProgressDialog;
 
     public MainWindowViewModel(
         IEditorViewModelFactory editorViewModelFactory,
@@ -103,6 +67,57 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
             });
     }
 
+    public static MainWindowViewModel DesignInstance { get; } =
+        new(
+            new DummyEditorViewModelFactory(),
+            new DummyRouter(),
+            new DummyConfigurationStore()
+        );
+
+    public ReactiveCommand<Unit, Unit> NavigateToToolsetEditorCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> OpenFileCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> CreateNewFileCommand { get; }
+
+    public ReactiveCommand<EditorViewModel, Unit> CloseEditorCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> ExitCommand { get; }
+
+    public ObservableCollection<ToolsetViewModel> Toolsets { get; } = [];
+
+    public ObservableCollection<EditorViewModel> Editors { get; } = [];
+
+    public EditorViewModel? CurrentEditor
+    {
+        get => _currentEditor;
+        set => SetProperty(ref _currentEditor, value);
+    }
+
+    public bool ShouldShowProgressDialog
+    {
+        get => _shouldShowProgressDialog;
+        set => SetProperty(ref _shouldShowProgressDialog, value);
+    }
+
+    public string ProgressMessage
+    {
+        get => _progressMessage;
+        set => SetProperty(ref _progressMessage, value);
+    }
+
+    public ToolsetViewModel? DefaultToolset => _defaultToolset.Value;
+
+    public void RaisePropertyChanging(PropertyChangingEventArgs args)
+    {
+        this.RaisePropertyChanging(args.PropertyName);
+    }
+
+    public void RaisePropertyChanged(PropertyChangedEventArgs args)
+    {
+        this.RaisePropertyChanged(args.PropertyName);
+    }
+
     private void CloseEditor(EditorViewModel editor)
     {
         if (!Editors.Contains(editor))
@@ -128,7 +143,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
     private async Task OpenFileAsync()
     {
-        var uri = await _router.ShowOpenFileDialogAsync(AppConstants.FileFilter);
+        var uri = await _router.ShowOpenFileDialogAsync(AppConstants.OpenFileFilter);
         if (uri == null)
         {
             return;
@@ -155,8 +170,10 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
                     editor.Toolset = vm;
                 }
             }
+
             Toolsets.Add(vm);
         }
+
         RaisePropertyChanged(
             new PropertyChangedEventArgs(nameof(DefaultToolset)));
     }
@@ -168,15 +185,5 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
             await _router.ShowDialogAsync<ToolsetEditorWindowViewModel>();
             ReloadToolsets();
         });
-    }
-
-    public void RaisePropertyChanging(PropertyChangingEventArgs args)
-    {
-        this.RaisePropertyChanging(args.PropertyName);
-    }
-
-    public void RaisePropertyChanged(PropertyChangedEventArgs args)
-    {
-        this.RaisePropertyChanged(args.PropertyName);
     }
 }

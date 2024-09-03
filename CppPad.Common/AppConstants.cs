@@ -4,8 +4,14 @@ public static class AppConstants
 {
     public const string AppName = "CppPad";
 
-    public const string FileFilter =
-        "C++ Files (*.cpp)|*.cpp|C Files (*.c)|*.c|All Files (*.*)|*.*";
+    public const string DefaultFileExtension = ".cpad";
+
+    public const string OpenFileFilter =
+        "CppPad Files (*.cpad)|*.cpad|C++ Files (*.cpp)|*.cpp|C Files (*.c)|*.c|All Files (*.*)|*.*";
+
+    public const string SaveFileFilter =
+        "CppPad Files (*.cpad)|*.cpad|All Files (*.*)|*.*";
+
 
     public static readonly string AppFolder =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppName);
