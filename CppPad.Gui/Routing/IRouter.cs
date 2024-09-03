@@ -21,6 +21,8 @@ public interface IRouter
 
     Task<bool> AskUserAsync(string title, string text);
 
+    Task<T?> ShowInputBoxAsync<T>(string prompt);
+
     void SetMainWindow(Window window);
 }
 
@@ -39,6 +41,11 @@ public class DummyRouter : IRouter
     public Task<bool> AskUserAsync(string title, string text)
     {
         return Task.FromResult(false);
+    }
+
+    public Task<T?> ShowInputBoxAsync<T>(string prompt)
+    {
+        return Task.FromResult(default(T));
     }
 
     public void SetMainWindow(Window window)

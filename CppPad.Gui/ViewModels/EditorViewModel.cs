@@ -43,6 +43,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private ScriptSettingsViewModel _scriptSettings = new();
     private OutputIndex _selectedOutputIndex;
 
+    public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
+
     private string _sourceCode =
         """
         #include <iostream>
@@ -68,6 +70,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         SaveAsCommand = ReactiveCommand.CreateFromTask(SaveAsAsync);
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
         EditScriptSettingsCommand = ReactiveCommand.CreateFromTask(EditScriptSettingsAsync);
+        GoToLineCommand = ReactiveCommand.CreateFromTask(GoToLineAsync);
     }
 
     public static EditorViewModel DesignInstance { get; } = new(
@@ -132,6 +135,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     public ReactiveCommand<Unit, Unit> SaveAsCommand { get; }
 
+    public ReactiveCommand<Unit, Unit> GoToLineCommand { get; }
+
     public ToolsetViewModel? Toolset
     {
         get => _toolset;
@@ -182,6 +187,16 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 ScriptSettings = vm.ScriptSettings;
             }
         });
+    }
+
+    private async Task GoToLineAsync()
+    {
+        var lineCount = SourceCode.Count(c => c == '\n') + 1;
+        var line = await _router.ShowInputBoxAsync<int>($"Line Number: (1-{lineCount})");
+        if (line != 0 && line <= lineCount)
+        {
+            GoToLineRequested?.Invoke(this, new GoToLineRequestedEventArgs(line));
+        }
     }
 
     private Task SaveAsAsync()

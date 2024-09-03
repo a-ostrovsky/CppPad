@@ -37,7 +37,9 @@
                                   Command="{CompiledBinding ExitCommand }"/>
                     </MenuItem>
                     <MenuItem Header="_Edit">                    
-                        <MenuItem Header="_Go to Line"/>
+                        <MenuItem Header="_Go to Line (Ctrl+G)"
+                                  Command="{CompiledBinding CurrentEditor.GoToLineCommand, FallbackValue={x:Null}}"
+                                  HotKey="Ctrl+G"/>
                     </MenuItem>
                     <MenuItem Header="_Script">
                         <MenuItem Header="_Run (F5)"

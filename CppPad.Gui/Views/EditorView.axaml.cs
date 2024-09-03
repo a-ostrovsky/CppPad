@@ -32,7 +32,6 @@ public partial class EditorView : UserControl
         var registryOptions = new RegistryOptions(ThemeName.Light);
         var textMateInstallation = textEditor.InstallTextMate(registryOptions);
         textMateInstallation.SetGrammar(registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp").Id));
-
         textEditor.TextChanged += TextEditor_TextChanged;
         DataContextChanged += EditorView_DataContextChanged;
     }
@@ -51,11 +50,20 @@ public partial class EditorView : UserControl
         Debug.Assert(textEditor != null);
         vm.PropertyChanged += (_, args) =>
         {
-            if (_isInternalChange || args.PropertyName != "SourceCode")
+            if (_isInternalChange)
             {
                 return;
             }
-            textEditor.Text = ((EditorViewModel)DataContext!).SourceCode;
+
+            if (args.PropertyName == nameof(EditorViewModel.SourceCode))
+            {
+                textEditor.Text = ((EditorViewModel)DataContext!).SourceCode;
+            }
+        };
+        vm.GoToLineRequested += (_, args) =>
+        {
+            textEditor.ScrollToLine(args.Line);
+            textEditor.CaretOffset = GetCaretOffsetForLine(textEditor, args.Line);
         };
         textEditor.Text = vm.SourceCode;
     }
@@ -71,5 +79,12 @@ public partial class EditorView : UserControl
         {
             _isInternalChange = false;
         }
+    }
+
+    private static int GetCaretOffsetForLine(TextEditor textEditor, int line)
+    {
+        var document = textEditor.Document;
+        var lineInfo = document.GetLineByNumber(line);
+        return lineInfo.Offset;
     }
 }

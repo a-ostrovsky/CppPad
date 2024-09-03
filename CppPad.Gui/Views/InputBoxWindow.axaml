@@ -1,0 +1,21 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="150"
+        Width="400" Height="150"
+        x:Class="CppPad.Gui.Views.InputBoxWindow"
+        Title="InputBoxWindow"
+        CanResize="False"
+        WindowStartupLocation="CenterScreen"
+        ShowInTaskbar="False"
+        KeyDown="Window_KeyDown">
+    <StackPanel Margin="20">
+        <TextBlock x:Name="PromptTextBlock" Text="Enter your input:" Margin="0,0,0,10"/>
+        <TextBox x:Name="InputTextBox" Width="300" Margin="0,0,0,10"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button x:Name="OkButton" Content="OK" Width="75" Margin="0,0,10,0" Click="OkButton_Click"/>
+            <Button x:Name="CancelButton" Content="Cancel" Width="75" Click="CancelButton_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

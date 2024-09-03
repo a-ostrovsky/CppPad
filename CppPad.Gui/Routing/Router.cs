@@ -3,11 +3,13 @@
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using CppPad.Gui.ViewModels;
+using CppPad.Gui.Views;
 using Microsoft.Extensions.DependencyInjection;
 using MsBox.Avalonia;
 using MsBox.Avalonia.Enums;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -116,6 +118,20 @@ public class Router(IServiceProvider serviceProvider) : IRouter
             AllowMultiple = false
         });
         return files.Count == 0 ? null : files[0].Path;
+    }
+
+    public async Task<T?> ShowInputBoxAsync<T>(string prompt)
+    {
+        if (_mainWindow == null)
+        {
+            throw new InvalidOperationException(
+                "Main window is not set. Call SetMainWindow first.");
+        }
+
+        var inputBox = new InputBoxWindow();
+        inputBox.SetPrompt(prompt);
+        await inputBox.ShowDialog(_mainWindow);
+        return (T?)Convert.ChangeType(inputBox.Result, typeof(T), CultureInfo.InvariantCulture);
     }
 
     private static List<FilePickerFileType> ParseFilter(string filter)
