@@ -21,6 +21,35 @@
                         <MenuItem Header="_New (Ctrl+N)"
                                   Command="{CompiledBinding CreateNewFileCommand}"
                                   HotKey="Ctrl+N"/>
+                        <MenuItem Header="New from _Template"
+                                  IsVisible="{Binding Templates.HasTemplates}"
+                                  ItemsSource="{Binding Templates.TemplateFileNames}">
+                            <MenuItem.Styles>
+                                <Style Selector="MenuItem">
+                                    <Setter Property="Command" 
+                                            Value="{CompiledBinding $parent[Window].((vm:MainWindowViewModel)DataContext).CreateNewFileFromTemplateCommand, FallbackValue={x:Null}}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </Style>
+                            </MenuItem.Styles>
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid ColumnDefinitions="* Auto">
+                                        <TextBlock Grid.Column="0" 
+                                                   MinWidth="150"
+                                                   Text="{Binding}" 
+                                                   VerticalAlignment="Center" />
+                                        <Button Grid.Column="1"
+                                                Content="🗑️"
+                                                Command="{CompiledBinding $parent[Window].((vm:MainWindowViewModel)DataContext).Templates.DeleteCommand, FallbackValue={x:Null}}"
+                                                CommandParameter="{Binding}"
+                                                BorderBrush="{x:Null}"
+                                                Background="{x:Null}"
+                                                VerticalAlignment="Center"
+                                                Margin="5,0,0,0" />
+                                    </Grid>
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
+                        </MenuItem>
                         <MenuItem Header="_Open (Ctrl+O)"
                                   Command="{CompiledBinding OpenFileCommand}"
                                   HotKey="Ctrl+O"/>
@@ -29,6 +58,9 @@
                                   HotKey="Ctrl+S"/>
                         <MenuItem Header="Save _As..."
                                   Command="{CompiledBinding CurrentEditor.SaveAsCommand, FallbackValue={x:Null}}"/>
+                        <Separator />
+                        <MenuItem Header="Save As Template"
+                                  Command="{CompiledBinding CurrentEditor.SaveAsTemplateCommand, FallbackValue={x:Null}}"/>
                         <Separator />
                         <MenuItem Header="Edit _Toolsets..."
                                   Command="{CompiledBinding NavigateToToolsetEditorCommand}"/>

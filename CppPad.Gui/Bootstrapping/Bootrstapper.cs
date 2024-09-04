@@ -79,6 +79,7 @@ public class Bootstrapper
         collection.AddTransient<EditorViewModel>();
         collection.AddTransient<ToolsetEditorWindowViewModel>();
         collection.AddTransient<ScriptSettingsWindowViewModel>();
+        collection.AddSingleton<TemplatesViewModel>();
 
         collection.AddSingleton<MainWindow>();
         collection.AddTransient<EditorView>();
@@ -108,5 +109,6 @@ public class Bootstrapper
     {
         collection.AddSingleton<IScriptParser, ScriptParser>();
         collection.AddSingleton<IScriptLoader, ScriptLoader>();
+        collection.AddSingleton<ITemplateLoader, TemplateLoader>();
     }
 }

@@ -1,17 +1,21 @@
-﻿using CppPad.ScriptFile.Interface;
+﻿#region
+
+using CppPad.ScriptFile.Interface;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+
+#endregion
 
 namespace CppPad.ScriptFile.Json;
 
 public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
 {
-    private readonly ILogger _logger = loggerFactory.CreateLogger<ScriptParser>();
-
     private static readonly JsonSerializerOptions SerializerOptions = new()
     {
         WriteIndented = true
     };
+
+    private readonly ILogger _logger = loggerFactory.CreateLogger<ScriptParser>();
 
     public Script Parse(string content)
     {
@@ -28,6 +32,7 @@ public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
             {
                 throw new ParsingException($"Unsupported script version: {script.Version}.");
             }
+
             return script;
         }
         catch (Exception ex)
@@ -42,7 +47,7 @@ public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
         _logger.LogInformation("Creating Script object from C++ file content.");
         var script = new Script
         {
-            Content = content,
+            Content = content
         };
         return script;
     }

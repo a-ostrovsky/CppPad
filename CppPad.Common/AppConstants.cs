@@ -12,9 +12,10 @@ public static class AppConstants
     public const string SaveFileFilter =
         "CppPad Files (*.cpad)|*.cpad|All Files (*.*)|*.*";
 
-
     public static readonly string AppFolder =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppName);
 
     public static readonly string TempFolder = Path.Combine(AppFolder, "Temp");
+
+    public static readonly string TemplateFolder = Path.Combine(AppFolder, "Templates");
 }

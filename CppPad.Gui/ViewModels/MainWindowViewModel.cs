@@ -4,6 +4,7 @@ using CppPad.Common;
 using CppPad.Configuration.Interface;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
+using CppPad.ScriptFileLoader.Interface;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -31,10 +32,12 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     private bool _shouldShowProgressDialog;
 
     public MainWindowViewModel(
+        TemplatesViewModel templates,
         IEditorViewModelFactory editorViewModelFactory,
         IRouter router,
         IConfigurationStore configurationStore)
     {
+        Templates = templates;
         _editorViewModelFactory = editorViewModelFactory;
         _router = router;
         _configurationStore = configurationStore;
@@ -43,6 +46,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         OpenFileCommand = ReactiveCommand.CreateFromTask(OpenFileAsync);
         ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
         CreateNewFileCommand = ReactiveCommand.Create(CreateNewFile);
+        CreateNewFileFromTemplateCommand = ReactiveCommand.CreateFromTask<string>(CreateNewFileFromTemplateAsync);
         CloseEditorCommand = ReactiveCommand.Create<EditorViewModel>(CloseEditor);
 
         Editors.Add(_editorViewModelFactory.Create());
@@ -69,6 +73,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
     public static MainWindowViewModel DesignInstance { get; } =
         new(
+            new TemplatesViewModel(new DummyTemplateLoader()),
             new DummyEditorViewModelFactory(),
             new DummyRouter(),
             new DummyConfigurationStore()
@@ -79,6 +84,8 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     public ReactiveCommand<Unit, Unit> OpenFileCommand { get; }
 
     public ReactiveCommand<Unit, Unit> CreateNewFileCommand { get; }
+
+    public ReactiveCommand<string, Unit> CreateNewFileFromTemplateCommand { get; }
 
     public ReactiveCommand<EditorViewModel, Unit> CloseEditorCommand { get; }
 
@@ -105,6 +112,8 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         get => _progressMessage;
         set => SetProperty(ref _progressMessage, value);
     }
+
+    public TemplatesViewModel Templates { get; }
 
     public ToolsetViewModel? DefaultToolset => _defaultToolset.Value;
 
@@ -141,18 +150,32 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         CurrentEditor = editor;
     }
 
-    private async Task OpenFileAsync()
+    private Task CreateNewFileFromTemplateAsync(string templateName)
     {
-        var uri = await _router.ShowOpenFileDialogAsync(AppConstants.OpenFileFilter);
-        if (uri == null)
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            return;
-        }
+            var editor = _editorViewModelFactory.Create();
+            await editor.LoadFromTemplateAsync(templateName);
+            Editors.Add(editor);
+            CurrentEditor = editor;
+        });
+    }
 
-        var editor = _editorViewModelFactory.Create();
-        await editor.LoadSourceCodeAsync(uri);
-        Editors.Add(editor);
-        CurrentEditor = editor;
+    private Task OpenFileAsync()
+    {
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
+        {
+            var uri = await _router.ShowOpenFileDialogAsync(AppConstants.OpenFileFilter);
+            if (uri == null)
+            {
+                return;
+            }
+
+            var editor = _editorViewModelFactory.Create();
+            await editor.LoadSourceCodeAsync(uri);
+            Editors.Add(editor);
+            CurrentEditor = editor;
+        });
     }
 
     private void ReloadToolsets()

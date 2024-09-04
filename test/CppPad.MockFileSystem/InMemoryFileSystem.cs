@@ -4,6 +4,7 @@ using CppPad.Common;
 using CppPad.FileSystem;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -137,6 +138,11 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         return _files.ContainsKey(path);
     }
 
+    public override bool DirectoryExists(string path)
+    {
+        return _directories.Contains(path);
+    }
+
     public override string[] ListFiles(string path)
     {
         return _files.Keys.Where(f => Path.GetDirectoryName(f) == path).ToArray();
@@ -145,6 +151,21 @@ public sealed class InMemoryFileSystem : DiskFileSystem
     public override Task<string[]> ListFilesAsync(string path)
     {
         return Task.FromResult(ListFiles(path));
+    }
+
+    public override Task<string[]> ListFilesAsync(string path, string searchPattern)
+    {
+        // Convert the search pattern to a regex pattern
+        var regexPattern = "^" + Regex.Escape(searchPattern)
+            .Replace("\\*", ".*")
+            .Replace("\\?", ".") + "$";
+        var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
+
+        var files = _files.Keys
+            .Where(f => Path.GetDirectoryName(f) == path && regex.IsMatch(Path.GetFileName(f)))
+            .ToArray();
+
+        return Task.FromResult(files);
     }
 
     public override string CreateTempFile(string? extensions)

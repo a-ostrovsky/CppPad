@@ -31,6 +31,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     }
 
     private readonly ICompiler _compiler;
+    private readonly TemplatesViewModel _templatesViewModel;
     private readonly IRouter _router;
     private readonly IScriptLoader _scriptLoader;
 
@@ -59,10 +60,12 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private ToolsetViewModel? _toolset;
 
     public EditorViewModel(
+        TemplatesViewModel templatesViewModel,
         IRouter router,
         ICompiler compiler,
         IScriptLoader scriptLoader)
     {
+        _templatesViewModel = templatesViewModel;
         _router = router;
         _compiler = compiler;
         _scriptLoader = scriptLoader;
@@ -71,9 +74,11 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
         EditScriptSettingsCommand = ReactiveCommand.CreateFromTask(EditScriptSettingsAsync);
         GoToLineCommand = ReactiveCommand.CreateFromTask(GoToLineAsync);
+        SaveAsTemplateCommand = ReactiveCommand.CreateFromTask(SaveAsTemplateAsync);
     }
 
     public static EditorViewModel DesignInstance { get; } = new(
+        new TemplatesViewModel(new DummyTemplateLoader()),
         new DummyRouter(),
         new DummyCompiler(),
         new DummyScriptLoader()
@@ -134,6 +139,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     public ReactiveCommand<Unit, Unit> EditScriptSettingsCommand { get; }
 
     public ReactiveCommand<Unit, Unit> SaveAsCommand { get; }
+
+    public ReactiveCommand<Unit, Unit> SaveAsTemplateCommand { get; }
 
     public ReactiveCommand<Unit, Unit> GoToLineCommand { get; }
 
@@ -216,6 +223,24 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         });
     }
 
+    private Task SaveAsTemplateAsync()
+    {
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
+        {
+            var templateName = await _router.ShowInputBoxAsync<string>("Enter template name:");
+            if (templateName == null)
+            {
+                return;
+            }
+
+            var filePath = Path.Combine(AppConstants.TemplateFolder,
+                templateName + AppConstants.DefaultFileExtension);
+
+            var script = GetScript();
+            await _templatesViewModel.SaveAsync(filePath, script);
+        });
+    }
+
     private void SetCurrentFilePath(Uri uri)
     {
         CurrentFileUri = uri;
@@ -276,13 +301,27 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
             var script = await _scriptLoader.LoadAsync(uri.AbsolutePath);
-            SourceCode = script.Content;
-            ScriptSettings.CppStandard = script.CppStandard;
-            ScriptSettings.AdditionalBuildArgs = script.AdditionalBuildArgs;
-            ScriptSettings.AdditionalIncludeDirs = string.Join(Environment.NewLine, script.AdditionalIncludeDirs);
-            ScriptSettings.OptimizationLevel = script.OptimizationLevel;
+            SetScript(script);
             SetCurrentFilePath(uri);
         });
+    }
+
+    public Task LoadFromTemplateAsync(string templateName)
+    {
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
+        {
+            var script = await _templatesViewModel.LoadAsync(templateName);
+            SetScript(script);
+        });
+    }
+
+    private void SetScript(Script script)
+    {
+        SourceCode = script.Content;
+        ScriptSettings.CppStandard = script.CppStandard;
+        ScriptSettings.AdditionalBuildArgs = script.AdditionalBuildArgs;
+        ScriptSettings.AdditionalIncludeDirs = string.Join(Environment.NewLine, script.AdditionalIncludeDirs);
+        ScriptSettings.OptimizationLevel = script.OptimizationLevel;
     }
 
     private Script GetScript()

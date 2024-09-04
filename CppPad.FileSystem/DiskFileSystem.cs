@@ -29,6 +29,11 @@ public class DiskFileSystem
         return Task.Run(() => Directory.GetFiles(path));
     }
 
+    public virtual Task<string[]> ListFilesAsync(string path, string searchPattern)
+    {
+        return Task.Run(() => Directory.GetFiles(path, searchPattern));
+    }
+
     public virtual Task CreateDirectoryAsync(string path)
     {
         return Task.Run(() => Directory.CreateDirectory(path));
@@ -87,6 +92,11 @@ public class DiskFileSystem
     public virtual bool FileExists(string path)
     {
         return File.Exists(path);
+    }
+
+    public virtual bool DirectoryExists(string path)
+    {
+        return Directory.Exists(path);
     }
 
     public virtual string CreateTempFile(string? extensions)
