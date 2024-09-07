@@ -59,7 +59,7 @@
                         <MenuItem Header="Save _As..."
                                   Command="{CompiledBinding CurrentEditor.SaveAsCommand, FallbackValue={x:Null}}"/>
                         <Separator />
-                        <MenuItem Header="Save As Template"
+                        <MenuItem Header="Save As Template..."
                                   Command="{CompiledBinding CurrentEditor.SaveAsTemplateCommand, FallbackValue={x:Null}}"/>
                         <Separator />
                         <MenuItem Header="Edit _Toolsets..."
@@ -95,22 +95,24 @@
                 <CheckBox Content="include std"
                           Margin="25 0 0 0"/>-->
             </StackPanel>
-            <TabControl ItemsSource="{Binding Editors}"
+            <TabControl TabStripPlacement="Left" 
+                        ItemsSource="{Binding Editors}"
                         SelectedItem="{Binding CurrentEditor}">
                 <TabControl.ItemTemplate>
                     <DataTemplate>
                         <Grid ColumnDefinitions="Auto Auto">
-                            <TextBlock Text="{Binding Title}" 
-                                       VerticalAlignment="Center" />
-                            <Button Grid.Column="1"
+                            <Button Grid.Column="0"
                                     BorderThickness="0"
                                     Background="{x:Null}"
                                     Padding="0"
-                                    Margin="5 0 0 0"
+                                    Margin="2 0 5 0"
                                     VerticalAlignment="Center"
                                     Command="{Binding $parent[TabControl].((vm:MainWindowViewModel)DataContext).CloseEditorCommand, FallbackValue={x:Null}}"
                                     CommandParameter="{Binding}"
                                     Content="X" />
+                            <TextBlock Grid.Column="1" Text="{Binding Title}"
+                                       Width="90"
+                                       VerticalAlignment="Center"/>
                         </Grid>
                     </DataTemplate>
                 </TabControl.ItemTemplate>

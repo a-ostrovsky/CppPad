@@ -47,7 +47,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.Int
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem", "CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj", "{F7B0AA63-2076-4863-BFE4-F03FC244308C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.ScriptFileLoader.OnFileSystem.Test", "test\CppPad.ScriptFileLoader.OnFileSystem.Test\CppPad.ScriptFileLoader.OnFileSystem.Test.csproj", "{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem.Test", "test\CppPad.ScriptFileLoader.OnFileSystem.Test\CppPad.ScriptFileLoader.OnFileSystem.Test.csproj", "{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Gui.Test", "test\CppPad.Gui.Test\CppPad.Gui.Test.csproj", "{17D9CB5F-D54C-4560-B15E-15720CF42943}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -123,6 +125,10 @@ Global
 		{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{17D9CB5F-D54C-4560-B15E-15720CF42943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{17D9CB5F-D54C-4560-B15E-15720CF42943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{17D9CB5F-D54C-4560-B15E-15720CF42943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{17D9CB5F-D54C-4560-B15E-15720CF42943}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -145,6 +151,7 @@ Global
 		{0DAD8E69-BD19-4676-8782-8AF6201E5043} = {6ADAE61C-8BEA-46DC-A287-841319BA0CA7}
 		{F7B0AA63-2076-4863-BFE4-F03FC244308C} = {6ADAE61C-8BEA-46DC-A287-841319BA0CA7}
 		{1FB19F5C-C51E-4AA3-ACB4-228535C553E8} = {ACFBB731-A040-4DE3-A075-53C1873AFF18}
+		{17D9CB5F-D54C-4560-B15E-15720CF42943} = {ACFBB731-A040-4DE3-A075-53C1873AFF18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69390040-E36B-43D6-B587-A8E6B7C3C67A}

@@ -30,10 +30,12 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         Application = 1
     }
 
+    private const int MaxTitleLength = 13;
+
     private readonly ICompiler _compiler;
-    private readonly TemplatesViewModel _templatesViewModel;
     private readonly IRouter _router;
     private readonly IScriptLoader _scriptLoader;
+    private readonly TemplatesViewModel _templatesViewModel;
 
     private string? _applicationOutput;
     private int _applicationOutputCaretIndex;
@@ -41,10 +43,10 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private int _compilerOutputCaretIndex;
 
     private Uri? _currentFilePath;
+
+    private bool _isModified;
     private ScriptSettingsViewModel _scriptSettings = new();
     private OutputIndex _selectedOutputIndex;
-
-    public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
 
     private string _sourceCode =
         """
@@ -93,7 +95,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     public string SourceCode
     {
         get => _sourceCode;
-        set => SetProperty(ref _sourceCode, value);
+        set => SetPropertyAndUpdateModified(ref _sourceCode, value);
     }
 
     public Uri? CurrentFileUri
@@ -132,6 +134,18 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         set => SetProperty(ref _selectedOutputIndex, value);
     }
 
+    public bool IsModified
+    {
+        get => _isModified;
+        set
+        {
+            if (SetProperty(ref _isModified, value))
+            {
+                UpdateTitle();
+            }
+        }
+    }
+
     public ReactiveCommand<Unit, Unit> RunCommand { get; }
 
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
@@ -166,6 +180,30 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         this.RaisePropertyChanged(args.PropertyName);
     }
 
+    public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
+
+    private static string TruncateTitle(string title)
+    {
+        if (title.Length <= MaxTitleLength)
+        {
+            return title;
+        }
+
+        const int charsToShow = MaxTitleLength - 3; //-3 for the ellipsis
+        const int frontChars = charsToShow / 2;
+        const int backChars = charsToShow - frontChars;
+
+        return $"{title[..frontChars]}...{title[^backChars..]}";
+    }
+
+    private void UpdateTitle()
+    {
+        var baseTitle = _currentFilePath != null
+            ? TruncateTitle(Path.GetFileName(_currentFilePath.AbsolutePath))
+            : "Untitled";
+        Title = IsModified ? $"{baseTitle}*" : baseTitle;
+    }
+
     private Task SaveAsync()
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
@@ -178,6 +216,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
             var script = GetScript();
             await _scriptLoader.SaveAsync(CurrentFileUri.AbsolutePath, script);
+            IsModified = false;
         });
     }
 
@@ -192,6 +231,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             if (vm.ShouldApplySettings)
             {
                 ScriptSettings = vm.ScriptSettings;
+                IsModified = true;
             }
         });
     }
@@ -220,6 +260,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             var script = GetScript();
             await _scriptLoader.SaveAsync(filePath, script);
             SetCurrentFilePath(uri!);
+            IsModified = false;
         });
     }
 
@@ -244,7 +285,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private void SetCurrentFilePath(Uri uri)
     {
         CurrentFileUri = uri;
-        Title = Path.GetFileName(uri.AbsolutePath);
+        UpdateTitle();
     }
 
     private Task RunAsync()
@@ -315,12 +356,21 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         });
     }
 
+    private void SetPropertyAndUpdateModified<T>(ref T field, T value)
+    {
+        if (SetProperty(ref field, value))
+        {
+            IsModified = true;
+        }
+    }
+
     private void SetScript(Script script)
     {
         SourceCode = script.Content;
         ScriptSettings.CppStandard = script.CppStandard;
         ScriptSettings.AdditionalBuildArgs = script.AdditionalBuildArgs;
-        ScriptSettings.AdditionalIncludeDirs = string.Join(Environment.NewLine, script.AdditionalIncludeDirs);
+        ScriptSettings.AdditionalIncludeDirs =
+            string.Join(Environment.NewLine, script.AdditionalIncludeDirs);
         ScriptSettings.OptimizationLevel = script.OptimizationLevel;
     }
 
