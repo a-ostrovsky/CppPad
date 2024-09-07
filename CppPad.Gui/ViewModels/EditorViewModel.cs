@@ -204,7 +204,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         Title = IsModified ? $"{baseTitle}*" : baseTitle;
     }
 
-    private Task SaveAsync()
+    public Task SaveAsync()
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {

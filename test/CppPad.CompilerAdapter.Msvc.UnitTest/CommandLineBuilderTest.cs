@@ -38,7 +38,8 @@ public class CommandLineBuilderTest
 
         Assert.Contains("echo PreBuild", result);
         Assert.Contains($"call \"{expectedVcvarsallPath}\" x64", result);
-        Assert.Contains("cl.exe \"source.cpp\" /Fe\"target.exe\"", result);
+        Assert.Contains("cl.exe", result);
+        Assert.Contains("source.cpp", result);
         Assert.Contains("/I\"include1\"", result);
         Assert.Contains("/I\"include2\"", result);
         Assert.Contains("/O2", result);

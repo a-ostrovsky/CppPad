@@ -46,12 +46,14 @@ public class CommandLineBuilder(DiskFileSystem fileSystem) : ICommandLineBuilder
 
         var includeDirs = string.Join(" ", buildArgs.AdditionalIncludeDirs.Select(dir => $"/I\"{dir}\""));
 
+        var targetFolder = Path.GetDirectoryName(buildArgs.TargetFilePath) ?? string.Empty;
+
         var batchContent =
             $"""
               @echo off
               {buildArgs.PreBuildCommand}
               call "{vcvarsallPath}" x64
-              cl.exe "{buildArgs.SourceFilePath}" /Fe"{buildArgs.TargetFilePath}" {includeDirs} {optimizationLevel} {cppStandard} {buildArgs.AdditionalBuildArgs}
+              cl.exe "{buildArgs.SourceFilePath}" /Fe"{buildArgs.TargetFilePath}" /Fo"{targetFolder}"\ {includeDirs} {optimizationLevel} {cppStandard} {buildArgs.AdditionalBuildArgs}
              """;
         return batchContent;
     }

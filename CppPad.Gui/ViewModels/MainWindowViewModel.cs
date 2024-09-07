@@ -47,7 +47,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
         CreateNewFileCommand = ReactiveCommand.Create(CreateNewFile);
         CreateNewFileFromTemplateCommand = ReactiveCommand.CreateFromTask<string>(CreateNewFileFromTemplateAsync);
-        CloseEditorCommand = ReactiveCommand.Create<EditorViewModel>(CloseEditor);
+        CloseEditorCommand = ReactiveCommand.CreateFromTask<EditorViewModel>(CloseEditorAsync);
 
         Editors.Add(_editorViewModelFactory.Create());
         CurrentEditor = Editors.FirstOrDefault();
@@ -127,8 +127,19 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         this.RaisePropertyChanged(args.PropertyName);
     }
 
-    private void CloseEditor(EditorViewModel editor)
+    private async Task CloseEditorAsync(EditorViewModel editor)
     {
+        if (editor.IsModified &&
+            await _router.AskUserAsync("Unsaved Changes",
+                "You have unsaved changes. Do you want to save before closing?"))
+        {
+            await editor.SaveAsync();
+            if (editor.IsModified) // User canceled save
+            {
+                return;
+            }
+        }
+
         if (!Editors.Contains(editor))
         {
             return;
