@@ -49,7 +49,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem.Test", "test\CppPad.ScriptFileLoader.OnFileSystem.Test\CppPad.ScriptFileLoader.OnFileSystem.Test.csproj", "{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Gui.Test", "test\CppPad.Gui.Test\CppPad.Gui.Test.csproj", "{17D9CB5F-D54C-4560-B15E-15720CF42943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Gui.Test", "test\CppPad.Gui.Test\CppPad.Gui.Test.csproj", "{17D9CB5F-D54C-4560-B15E-15720CF42943}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A1DFBEA-74E2-4590-AC13-202F903D839D}"
+	ProjectSection(SolutionItems) = preProject
+		TODO.txt = TODO.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

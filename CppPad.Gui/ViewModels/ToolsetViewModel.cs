@@ -1,26 +1,55 @@
-using CppPad.CompilerAdapter.Interface;
+#region
 
-using ConfigToolset = CppPad.Configuration.Interface.Toolset;
-using CompilerToolset = CppPad.CompilerAdapter.Interface.Toolset;
-using CppPad.Gui.Views;
 using System;
+using CompilerToolset = CppPad.CompilerAdapter.Interface.Toolset;
+using ConfigToolset = CppPad.Configuration.Interface.Toolset;
+using CpuArchitecture = CppPad.CompilerAdapter.Interface.CpuArchitecture;
+
+#endregion
 
 namespace CppPad.Gui.ViewModels;
 
 public class ToolsetViewModel : ViewModelBase
 {
+    private readonly Guid _id = Guid.Empty;
+    private string _executablePath = string.Empty;
+
+    private bool _isDefault;
+    private string _name = string.Empty;
+    private CpuArchitecture _targetArchitecture;
+    private string _type = string.Empty;
+
+    public ToolsetViewModel()
+    {
+    }
+
+    public ToolsetViewModel(CompilerToolset toolset)
+    {
+        Type = toolset.Type;
+        Name = toolset.Name;
+        TargetArchitecture = toolset.TargetArchitecture;
+        ExecutablePath = toolset.ExecutablePath;
+    }
+
+    public ToolsetViewModel(ConfigToolset toolset)
+    {
+        Type = toolset.Type;
+        Name = toolset.Name;
+        ExecutablePath = toolset.ExecutablePath;
+        if (Enum.TryParse<CpuArchitecture>(toolset.TargetArchitecture, out var targetArchitecture))
+        {
+            TargetArchitecture = targetArchitecture;
+        }
+
+        _id = toolset.Id;
+    }
+
     public static ToolsetViewModel DesignInstance { get; } = new()
     {
         Type = "Type",
         Name = "Name",
         ExecutablePath = "ExecutablePath"
     };
-
-    private bool _isDefault = false;
-    private string _name = string.Empty;
-    private string _executablePath = string.Empty;
-    private string _type = string.Empty;
-    private readonly Guid _id = Guid.Empty;
 
     public bool IsDefault
     {
@@ -46,31 +75,18 @@ public class ToolsetViewModel : ViewModelBase
         set => SetProperty(ref _executablePath, value);
     }
 
-    public ToolsetViewModel()
+    public CpuArchitecture TargetArchitecture
     {
-
-    }
-
-    public ToolsetViewModel(CompilerToolset toolset)
-    {
-        Type = toolset.Type;
-        Name = toolset.Name;
-        ExecutablePath = toolset.ExecutablePath;
-    }
-
-    public ToolsetViewModel(ConfigToolset toolset)
-    {
-        Type = toolset.Type;
-        Name = toolset.Name;
-        ExecutablePath = toolset.ExecutablePath;
-        _id = toolset.Id;
+        get => _targetArchitecture;
+        set => SetProperty(ref _targetArchitecture, value);
     }
 
     public ConfigToolset ToConfigToolset()
     {
-        return new(
+        return new ConfigToolset(
             _id == Guid.Empty ? Guid.NewGuid() : _id,
             Type,
+            TargetArchitecture.ToString(),
             Name,
             ExecutablePath
         );
@@ -78,6 +94,6 @@ public class ToolsetViewModel : ViewModelBase
 
     public CompilerToolset ToCompilerToolset()
     {
-        return new CompilerToolset(Type, Name, ExecutablePath);
+        return new CompilerToolset(Type, TargetArchitecture, Name, ExecutablePath);
     }
 }

@@ -19,18 +19,22 @@
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" Background="Gray" />
         <TabControl Grid.Row="2" SelectedIndex="{Binding SelectedOutputIndex}" Margin="2 2 2 5">
             <TabItem Header="Compiler">
-                <TextBox Text="{Binding CompilerOutput}"
-                         CaretIndex="{Binding CompilerOutputCaretIndex}"
-                         FontSize="16"
-                         IsReadOnly="True"
-                         FontFamily="Cascadia Code,Consolas,Menlo,Monospace"/>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding CompilerOutput}"
+                             CaretIndex="{Binding CompilerOutputCaretIndex}"
+                             FontSize="16"
+                             IsReadOnly="True"
+                             FontFamily="Cascadia Code,Consolas,Menlo,Monospace"/>
+                </ScrollViewer>
             </TabItem>
             <TabItem Header="Application">
-                <TextBox Text="{Binding ApplicationOutput}"
-                         CaretIndex="{Binding ApplicationOutputCaretIndex}"
-                         FontSize="16"
-                         IsReadOnly="True"
-                         FontFamily="Cascadia Code,Consolas,Menlo,Monospace"/>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                    <TextBox Text="{Binding ApplicationOutput}"
+                             CaretIndex="{Binding ApplicationOutputCaretIndex}"
+                             FontSize="16"
+                             IsReadOnly="True"
+                             FontFamily="Cascadia Code,Consolas,Menlo,Monospace"/>
+                </ScrollViewer>
             </TabItem>
         </TabControl>        
     </Grid>

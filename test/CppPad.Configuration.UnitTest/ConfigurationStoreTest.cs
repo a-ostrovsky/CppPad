@@ -25,7 +25,7 @@ namespace CppPad.Configuration.UnitTest
             var toolsetConfiguration = new ToolsetConfiguration
             {
                 Toolsets = [
-                    new Toolset(Guid.Empty, "Type1", "Name1", "Path1")
+                    new Toolset(Guid.Empty, "Type1", "X86", "Name1", "Path1")
                 ],
                 DefaultToolsetId = Guid.NewGuid()
             };
@@ -38,6 +38,7 @@ namespace CppPad.Configuration.UnitTest
             Assert.Equal("Type1", config.Toolsets[0].Type);
             Assert.Equal("Name1", config.Toolsets[0].Name);
             Assert.Equal("Path1", config.Toolsets[0].ExecutablePath);
+            Assert.Equal("X86", config.Toolsets[0].TargetArchitecture);
             Assert.Equal(toolsetConfiguration.DefaultToolsetId, config.DefaultToolsetId);
         }
     }

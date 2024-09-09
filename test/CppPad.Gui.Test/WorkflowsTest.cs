@@ -3,7 +3,7 @@ using System.Reactive.Linq;
 
 namespace CppPad.Gui.Test
 {
-    public class EditWorkflowsTest : TestBase
+    public class WorkflowsTest : TestBase
     {
         [Fact]
         public async Task Create_save_and_load_file()
@@ -43,6 +43,24 @@ namespace CppPad.Gui.Test
             var compiler = ObjectTree.Compiler;
             compiler.VerifyBuild(editor.Toolset!.ToCompilerToolset());
             compiler.VerifyBuildOutputRun();
+        }
+
+        [Fact]
+        public async Task RunScript_WithError()
+        {
+            ObjectTree.ErrorHandler.ExpectError();
+            ObjectTree.Compiler.SetError();
+
+            // Compile once
+            var editor = new EditorHelper(ObjectTree).CreateValidScript();
+            await editor.RunCommand.Execute();
+            Assert.NotNull(editor.CompilerOutput);
+            Assert.NotEmpty(editor.CompilerOutput);
+
+            // Compile again, same output expected
+            var previousOutput = editor.CompilerOutput;
+            await editor.RunCommand.Execute();
+            Assert.Equal(previousOutput, editor.CompilerOutput);
         }
     }
 }

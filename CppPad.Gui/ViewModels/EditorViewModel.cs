@@ -302,15 +302,21 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             ApplicationOutput = string.Empty;
             _compiler.CompilerMessageReceived += OnCompilerOnCompilerMessageReceived;
             var buildArgs = GetBuildArgs();
-            var executable = await _compiler.BuildAsync(Toolset.ToCompilerToolset(), buildArgs);
-            _compiler.CompilerMessageReceived -= OnCompilerOnCompilerMessageReceived;
-            executable.OutputReceived += (_, args) => WriteApplicationOutput(args.Output);
-            executable.ErrorReceived += (_, args) => WriteApplicationOutput(args.Error);
-            executable.ProcessExited += (_, args) => WriteApplicationOutput(
-                $"Process exited with code: {args.ExitCode}");
-            WriteCompilerOutput(string.Empty);
-            SelectedOutputIndex = OutputIndex.Application;
-            await executable.RunAsync();
+            try
+            {
+                var executable = await _compiler.BuildAsync(Toolset.ToCompilerToolset(), buildArgs);
+                executable.OutputReceived += (_, args) => WriteApplicationOutput(args.Output);
+                executable.ErrorReceived += (_, args) => WriteApplicationOutput(args.Error);
+                executable.ProcessExited += (_, args) => WriteApplicationOutput(
+                    $"Process exited with code: {args.ExitCode}");
+                WriteCompilerOutput(string.Empty);
+                SelectedOutputIndex = OutputIndex.Application;
+                await executable.RunAsync();
+            }
+            finally
+            {
+                _compiler.CompilerMessageReceived -= OnCompilerOnCompilerMessageReceived;
+            }
         });
     }
 
@@ -369,6 +375,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         SourceCode = script.Content;
         ScriptSettings.CppStandard = script.CppStandard;
         ScriptSettings.AdditionalBuildArgs = script.AdditionalBuildArgs;
+        ScriptSettings.PreBuildCommand = script.PreBuildCommand;
         ScriptSettings.AdditionalIncludeDirs =
             string.Join(Environment.NewLine, script.AdditionalIncludeDirs);
         ScriptSettings.OptimizationLevel = script.OptimizationLevel;
@@ -381,6 +388,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             Content = SourceCode,
             CppStandard = ScriptSettings.CppStandard,
             AdditionalBuildArgs = ScriptSettings.AdditionalBuildArgs,
+            PreBuildCommand = ScriptSettings.PreBuildCommand,
             AdditionalIncludeDirs = ScriptSettings.AdditionalIncludeDirsArray,
             OptimizationLevel = ScriptSettings.OptimizationLevel
         };

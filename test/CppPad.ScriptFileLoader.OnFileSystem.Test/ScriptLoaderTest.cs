@@ -60,7 +60,8 @@ public class ScriptLoaderTest
             AdditionalIncludeDirs = ["X:\\Includes"],
             CppStandard = CppStandard.Cpp11,
             OptimizationLevel = OptimizationLevel.Level1,
-            AdditionalBuildArgs = "Args1"
+            AdditionalBuildArgs = "Args1",
+            PreBuildCommand = "PreBuildCommand1"
         };
 
         // Act

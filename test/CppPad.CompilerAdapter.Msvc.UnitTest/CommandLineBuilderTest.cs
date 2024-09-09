@@ -16,7 +16,7 @@ public class CommandLineBuilderTest
         _fileSystem.CreateDirectory(@"C:\path\to");
         _fileSystem.WriteAllText(@"C:\path\to\cl.exe", string.Empty); // Simulate the existence of cl.exe
 
-        var toolset = new Toolset("type", "name", "C:\\path\\to\\cl.exe");
+        var toolset = new Toolset("type", CpuArchitecture.X64, "name", @"C:\path\to\cl.exe");
         var buildArgs = new BuildBatchFileArgs
         {
             SourceFilePath = "source.cpp",
@@ -34,7 +34,7 @@ public class CommandLineBuilderTest
         var result = commandLineBuilder.BuildBatchFile(toolset, buildArgs);
 
         // Assert
-        var expectedVcvarsallPath = Path.GetFullPath(Path.Combine("C:\\path\\to\\cl.exe", @"..\..\..\..\..\..\Auxiliary\Build\vcvarsall.bat"));
+        var expectedVcvarsallPath = Path.GetFullPath(Path.Combine(@"C:\path\to\cl.exe", @"..\..\..\..\..\..\Auxiliary\Build\vcvarsall.bat"));
 
         Assert.Contains("echo PreBuild", result);
         Assert.Contains($"call \"{expectedVcvarsallPath}\" x64", result);
@@ -52,7 +52,7 @@ public class CommandLineBuilderTest
     {
         // Arrange
         var fileSystem = new InMemoryFileSystem();
-        var toolset = new Toolset("type", "name", "path/to/cl.exe");
+        var toolset = new Toolset("type", CpuArchitecture.X64, "name", "path/to/cl.exe");
         var buildArgs = new BuildBatchFileArgs
         {
             SourceFilePath = "source.cpp",

@@ -46,14 +46,14 @@ public class Compiler : ICompiler
         {
             var tempSourceFilePath = _fileSystem.CreateTempFile("cpp");
             var tempExeFilePath = Path.ChangeExtension(tempSourceFilePath, ".exe");
-            var tempBatchFileName = Path.ChangeExtension(tempSourceFilePath, ".bat");
+            var tempBatchFilePath = Path.ChangeExtension(tempSourceFilePath, ".bat");
 
             _logger.LogInformation(
                 "Source file created at {TempSourceFilePath}", tempSourceFilePath);
             _logger.LogInformation(
                 "Executable file will be created at {TempExeFilePath}", tempExeFilePath);
             _logger.LogInformation(
-                "Batch file for compilation will be created at {BatchFilePath}", tempBatchFileName);
+                "Batch file for compilation will be created at {BatchFilePath}", tempBatchFilePath);
 
             await _fileSystem.WriteAllTextAsync(tempSourceFilePath, args.SourceCode);
 
@@ -70,15 +70,16 @@ public class Compiler : ICompiler
                 PreBuildCommand = args.PreBuildCommand
             });
 
-            await _fileSystem.WriteAllTextAsync(tempBatchFileName, tempBatchFileContent);
-            _logger.LogInformation("Batch file created at {TempBatchFile}", tempBatchFileName);
-            await _compilerProcessExecutor.ExecuteAsync("cmd.exe", $"/c \"{tempBatchFileName}\"");
+            await _fileSystem.WriteAllTextAsync(tempBatchFilePath, tempBatchFileContent);
+            _logger.LogInformation("Batch file created at {TempBatchFile}", tempBatchFilePath);
+            await _compilerProcessExecutor.ExecuteAsync("cmd.exe", $"/c \"{tempBatchFilePath}\"");
 
             _logger.LogInformation("Compilation succeeded.");
 
             _fileSystem.DeleteFile(tempSourceFilePath);
-            _fileSystem.DeleteFile(tempBatchFileName);
-
+            _fileSystem.DeleteFile(tempBatchFilePath);
+            var objFilePath = Path.ChangeExtension(tempExeFilePath, ".obj");
+            _fileSystem.DeleteFile(objFilePath);
             return new Executable(tempExeFilePath, _fileSystem, _loggerFactory);
         }
         catch (Exception ex)

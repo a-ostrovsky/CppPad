@@ -50,20 +50,20 @@ public class ToolsetDetector(
         var binPath = Path.Combine(visualStudioPath,
             @$"VC\Tools\MSVC\{version}\bin");
         var result = new List<Toolset>();
-        var combinations = new List<(string, string)>
+        var combinations = new List<(string, string, CpuArchitecture)>
         {
-            ("Hostx64", "x64"),
-            ("Hostx64", "x86"),
-            ("Hostx86", "x64"),
-            ("Hostx86", "x86")
+            ("Hostx64", "x64", CpuArchitecture.X64),
+            ("Hostx64", "x86", CpuArchitecture.X86),
+            ("Hostx86", "x64", CpuArchitecture.X64),
+            ("Hostx86", "x86", CpuArchitecture.X86)
         };
-        foreach (var (host, target) in combinations)
+        foreach (var (host, target, arch) in combinations)
         {
             var executablePath =
                 Path.Combine(binPath, @$"{host}\{target}\cl.exe");
             if (fileSystem.FileExists(executablePath))
             {
-                result.Add(new Toolset($"MSVC {version}",
+                result.Add(new Toolset($"MSVC {version}", arch,
                     $"{version} ({host} -> {target})", executablePath));
             }
             else

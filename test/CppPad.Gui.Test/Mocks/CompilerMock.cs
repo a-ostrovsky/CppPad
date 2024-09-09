@@ -11,14 +11,31 @@ public class CompilerMock : ICompiler, IExecutable
 
     private Toolset? _lastToolset;
     private bool _runExecuted;
+    private bool _shouldGenerateError;
+
+    public void SetError()
+    {
+        _shouldGenerateError = true;
+    }
 
     public Task<IExecutable> BuildAsync(Toolset toolset, BuildArgs args)
     {
         // Simulate build process
         _lastToolset = toolset;
-        CompilerMessageReceived?.Invoke(this, new CompilerMessageEventArgs(CompilerMessageType.Info, "Build started"));
-        CompilerMessageReceived?.Invoke(this, new CompilerMessageEventArgs(CompilerMessageType.Info, "Build completed"));
-        return Task.FromResult<IExecutable>(this);
+        if (_shouldGenerateError)
+        {
+            CompilerMessageReceived?.Invoke(this,
+                new CompilerMessageEventArgs(CompilerMessageType.Error, "Build failed"));
+            return Task.FromException<IExecutable>(new CompilationFailedException());
+        }
+        else
+        {
+            CompilerMessageReceived?.Invoke(this,
+                new CompilerMessageEventArgs(CompilerMessageType.Info, "Build started"));
+            CompilerMessageReceived?.Invoke(this,
+                new CompilerMessageEventArgs(CompilerMessageType.Info, "Build completed"));
+            return Task.FromResult<IExecutable>(this);
+        }
     }
 
     public Task RunAsync()

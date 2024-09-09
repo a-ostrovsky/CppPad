@@ -48,11 +48,18 @@ public class CommandLineBuilder(DiskFileSystem fileSystem) : ICommandLineBuilder
 
         var targetFolder = Path.GetDirectoryName(buildArgs.TargetFilePath) ?? string.Empty;
 
+        var architecture = toolset.TargetArchitecture switch
+        {
+            CpuArchitecture.X64 => "x64",
+            CpuArchitecture.X86 => "x86",
+            _ => throw new ArgumentException($"Unsupported architecture: {toolset.TargetArchitecture}")
+        };
+
         var batchContent =
             $"""
               @echo off
               {buildArgs.PreBuildCommand}
-              call "{vcvarsallPath}" x64
+              call "{vcvarsallPath}" {architecture}
               cl.exe "{buildArgs.SourceFilePath}" /Fe"{buildArgs.TargetFilePath}" /Fo"{targetFolder}"\ {includeDirs} {optimizationLevel} {cppStandard} {buildArgs.AdditionalBuildArgs}
              """;
         return batchContent;

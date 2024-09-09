@@ -15,4 +15,6 @@ public record Script
     public OptimizationLevel OptimizationLevel { get; init; } = OptimizationLevel.Unspecified;
 
     public string AdditionalBuildArgs { get; init; } = string.Empty;
+
+    public string PreBuildCommand { get; init; } = string.Empty;
 }

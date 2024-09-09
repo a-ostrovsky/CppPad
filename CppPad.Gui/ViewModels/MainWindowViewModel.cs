@@ -167,6 +167,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         {
             var editor = _editorViewModelFactory.Create();
             await editor.LoadFromTemplateAsync(templateName);
+            editor.IsModified = false;
             Editors.Add(editor);
             CurrentEditor = editor;
         });
@@ -184,6 +185,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
             var editor = _editorViewModelFactory.Create();
             await editor.LoadSourceCodeAsync(uri);
+            editor.IsModified = false;
             Editors.Add(editor);
             CurrentEditor = editor;
         });
