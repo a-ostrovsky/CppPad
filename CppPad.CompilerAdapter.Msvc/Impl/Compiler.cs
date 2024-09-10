@@ -67,11 +67,13 @@ public class Compiler : ICompiler
                 OptimizationLevel = args.OptimizationLevel,
                 CppStandard = args.CppStandard,
                 AdditionalIncludeDirs = args.AdditionalIncludeDirs,
+                LibrarySearchPaths = args.LibrarySearchPaths,
+                StaticallyLinkedLibraries = args.StaticallyLinkedLibraries,
                 PreBuildCommand = args.PreBuildCommand
             });
 
             await _fileSystem.WriteAllTextAsync(tempBatchFilePath, tempBatchFileContent);
-            _logger.LogInformation("Batch file created at {TempBatchFile}", tempBatchFilePath);
+            _logger.LogInformation("Batch file created at {TempBatchFile}. Content: {TempBatchContent}", tempBatchFilePath, tempBatchFileContent);
             await _compilerProcessExecutor.ExecuteAsync("cmd.exe", $"/c \"{tempBatchFilePath}\"");
 
             _logger.LogInformation("Compilation succeeded.");

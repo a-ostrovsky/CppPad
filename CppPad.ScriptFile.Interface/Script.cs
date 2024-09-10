@@ -10,6 +10,10 @@ public record Script
 
     public IReadOnlyList<string> AdditionalIncludeDirs { get; init; } = [];
 
+    public IReadOnlyList<string> LibrarySearchPaths { get; init; } = [];
+
+    public IReadOnlyList<string> StaticallyLinkedLibraries { get; init; } = [];
+
     public CppStandard CppStandard { get; init; } = CppStandard.CppLatest;
 
     public OptimizationLevel OptimizationLevel { get; init; } = OptimizationLevel.Unspecified;

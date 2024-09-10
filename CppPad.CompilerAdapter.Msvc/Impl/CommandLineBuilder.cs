@@ -44,7 +44,11 @@ public class CommandLineBuilder(DiskFileSystem fileSystem) : ICommandLineBuilder
             _ => string.Empty
         };
 
-        var includeDirs = string.Join(" ", buildArgs.AdditionalIncludeDirs.Select(dir => $"/I\"{dir}\""));
+        var includeDirs = string.Join(" ",
+            buildArgs.AdditionalIncludeDirs.Select(dir => $"/I\"{dir}\""));
+        var libraryPaths = string.Join(" ",
+            buildArgs.LibrarySearchPaths.Select(path => $"/LIBPATH:\"{path}\""));
+        var libraries = string.Join(" ", buildArgs.StaticallyLinkedLibraries);
 
         var targetFolder = Path.GetDirectoryName(buildArgs.TargetFilePath) ?? string.Empty;
 
@@ -52,15 +56,20 @@ public class CommandLineBuilder(DiskFileSystem fileSystem) : ICommandLineBuilder
         {
             CpuArchitecture.X64 => "x64",
             CpuArchitecture.X86 => "x86",
-            _ => throw new ArgumentException($"Unsupported architecture: {toolset.TargetArchitecture}")
+            _ => throw new ArgumentException(
+                $"Unsupported architecture: {toolset.TargetArchitecture}")
         };
+
+        var clExeCall =
+            $@"cl.exe /Fe""{buildArgs.TargetFilePath}"" {buildArgs.SourceFilePath} {includeDirs} "
+            + $"{optimizationLevel} {cppStandard} {buildArgs.AdditionalBuildArgs} /link {libraryPaths} {libraries}";
 
         var batchContent =
             $"""
               @echo off
               {buildArgs.PreBuildCommand}
               call "{vcvarsallPath}" {architecture}
-              cl.exe "{buildArgs.SourceFilePath}" /Fe"{buildArgs.TargetFilePath}" /Fo"{targetFolder}"\ {includeDirs} {optimizationLevel} {cppStandard} {buildArgs.AdditionalBuildArgs}
+              {clExeCall}
              """;
         return batchContent;
     }

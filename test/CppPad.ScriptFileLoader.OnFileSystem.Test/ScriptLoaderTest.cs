@@ -58,6 +58,8 @@ public class ScriptLoaderTest
         {
             Content = "int main() { return 0; }",
             AdditionalIncludeDirs = ["X:\\Includes"],
+            LibrarySearchPaths = ["X:\\Libs"],
+            StaticallyLinkedLibraries = ["lib1", "lib2"],
             CppStandard = CppStandard.Cpp11,
             OptimizationLevel = OptimizationLevel.Level1,
             AdditionalBuildArgs = "Args1",

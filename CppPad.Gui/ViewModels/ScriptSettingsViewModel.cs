@@ -15,6 +15,8 @@ public class ScriptSettingsViewModel : ViewModelBase
     private CppStandard _cppStandard = CppStandard.CppLatest;
     private OptimizationLevel _optimizationLevel = OptimizationLevel.Unspecified;
     private string _preBuildCommand = string.Empty;
+    private string _librarySearchPaths = string.Empty;
+    private string _staticallyLinkedLibraries = string.Empty;
 
     public string PreBuildCommand
     {
@@ -48,4 +50,22 @@ public class ScriptSettingsViewModel : ViewModelBase
         get => _additionalBuildArgs;
         set => SetProperty(ref _additionalBuildArgs, value);
     }
+
+    public string LibrarySearchPaths
+    {
+        get => _librarySearchPaths;
+        set => SetProperty(ref _librarySearchPaths, value);
+    }
+
+    public string[] LibrarySearchPathsArray => LibrarySearchPaths
+        .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).ToArray();
+
+    public string StaticallyLinkedLibraries
+    {
+        get => _staticallyLinkedLibraries;
+        set => SetProperty(ref _staticallyLinkedLibraries, value);
+    }
+
+    public string[] StaticallyLinkedLibrariesArray => StaticallyLinkedLibraries
+        .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).ToArray();
 }

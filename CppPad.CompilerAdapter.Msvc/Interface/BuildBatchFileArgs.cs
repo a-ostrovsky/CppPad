@@ -10,6 +10,10 @@ public record BuildBatchFileArgs
 
     public IReadOnlyList<string> AdditionalIncludeDirs { get; init; } = [];
 
+    public IReadOnlyList<string> LibrarySearchPaths { get; init; } = [];
+
+    public IReadOnlyList<string> StaticallyLinkedLibraries { get; init; } = [];
+
     public string AdditionalBuildArgs { get; init; } = string.Empty;
 
     public OptimizationLevel OptimizationLevel { get; init; } = OptimizationLevel.Unspecified;

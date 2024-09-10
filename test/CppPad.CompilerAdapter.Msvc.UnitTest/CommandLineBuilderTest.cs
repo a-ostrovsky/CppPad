@@ -21,7 +21,9 @@ public class CommandLineBuilderTest
         {
             SourceFilePath = "source.cpp",
             TargetFilePath = "target.exe",
-            AdditionalIncludeDirs = ["include1", "include2"],
+            AdditionalIncludeDirs = new List<string> { "include1", "include2" },
+            LibrarySearchPaths = new List<string> { @"C:\libs\path1", @"C:\libs\path2" },
+            StaticallyLinkedLibraries = new List<string> { "lib1.lib", "lib2.lib" },
             AdditionalBuildArgs = "/DDEBUG",
             OptimizationLevel = OptimizationLevel.Level2,
             CppStandard = CppStandard.Cpp17,
@@ -42,6 +44,10 @@ public class CommandLineBuilderTest
         Assert.Contains("source.cpp", result);
         Assert.Contains("/I\"include1\"", result);
         Assert.Contains("/I\"include2\"", result);
+        Assert.Contains("/LIBPATH:\"C:\\libs\\path1\"", result);
+        Assert.Contains("/LIBPATH:\"C:\\libs\\path2\"", result);
+        Assert.Contains("lib1.lib", result);
+        Assert.Contains("lib2.lib", result);
         Assert.Contains("/O2", result);
         Assert.Contains("/std:c++17", result);
         Assert.Contains("/DDEBUG", result);

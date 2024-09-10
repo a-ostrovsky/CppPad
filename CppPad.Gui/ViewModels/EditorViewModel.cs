@@ -378,6 +378,10 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         ScriptSettings.PreBuildCommand = script.PreBuildCommand;
         ScriptSettings.AdditionalIncludeDirs =
             string.Join(Environment.NewLine, script.AdditionalIncludeDirs);
+        ScriptSettings.StaticallyLinkedLibraries =
+            string.Join(Environment.NewLine, script.StaticallyLinkedLibraries);
+        ScriptSettings.LibrarySearchPaths =
+            string.Join(Environment.NewLine, script.LibrarySearchPaths);
         ScriptSettings.OptimizationLevel = script.OptimizationLevel;
     }
 
@@ -390,7 +394,9 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             AdditionalBuildArgs = ScriptSettings.AdditionalBuildArgs,
             PreBuildCommand = ScriptSettings.PreBuildCommand,
             AdditionalIncludeDirs = ScriptSettings.AdditionalIncludeDirsArray,
-            OptimizationLevel = ScriptSettings.OptimizationLevel
+            OptimizationLevel = ScriptSettings.OptimizationLevel,
+            LibrarySearchPaths = ScriptSettings.LibrarySearchPathsArray,
+            StaticallyLinkedLibraries = ScriptSettings.StaticallyLinkedLibrariesArray
         };
     }
 
@@ -403,6 +409,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             CppStandard = ScriptSettings.CppStandard,
             OptimizationLevel = ScriptSettings.OptimizationLevel,
             AdditionalIncludeDirs = ScriptSettings.AdditionalIncludeDirsArray,
+            LibrarySearchPaths = ScriptSettings.LibrarySearchPathsArray,
+            StaticallyLinkedLibraries = ScriptSettings.StaticallyLinkedLibrariesArray,
             PreBuildCommand = ScriptSettings.PreBuildCommand
         };
         return buildArgs;
