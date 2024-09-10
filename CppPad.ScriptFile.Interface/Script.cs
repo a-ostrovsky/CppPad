@@ -12,6 +12,8 @@ public record Script
 
     public IReadOnlyList<string> LibrarySearchPaths { get; init; } = [];
 
+    public IReadOnlyList<string> AdditionalEnvironmentPaths { get; init; } = [];
+
     public IReadOnlyList<string> StaticallyLinkedLibraries { get; init; } = [];
 
     public CppStandard CppStandard { get; init; } = CppStandard.CppLatest;

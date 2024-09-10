@@ -17,6 +17,8 @@ public class Executable(
     private readonly ILogger<Executable> _logger =
         loggerFactory.CreateLogger<Executable>();
 
+    private string[] _paths = [];
+
     public event EventHandler<OutputReceivedEventArgs>? OutputReceived;
     public event EventHandler<ErrorReceivedEventArgs>? ErrorReceived;
     public event EventHandler<ProcessExitedEventArgs>? ProcessExited;
@@ -33,6 +35,13 @@ public class Executable(
             process.StartInfo.RedirectStandardError = true;
             process.StartInfo.UseShellExecute = false;
             process.StartInfo.CreateNoWindow = true;
+
+            if (_paths.Length > 0)
+            {
+                var pathVariable = process.StartInfo.EnvironmentVariables["PATH"];
+                var additionalPaths = string.Join(Path.PathSeparator, _paths);
+                process.StartInfo.EnvironmentVariables["PATH"] = $"{pathVariable}{Path.PathSeparator}{additionalPaths}";
+            }
 
             process.OutputDataReceived += (_, e) =>
             {
@@ -79,5 +88,10 @@ public class Executable(
             ErrorReceived?.Invoke(this,
                 new ErrorReceivedEventArgs($"An error occurred: {ex}"));
         }
+    }
+
+    public void SetAdditionalEnvironmentPaths(IEnumerable<string> paths)
+    {
+        _paths = paths.ToArray();
     }
 }

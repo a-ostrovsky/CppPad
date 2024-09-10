@@ -17,6 +17,7 @@ public class ScriptSettingsViewModel : ViewModelBase
     private string _preBuildCommand = string.Empty;
     private string _librarySearchPaths = string.Empty;
     private string _staticallyLinkedLibraries = string.Empty;
+    private string _additionalEnvironmentPaths = string.Empty;
 
     public string PreBuildCommand
     {
@@ -67,5 +68,14 @@ public class ScriptSettingsViewModel : ViewModelBase
     }
 
     public string[] StaticallyLinkedLibrariesArray => StaticallyLinkedLibraries
+        .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).ToArray();
+
+    public string AdditionalEnvironmentPaths
+    {
+        get => _additionalEnvironmentPaths;
+        set => SetProperty(ref _additionalEnvironmentPaths, value);
+    }
+
+    public string[] AdditionalEnvironmentPathsArray => AdditionalEnvironmentPaths
         .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).ToArray();
 }

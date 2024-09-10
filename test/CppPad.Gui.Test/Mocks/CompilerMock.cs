@@ -1,22 +1,18 @@
-﻿using CppPad.CompilerAdapter.Interface;
+﻿#region
+
+using CppPad.CompilerAdapter.Interface;
+
+#endregion
 
 namespace CppPad.Gui.Test.Mocks;
 
 public class CompilerMock : ICompiler, IExecutable
 {
-    public event EventHandler<CompilerMessageEventArgs>? CompilerMessageReceived;
-    public event EventHandler<OutputReceivedEventArgs>? OutputReceived;
-    public event EventHandler<ErrorReceivedEventArgs>? ErrorReceived;
-    public event EventHandler<ProcessExitedEventArgs>? ProcessExited;
-
     private Toolset? _lastToolset;
     private bool _runExecuted;
     private bool _shouldGenerateError;
-
-    public void SetError()
-    {
-        _shouldGenerateError = true;
-    }
+    public string[] AdditionalPaths { get; private set; } = [];
+    public event EventHandler<CompilerMessageEventArgs>? CompilerMessageReceived;
 
     public Task<IExecutable> BuildAsync(Toolset toolset, BuildArgs args)
     {
@@ -28,15 +24,17 @@ public class CompilerMock : ICompiler, IExecutable
                 new CompilerMessageEventArgs(CompilerMessageType.Error, "Build failed"));
             return Task.FromException<IExecutable>(new CompilationFailedException());
         }
-        else
-        {
-            CompilerMessageReceived?.Invoke(this,
-                new CompilerMessageEventArgs(CompilerMessageType.Info, "Build started"));
-            CompilerMessageReceived?.Invoke(this,
-                new CompilerMessageEventArgs(CompilerMessageType.Info, "Build completed"));
-            return Task.FromResult<IExecutable>(this);
-        }
+
+        CompilerMessageReceived?.Invoke(this,
+            new CompilerMessageEventArgs(CompilerMessageType.Info, "Build started"));
+        CompilerMessageReceived?.Invoke(this,
+            new CompilerMessageEventArgs(CompilerMessageType.Info, "Build completed"));
+        return Task.FromResult<IExecutable>(this);
     }
+
+    public event EventHandler<OutputReceivedEventArgs>? OutputReceived;
+    public event EventHandler<ErrorReceivedEventArgs>? ErrorReceived;
+    public event EventHandler<ProcessExitedEventArgs>? ProcessExited;
 
     public Task RunAsync()
     {
@@ -50,6 +48,16 @@ public class CompilerMock : ICompiler, IExecutable
             // Simulate process exit
             ProcessExited?.Invoke(this, new ProcessExitedEventArgs(0));
         });
+    }
+
+    public void SetAdditionalEnvironmentPaths(IEnumerable<string> paths)
+    {
+        AdditionalPaths = paths.ToArray();
+    }
+
+    public void SetError()
+    {
+        _shouldGenerateError = true;
     }
 
     // Method to verify that build was performed with the given toolset

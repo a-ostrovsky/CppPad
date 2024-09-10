@@ -311,6 +311,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                     $"Process exited with code: {args.ExitCode}");
                 WriteCompilerOutput(string.Empty);
                 SelectedOutputIndex = OutputIndex.Application;
+                executable.SetAdditionalEnvironmentPaths(
+                    ScriptSettings.AdditionalEnvironmentPathsArray);
                 await executable.RunAsync();
             }
             finally
@@ -382,6 +384,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             string.Join(Environment.NewLine, script.StaticallyLinkedLibraries);
         ScriptSettings.LibrarySearchPaths =
             string.Join(Environment.NewLine, script.LibrarySearchPaths);
+        ScriptSettings.AdditionalEnvironmentPaths =
+            string.Join(Environment.NewLine, script.AdditionalEnvironmentPaths);
         ScriptSettings.OptimizationLevel = script.OptimizationLevel;
     }
 
@@ -395,6 +399,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             PreBuildCommand = ScriptSettings.PreBuildCommand,
             AdditionalIncludeDirs = ScriptSettings.AdditionalIncludeDirsArray,
             OptimizationLevel = ScriptSettings.OptimizationLevel,
+            AdditionalEnvironmentPaths = ScriptSettings.AdditionalEnvironmentPathsArray,
             LibrarySearchPaths = ScriptSettings.LibrarySearchPathsArray,
             StaticallyLinkedLibraries = ScriptSettings.StaticallyLinkedLibrariesArray
         };

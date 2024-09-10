@@ -7,6 +7,8 @@ public interface IExecutable
     event EventHandler<ProcessExitedEventArgs>? ProcessExited;
 
     Task RunAsync();
+
+    void SetAdditionalEnvironmentPaths(IEnumerable<string> paths);
 }
 
 public class DummyExecutable : IExecutable
@@ -18,5 +20,9 @@ public class DummyExecutable : IExecutable
     public Task RunAsync()
     {
         return Task.CompletedTask;
+    }
+
+    public void SetAdditionalEnvironmentPaths(IEnumerable<string> paths)
+    {
     }
 }

@@ -45,6 +45,7 @@ public class TemplateLoaderTest
             Content = "int main() { return 0; }",
             AdditionalIncludeDirs = ["X:\\Includes"],
             LibrarySearchPaths = ["Y:\\Libs"],
+            AdditionalEnvironmentPaths = ["Z:\\Paths"],
             StaticallyLinkedLibraries = ["lib1", "lib2"],
             CppStandard = CppStandard.Cpp11,
             OptimizationLevel = OptimizationLevel.Level1,
