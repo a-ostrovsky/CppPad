@@ -26,6 +26,11 @@ public class InMemoryScriptStore : IScriptLoader
         await Task.CompletedTask;
     }
 
+    public IReadOnlyList<string> GetFileNames()
+    {
+        return _serializedScripts.Keys.ToList();
+    }
+
     private static string Serialize(Script script)
     {
         return JsonSerializer.Serialize(script);

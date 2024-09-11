@@ -199,7 +199,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private void UpdateTitle()
     {
         var baseTitle = _currentFilePath != null
-            ? TruncateTitle(Path.GetFileName(_currentFilePath.AbsolutePath))
+            ? TruncateTitle(Path.GetFileName(_currentFilePath.LocalPath))
             : "Untitled";
         Title = IsModified ? $"{baseTitle}*" : baseTitle;
     }
@@ -215,7 +215,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             }
 
             var script = GetScript();
-            await _scriptLoader.SaveAsync(CurrentFileUri.AbsolutePath, script);
+            await _scriptLoader.SaveAsync(CurrentFileUri.LocalPath, script);
             IsModified = false;
         });
     }
@@ -251,7 +251,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
             var uri = await _router.ShowSaveFileDialogAsync(AppConstants.SaveFileFilter);
-            var filePath = uri?.AbsolutePath;
+            var filePath = uri?.LocalPath;
             if (filePath == null)
             {
                 return;
@@ -349,7 +349,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            var script = await _scriptLoader.LoadAsync(uri.AbsolutePath);
+            var script = await _scriptLoader.LoadAsync(uri.LocalPath);
             SetScript(script);
             SetCurrentFilePath(uri);
         });

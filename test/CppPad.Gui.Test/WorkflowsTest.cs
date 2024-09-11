@@ -1,5 +1,9 @@
+#region
+
 using CppPad.Gui.Test.Helpers;
 using System.Reactive.Linq;
+
+#endregion
 
 namespace CppPad.Gui.Test
 {
@@ -25,9 +29,16 @@ namespace CppPad.Gui.Test
             Assert.True(editor.IsModified);
 
             // Save file
-            ObjectTree.Router.SetSomeSelectedFile();
+            ObjectTree.Router.SetSelectedFile(new Uri("file:///C:/name%20with%20space.cpp"));
             await editor.SaveCommand.Execute();
             Assert.False(editor.IsModified);
+
+            // Assert that file exists
+            const string expectedFileNameWithoutPath = "name with space.cpp";
+            var existingFileNames = ObjectTree.ScriptLoader.GetFileNames()
+                .Select(Path.GetFileName)
+                .ToArray();
+            Assert.Contains(expectedFileNameWithoutPath, existingFileNames);
 
             // Load file
             await mainWindow.OpenFileCommand.Execute();
