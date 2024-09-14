@@ -13,6 +13,8 @@ public class DummyCompiler : ICompiler
 
     public Task<IExecutable> BuildAsync(Toolset toolset, BuildArgs args)
     {
+        CompilerMessageReceived?.Invoke(this,
+            new CompilerMessageEventArgs(CompilerMessageType.Info, string.Empty));
         return Task.FromResult<IExecutable>(new DummyExecutable());
     }
 }

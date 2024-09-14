@@ -83,7 +83,7 @@ public class Bootstrapper
 
         collection.AddSingleton<MainWindow>();
         collection.AddTransient<EditorView>();
-        collection.AddTransient<ToolsetEditorWindow>();
+        collection.AddTransient<Views.ToolsetEditorWindow>();
         collection.AddTransient<ScriptSettingsWindow>();
 
         collection.AddSingleton<IEditorViewModelFactory, EditorViewModelFactory>();

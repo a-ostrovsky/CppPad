@@ -1,8 +1,7 @@
 using Avalonia.Controls;
-
 using CppPad.Gui.ViewModels;
 
-namespace CppPad.Gui;
+namespace CppPad.Gui.Views;
 
 public partial class ToolsetEditorWindow : Window
 {

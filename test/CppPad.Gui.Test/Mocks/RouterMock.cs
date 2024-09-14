@@ -28,7 +28,7 @@ public class RouterMock : IRouter
 
     public Task<T> ShowDialogAsync<T>(T viewModel) where T : ViewModelBase
     {
-        return Task.FromResult(viewModel)!;
+        return Task.FromResult(viewModel);
     }
 
     public Task<Uri?> ShowSaveFileDialogAsync(string filter)

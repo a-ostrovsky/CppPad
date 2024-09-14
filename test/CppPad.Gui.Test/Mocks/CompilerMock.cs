@@ -10,7 +10,9 @@ public class CompilerMock : ICompiler, IExecutable
 {
     private Toolset? _lastToolset;
     private bool _runExecuted;
-    private bool _shouldGenerateError;
+    private bool _shouldGenerateCompileError;
+    private bool _shouldGenerateRuntimeError;
+
     public string[] AdditionalPaths { get; private set; } = [];
     public event EventHandler<CompilerMessageEventArgs>? CompilerMessageReceived;
 
@@ -18,7 +20,7 @@ public class CompilerMock : ICompiler, IExecutable
     {
         // Simulate build process
         _lastToolset = toolset;
-        if (_shouldGenerateError)
+        if (_shouldGenerateCompileError)
         {
             CompilerMessageReceived?.Invoke(this,
                 new CompilerMessageEventArgs(CompilerMessageType.Error, "Build failed"));
@@ -45,8 +47,16 @@ public class CompilerMock : ICompiler, IExecutable
             OutputReceived?.Invoke(this, new OutputReceivedEventArgs("Execution started"));
             // Simulate some output
             OutputReceived?.Invoke(this, new OutputReceivedEventArgs("Execution output"));
-            // Simulate process exit
-            ProcessExited?.Invoke(this, new ProcessExitedEventArgs(0));
+            if (_shouldGenerateRuntimeError)
+            {
+                ErrorReceived?.Invoke(this, new ErrorReceivedEventArgs("Runtime error"));
+                ProcessExited?.Invoke(this, new ProcessExitedEventArgs(1));
+            }
+            else
+            {
+                // Simulate process exit
+                ProcessExited?.Invoke(this, new ProcessExitedEventArgs(0));
+            }
         });
     }
 
@@ -55,9 +65,14 @@ public class CompilerMock : ICompiler, IExecutable
         AdditionalPaths = paths.ToArray();
     }
 
-    public void SetError()
+    public void SetCompilerError()
     {
-        _shouldGenerateError = true;
+        _shouldGenerateCompileError = true;
+    }
+
+    public void SetRuntimeError()
+    {
+        _shouldGenerateRuntimeError = true;
     }
 
     // Method to verify that build was performed with the given toolset

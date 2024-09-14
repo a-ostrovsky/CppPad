@@ -30,11 +30,13 @@ public class DummyTemplateLoader : ITemplateLoader
 
     public Task SaveAsync(string templateName, Script script)
     {
+        TemplatesChanged?.Invoke(this, EventArgs.Empty);
         return Task.CompletedTask;
     }
 
     public void Delete(string templateName)
     {
+        TemplatesChanged?.Invoke(this, EventArgs.Empty);
     }
 
     public Task<IReadOnlyList<string>> GetAllTemplatesAsync()

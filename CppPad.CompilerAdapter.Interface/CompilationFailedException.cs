@@ -1,5 +1,3 @@
-using System;
-
 namespace CppPad.CompilerAdapter.Interface;
 
 public class CompilationFailedException : Exception

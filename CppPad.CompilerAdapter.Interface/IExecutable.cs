@@ -19,6 +19,9 @@ public class DummyExecutable : IExecutable
 
     public Task RunAsync()
     {
+        OutputReceived?.Invoke(this, new OutputReceivedEventArgs(string.Empty));
+        ErrorReceived?.Invoke(this, new ErrorReceivedEventArgs(string.Empty));
+        ProcessExited?.Invoke(this, new ProcessExitedEventArgs(0));
         return Task.CompletedTask;
     }
 

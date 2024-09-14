@@ -50,8 +50,6 @@ public class CommandLineBuilder(DiskFileSystem fileSystem) : ICommandLineBuilder
             buildArgs.LibrarySearchPaths.Select(path => $"/LIBPATH:\"{path}\""));
         var libraries = string.Join(" ", buildArgs.StaticallyLinkedLibraries);
 
-        var targetFolder = Path.GetDirectoryName(buildArgs.TargetFilePath) ?? string.Empty;
-
         var architecture = toolset.TargetArchitecture switch
         {
             CpuArchitecture.X64 => "x64",

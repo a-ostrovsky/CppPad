@@ -33,7 +33,8 @@ public class App : Application
                 var services = await new Bootstrapper().InitializeAsync();
 
                 var window = services.GetRequiredService<MainWindow>();
-                DataTemplates.Add(services.GetRequiredService<ViewLocator>());
+                // TODO: Do we need this?
+                //DataTemplates.Add(services.GetRequiredService<ViewLocator>());
 
                 _logger = services.GetRequiredService<ILoggerFactory>().CreateLogger<App>();
 
