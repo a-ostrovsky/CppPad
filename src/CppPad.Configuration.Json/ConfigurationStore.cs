@@ -15,7 +15,6 @@ public class ConfigurationStore(
     private static readonly JsonSerializerOptions
         JsonSerializerOptions = new() { WriteIndented = true };
 
-
     public async Task SaveToolsetConfigurationAsync(
         ToolsetConfiguration toolsetConfiguration)
     {
@@ -27,6 +26,30 @@ public class ConfigurationStore(
         );
         await fileSystem.WriteAllTextAsync(settingsFile.GetOrCreateFile(), toolsetsJson);
     }
+
+    public async Task<IReadOnlyList<string>> GetLastOpenedFileNamesAsync()
+    {
+        var config = await LoadConfigurationAsync();
+        return config.RecentFiles;
+    }
+
+    public async Task SaveLastOpenedFileNameAsync(string fileName)
+    {
+        var config = await LoadConfigurationAsync();
+        // The number of files is small, so this O(N) operation is acceptable.
+        config.RecentFiles.Remove(fileName);
+        config.RecentFiles.Insert(0, fileName);
+        if (config.RecentFiles.Count > IConfigurationStore.MaxRecentFiles)
+        {
+            config.RecentFiles.RemoveAt(IConfigurationStore.MaxRecentFiles);
+        }
+
+        var configJson = JsonSerializer.Serialize(config, JsonSerializerOptions);
+        await fileSystem.WriteAllTextAsync(settingsFile.GetOrCreateFile(), configJson);
+        LastOpenedFileNamesChanged?.Invoke(this, EventArgs.Empty);
+    }
+
+    public event EventHandler<EventArgs>? LastOpenedFileNamesChanged;
 
     public async Task<ToolsetConfiguration> GetToolsetConfigurationAsync()
     {
@@ -67,5 +90,6 @@ public class ConfigurationStore(
     private class Config
     {
         public ToolsetConfiguration ToolsetConfiguration { get; set; } = new();
+        public List<string> RecentFiles { get; init; } = [];
     }
 }

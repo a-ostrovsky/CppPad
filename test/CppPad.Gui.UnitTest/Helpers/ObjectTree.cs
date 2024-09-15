@@ -20,8 +20,9 @@ public class ObjectTree
         ToolsetEditorWindowViewModel =
             new ToolsetEditorWindowViewModel(ToolsetDetector, ConfigurationStore);
         TemplatesViewModel = new TemplatesViewModel(TemplateLoader);
-        MainWindowViewModel = new MainWindowViewModel(TemplatesViewModel,
-            new EditorViewModelFactoryForTest(TemplatesViewModel, Router, Compiler, ScriptLoader),
+        EditorViewModelFactory = new EditorViewModelFactoryForTest(TemplatesViewModel, Router,
+            Compiler, ScriptLoader, ConfigurationStore);
+        MainWindowViewModel = new MainWindowViewModel(TemplatesViewModel, EditorViewModelFactory,
             Router, ConfigurationStore);
     }
 
@@ -30,6 +31,8 @@ public class ObjectTree
     public InMemoryTemplateStore TemplateLoader { get; }
 
     public RouterMock Router { get; }
+
+    public EditorViewModelFactoryForTest EditorViewModelFactory { get; }
 
     public ToolsetDetectorMock ToolsetDetector { get; }
 

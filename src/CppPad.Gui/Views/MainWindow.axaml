@@ -53,6 +53,22 @@
                         <MenuItem Header="_Open (Ctrl+O)"
                                   Command="{CompiledBinding OpenFileCommand}"
                                   HotKey="Ctrl+O"/>
+                        <MenuItem Header="Recent Files"
+                                  IsVisible="{Binding HasRecentFiles}"
+                                  ItemsSource="{Binding RecentFiles}">
+                            <MenuItem.Styles>
+                                <Style Selector="MenuItem">
+                                    <Setter Property="Command"
+                                            Value="{CompiledBinding $parent[Window].((vm:MainWindowViewModel)DataContext).OpenRecentFileCommand, FallbackValue={x:Null}}" />
+                                    <Setter Property="CommandParameter" Value="{Binding}" />
+                                </Style>
+                            </MenuItem.Styles>
+                            <MenuItem.ItemTemplate>
+                                <DataTemplate>
+                                    <MenuItem Header="{Binding}" />
+                                </DataTemplate>
+                            </MenuItem.ItemTemplate>
+                        </MenuItem>
                         <MenuItem Header="_Save (Ctrl+S)"
                                   Command="{CompiledBinding CurrentEditor.SaveCommand, FallbackValue={x:Null}}"
                                   HotKey="Ctrl+S"/>

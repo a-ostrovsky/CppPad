@@ -34,6 +34,8 @@ public class WorkflowsTest : TestBase
         ObjectTree.Router.SetSelectedFile(new Uri("file:///C:/name%20with%20space.cpp"));
         await editor.SaveCommand.Execute();
         Assert.False(editor.IsModified);
+        var lastFileNames = await ObjectTree.ConfigurationStore.GetLastOpenedFileNamesAsync();
+        Assert.Contains(lastFileNames, fileName => fileName.EndsWith("name with space.cpp"));
 
         // Assert that file exists
         const string expectedFileNameWithoutPath = "name with space.cpp";
@@ -108,10 +110,10 @@ public class WorkflowsTest : TestBase
         Assert.Equal("ExePath", toolsets[0].ExecutablePath);
 
         // Set default toolset
-        ObjectTree.ToolsetEditorWindowViewModel.SetDefaultToolsetCommand.Execute(toolsets[1]);
+        await ObjectTree.ToolsetEditorWindowViewModel.SetDefaultToolsetCommand.Execute(toolsets[1]);
         Assert.False(toolsets[0].IsDefault);
         Assert.True(toolsets[1].IsDefault);
-        ObjectTree.ToolsetEditorWindowViewModel.SetDefaultToolsetCommand.Execute(toolsets[0]);
+        await ObjectTree.ToolsetEditorWindowViewModel.SetDefaultToolsetCommand.Execute(toolsets[0]);
         Assert.False(toolsets[1].IsDefault);
         Assert.True(toolsets[0].IsDefault);
     }

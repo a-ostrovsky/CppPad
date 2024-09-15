@@ -26,6 +26,8 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
     private readonly ObservableAsPropertyHelper<ToolsetViewModel?> _defaultToolset;
     private readonly IEditorViewModelFactory _editorViewModelFactory;
+    private readonly ObservableAsPropertyHelper<bool> _hasRecentFiles;
+    private readonly AsyncLock _recentFilesLock = new();
     private readonly IRouter _router;
     private EditorViewModel? _currentEditor;
 
@@ -42,9 +44,11 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         NavigateToToolsetEditorCommand =
             ReactiveCommand.CreateFromTask(EditToolsetsAsync);
         OpenFileCommand = ReactiveCommand.CreateFromTask(OpenFileAsync);
+        OpenRecentFileCommand = ReactiveCommand.CreateFromTask<string>(OpenRecentFileAsync);
         ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
         CreateNewFileCommand = ReactiveCommand.Create(CreateNewFile);
-        CreateNewFileFromTemplateCommand = ReactiveCommand.CreateFromTask<string>(CreateNewFileFromTemplateAsync);
+        CreateNewFileFromTemplateCommand =
+            ReactiveCommand.CreateFromTask<string>(CreateNewFileFromTemplateAsync);
         CloseEditorCommand = ReactiveCommand.CreateFromTask<EditorViewModel>(CloseEditorAsync);
 
         Editors.Add(_editorViewModelFactory.Create());
@@ -58,6 +62,10 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
             .Select(_ => Toolsets.FirstOrDefault(x => x.IsDefault))
             .ToProperty(this, x => x.DefaultToolset);
 
+        _hasRecentFiles = this.WhenAnyValue(x => x.RecentFiles.Count)
+            .Select(count => count > 0)
+            .ToProperty(this, x => x.HasRecentFiles);
+
         this.ObservableForProperty(x => x.DefaultToolset)
             .Select(change => change.Value)
             .Subscribe(toolset =>
@@ -67,6 +75,10 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
                     editor.Toolset = toolset;
                 }
             });
+
+        _ = LoadRecentFilesAsync();
+
+        _configurationStore.LastOpenedFileNamesChanged += (s, e) => _ = LoadRecentFilesAsync();
     }
 
     public static MainWindowViewModel DesignInstance { get; } =
@@ -77,9 +89,15 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
             new DummyConfigurationStore()
         );
 
+    public ObservableCollection<string> RecentFiles { get; } = [];
+
+    public bool HasRecentFiles => _hasRecentFiles.Value;
+
     public ReactiveCommand<Unit, Unit> NavigateToToolsetEditorCommand { get; }
 
     public ReactiveCommand<Unit, Unit> OpenFileCommand { get; }
+
+    public ReactiveCommand<string, Unit> OpenRecentFileCommand { get; }
 
     public ReactiveCommand<Unit, Unit> CreateNewFileCommand { get; }
 
@@ -111,6 +129,19 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     public void RaisePropertyChanged(PropertyChangedEventArgs args)
     {
         this.RaisePropertyChanged(args.PropertyName);
+    }
+
+    private Task OpenRecentFileAsync(string filePath)
+    {
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
+        {
+            var editor = _editorViewModelFactory.Create();
+            await editor.LoadSourceCodeAsync(new Uri(filePath, UriKind.Absolute));
+            editor.IsModified = false;
+            Editors.Add(editor);
+            CurrentEditor = editor;
+            await _configurationStore.SaveLastOpenedFileNameAsync(filePath);
+        });
     }
 
     private async Task CloseEditorAsync(EditorViewModel editor)
@@ -174,6 +205,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
             editor.IsModified = false;
             Editors.Add(editor);
             CurrentEditor = editor;
+            await _configurationStore.SaveLastOpenedFileNameAsync(uri.LocalPath);
         });
     }
 
@@ -207,5 +239,17 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
             await _router.ShowDialogAsync<ToolsetEditorWindowViewModel>();
             ReloadToolsets();
         });
+    }
+
+    private async Task LoadRecentFilesAsync()
+    {
+        using var _ = await _recentFilesLock.LockAsync();
+
+        var recentFiles = await _configurationStore.GetLastOpenedFileNamesAsync();
+        RecentFiles.Clear();
+        foreach (var fileName in recentFiles)
+        {
+            RecentFiles.Add(fileName);
+        }
     }
 }

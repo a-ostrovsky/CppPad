@@ -35,6 +35,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private readonly ICompiler _compiler;
     private readonly IRouter _router;
     private readonly IScriptLoader _scriptLoader;
+    private readonly IConfigurationStore _configurationStore;
     private readonly TemplatesViewModel _templatesViewModel;
 
     private string? _applicationOutput;
@@ -65,12 +66,14 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         TemplatesViewModel templatesViewModel,
         IRouter router,
         ICompiler compiler,
-        IScriptLoader scriptLoader)
+        IScriptLoader scriptLoader,
+        IConfigurationStore configurationStore)
     {
         _templatesViewModel = templatesViewModel;
         _router = router;
         _compiler = compiler;
         _scriptLoader = scriptLoader;
+        _configurationStore = configurationStore;
         RunCommand = ReactiveCommand.CreateFromTask(RunAsync);
         SaveAsCommand = ReactiveCommand.CreateFromTask(SaveAsAsync);
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
@@ -83,7 +86,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         new TemplatesViewModel(new DummyTemplateLoader()),
         new DummyRouter(),
         new DummyCompiler(),
-        new DummyScriptLoader()
+        new DummyScriptLoader(),
+        new DummyConfigurationStore()
     );
 
     public string Title
@@ -216,6 +220,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
             var script = GetScript();
             await _scriptLoader.SaveAsync(CurrentFileUri.LocalPath, script);
+            await _configurationStore.SaveLastOpenedFileNameAsync(CurrentFileUri.LocalPath);
             IsModified = false;
         });
     }
@@ -260,6 +265,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             var script = GetScript();
             await _scriptLoader.SaveAsync(filePath, script);
             SetCurrentFilePath(uri!);
+            await _configurationStore.SaveLastOpenedFileNameAsync(uri!.LocalPath);
             IsModified = false;
         });
     }
