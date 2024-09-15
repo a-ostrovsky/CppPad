@@ -15,8 +15,11 @@ public class ObjectTree
         Router = new RouterMock();
         Compiler = new CompilerMock();
         ScriptLoader = new InMemoryScriptStore();
-        TemplatesViewModel = new TemplatesViewModel(TemplateLoader);
+        ToolsetDetector = new ToolsetDetectorMock();
         ConfigurationStore = new InMemoryConfigurationStore();
+        ToolsetEditorWindowViewModel =
+            new ToolsetEditorWindowViewModel(ToolsetDetector, ConfigurationStore);
+        TemplatesViewModel = new TemplatesViewModel(TemplateLoader);
         MainWindowViewModel = new MainWindowViewModel(TemplatesViewModel,
             new EditorViewModelFactoryForTest(TemplatesViewModel, Router, Compiler, ScriptLoader),
             Router, ConfigurationStore);
@@ -27,6 +30,10 @@ public class ObjectTree
     public InMemoryTemplateStore TemplateLoader { get; }
 
     public RouterMock Router { get; }
+
+    public ToolsetDetectorMock ToolsetDetector { get; }
+
+    public ToolsetEditorWindowViewModel ToolsetEditorWindowViewModel { get; }
 
     public TemplatesViewModel TemplatesViewModel { get; }
 

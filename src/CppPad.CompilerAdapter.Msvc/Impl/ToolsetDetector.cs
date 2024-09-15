@@ -18,7 +18,7 @@ public class ToolsetDetector(
     private readonly ILogger<ToolsetDetector> _logger =
         loggerFactory.CreateLogger<ToolsetDetector>();
 
-    public async Task<ICollection<Toolset>> GetToolsetsAsync()
+    public async Task<IReadOnlyList<Toolset>> GetToolsetsAsync()
     {
         var visualStudioPaths = await vsWhereAdapter.GetVisualStudioPathsAsync();
         foreach (var path in visualStudioPaths)

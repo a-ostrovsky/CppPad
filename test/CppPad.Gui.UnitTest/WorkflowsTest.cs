@@ -1,6 +1,8 @@
 #region
 
+using CppPad.CompilerAdapter.Interface;
 using CppPad.Gui.UnitTest.Helpers;
+using CppPad.ScriptFile.Interface;
 using System.Reactive.Linq;
 
 #endregion
@@ -47,6 +49,20 @@ public class WorkflowsTest : TestBase
     }
 
     [Fact]
+    public async Task Create_from_template()
+    {
+        var templateScript = new Script { Content = "void main(){}" };
+        await ObjectTree.TemplateLoader.SaveAsync("template", templateScript);
+
+        // Create new file from template
+        var mainWindow = ObjectTree.MainWindowViewModel;
+        await mainWindow.CreateNewFileFromTemplateCommand.Execute("template");
+
+        Assert.Equal(2, mainWindow.Editors.Count);
+        Assert.Equal("void main(){}", mainWindow.Editors[1].SourceCode);
+    }
+
+    [Fact]
     public async Task RunScript()
     {
         var editor = new EditorHelper(ObjectTree).CreateValidScript();
@@ -72,5 +88,31 @@ public class WorkflowsTest : TestBase
         var previousOutput = editor.CompilerOutput;
         await editor.RunCommand.Execute();
         Assert.Equal(previousOutput, editor.CompilerOutput);
+    }
+
+    [Fact]
+    public async Task Edit_Toolsets()
+    {
+        ObjectTree.ToolsetDetector.SetToolsets([
+            new Toolset("Type", CpuArchitecture.X64, "Name1", "ExePath"),
+            new Toolset("Type", CpuArchitecture.X64, "Name2", "ExePath")
+        ]);
+
+        // Auto detect toolsets
+        await ObjectTree.ToolsetEditorWindowViewModel.AutodetectToolsetsCommand.Execute();
+        var toolsets = ObjectTree.ToolsetEditorWindowViewModel.Toolsets;
+        Assert.Equal(2, toolsets.Count);
+        Assert.Equal("Type", toolsets[0].Type);
+        Assert.Equal(CpuArchitecture.X64, toolsets[0].TargetArchitecture);
+        Assert.Equal("Name1", toolsets[0].Name);
+        Assert.Equal("ExePath", toolsets[0].ExecutablePath);
+
+        // Set default toolset
+        ObjectTree.ToolsetEditorWindowViewModel.SetDefaultToolsetCommand.Execute(toolsets[1]);
+        Assert.False(toolsets[0].IsDefault);
+        Assert.True(toolsets[1].IsDefault);
+        ObjectTree.ToolsetEditorWindowViewModel.SetDefaultToolsetCommand.Execute(toolsets[0]);
+        Assert.False(toolsets[1].IsDefault);
+        Assert.True(toolsets[0].IsDefault);
     }
 }

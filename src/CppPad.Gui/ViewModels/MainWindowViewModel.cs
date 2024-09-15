@@ -28,8 +28,6 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     private readonly IEditorViewModelFactory _editorViewModelFactory;
     private readonly IRouter _router;
     private EditorViewModel? _currentEditor;
-    private string _progressMessage = string.Empty;
-    private bool _shouldShowProgressDialog;
 
     public MainWindowViewModel(
         TemplatesViewModel templates,
@@ -99,18 +97,6 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     {
         get => _currentEditor;
         set => SetProperty(ref _currentEditor, value);
-    }
-
-    public bool ShouldShowProgressDialog
-    {
-        get => _shouldShowProgressDialog;
-        set => SetProperty(ref _shouldShowProgressDialog, value);
-    }
-
-    public string ProgressMessage
-    {
-        get => _progressMessage;
-        set => SetProperty(ref _progressMessage, value);
     }
 
     public TemplatesViewModel Templates { get; }

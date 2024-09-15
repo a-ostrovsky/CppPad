@@ -26,9 +26,9 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         CreateDirectory(AppConstants.TempFolder);
     }
 
-    public void AlwaysCreateDirectoriesIfNotExist()
+    public void AlwaysCreateDirectoriesIfNotExist(bool alwaysCreate = true)
     {
-        _alwaysCreateDirectoriesIfNotExist = true;
+        _alwaysCreateDirectoriesIfNotExist = alwaysCreate;
     }
 
     public override Task WriteAllTextAsync(string path, string contents)

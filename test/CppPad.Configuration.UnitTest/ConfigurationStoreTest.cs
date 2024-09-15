@@ -3,6 +3,7 @@
 using CppPad.Configuration.Interface;
 using CppPad.Configuration.Json;
 using CppPad.MockFileSystem;
+using DeepEqual.Syntax;
 
 #endregion
 
@@ -40,5 +41,8 @@ public class ConfigurationStoreTest
         Assert.Equal("Path1", config.Toolsets[0].ExecutablePath);
         Assert.Equal("X86", config.Toolsets[0].TargetArchitecture);
         Assert.Equal(toolsetConfiguration.DefaultToolsetId, config.DefaultToolsetId);
+
+        // ReSharper disable once MethodHasAsyncOverload
+        _configurationStore.GetToolsetConfiguration().ShouldDeepEqual(config);
     }
 }

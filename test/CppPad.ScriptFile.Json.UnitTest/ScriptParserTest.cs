@@ -28,6 +28,16 @@ public class ScriptParserTest
     }
 
     [Fact]
+    public void Parse_EmptyJson_ThrowsException()
+    {
+        // Arrange
+        var invalidJsonContent = string.Empty;
+
+        // Act & Assert
+        Assert.Throws<ParsingException>(() => _scriptParser.Parse(invalidJsonContent));
+    }
+
+    [Fact]
     public void SerializeAndDeserialize_ValidScript_ReturnsSameScript()
     {
         // Arrange

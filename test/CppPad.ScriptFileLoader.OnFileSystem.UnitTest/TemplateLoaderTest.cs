@@ -96,4 +96,18 @@ public class TemplateLoaderTest
         Assert.Contains(templateName1, templates);
         Assert.Contains(templateName2, templates);
     }
+
+    [Fact]
+    public async Task GetAllTemplatesAsync_FolderDoesNotExist_ReturnsEmptyList()
+    {
+        // Arrange
+        _fileSystem.AlwaysCreateDirectoriesIfNotExist(false); // Folder will not be found
+        var templateLoader = new TemplateLoader(_fileSystem, new ScriptParser(NullLoggerFactory.Instance), NullLoggerFactory.Instance);
+
+        // Act
+        var templates = await templateLoader.GetAllTemplatesAsync();
+
+        // Assert
+        Assert.Empty(templates);
+    }
 }
