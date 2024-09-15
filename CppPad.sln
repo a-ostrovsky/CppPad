@@ -41,15 +41,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFile.Json", "s
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFile.Json.UnitTest", "test\CppPad.ScriptFile.Json.UnitTest\CppPad.ScriptFile.Json.UnitTest.csproj", "{B88B0698-EBFA-4A05-B3F5-BD753237C57E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Common.Test", "test\CppPad.Common.Test\CppPad.Common.Test.csproj", "{9BE27A7C-D672-4431-893C-C02029485D15}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Common.UnitTest", "test\CppPad.Common.UnitTest\CppPad.Common.UnitTest.csproj", "{9BE27A7C-D672-4431-893C-C02029485D15}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.Interface", "src\CppPad.ScriptFileLoader.Interface\CppPad.ScriptFileLoader.Interface.csproj", "{0DAD8E69-BD19-4676-8782-8AF6201E5043}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem", "src\CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj", "{F7B0AA63-2076-4863-BFE4-F03FC244308C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem.Test", "test\CppPad.ScriptFileLoader.OnFileSystem.Test\CppPad.ScriptFileLoader.OnFileSystem.Test.csproj", "{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem.UnitTest", "test\CppPad.ScriptFileLoader.OnFileSystem.UnitTest\CppPad.ScriptFileLoader.OnFileSystem.UnitTest.csproj", "{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Gui.Test", "test\CppPad.Gui.Test\CppPad.Gui.Test.csproj", "{17D9CB5F-D54C-4560-B15E-15720CF42943}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Gui.UnitTest", "test\CppPad.Gui.UnitTest\CppPad.Gui.UnitTest.csproj", "{17D9CB5F-D54C-4560-B15E-15720CF42943}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4A1DFBEA-74E2-4590-AC13-202F903D839D}"
 	ProjectSection(SolutionItems) = preProject
