@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj" />
-    <ProjectReference Include="..\..\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj" />
     <ProjectReference Include="..\CppPad.MockFileSystem\CppPad.MockFileSystem.csproj" />
   </ItemGroup>
 

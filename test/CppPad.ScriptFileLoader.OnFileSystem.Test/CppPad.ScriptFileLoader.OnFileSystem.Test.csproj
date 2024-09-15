@@ -24,9 +24,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CppPad.FileSystem\CppPad.FileSystem.csproj" />
-    <ProjectReference Include="..\..\CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj" />
-    <ProjectReference Include="..\..\CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.FileSystem\CppPad.FileSystem.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj" />
     <ProjectReference Include="..\CppPad.MockFileSystem\CppPad.MockFileSystem.csproj" />
   </ItemGroup>
 

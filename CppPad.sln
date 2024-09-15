@@ -3,23 +3,23 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Gui", "CppPad.Gui\CppPad.Gui.csproj", "{7AFD83D9-6AAB-4567-A053-C9F79EFD4BD8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Gui", "src\CppPad.Gui\CppPad.Gui.csproj", "{7AFD83D9-6AAB-4567-A053-C9F79EFD4BD8}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.CompilerAdapter.Interface", "CppPad.CompilerAdapter.Interface\CppPad.CompilerAdapter.Interface.csproj", "{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.CompilerAdapter.Interface", "src\CppPad.CompilerAdapter.Interface\CppPad.CompilerAdapter.Interface.csproj", "{CCC98DD7-B6E9-45C3-9D6A-570E8303D5A1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.CompilerAdapter.Msvc", "CppPad.CompilerAdapter.Msvc\CppPad.CompilerAdapter.Msvc.csproj", "{169FDE59-CD53-4F57-B27E-553FDA156AFF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.CompilerAdapter.Msvc", "src\CppPad.CompilerAdapter.Msvc\CppPad.CompilerAdapter.Msvc.csproj", "{169FDE59-CD53-4F57-B27E-553FDA156AFF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Configuration.Interface", "CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj", "{944A87F0-7E5E-40BB-9327-1AA838C39E57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Configuration.Interface", "src\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj", "{944A87F0-7E5E-40BB-9327-1AA838C39E57}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Configuration.Json", "CppPad.Configuration.Json\CppPad.Configuration.Json.csproj", "{482F25EE-D534-4869-9B5A-255CBBE556C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Configuration.Json", "src\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj", "{482F25EE-D534-4869-9B5A-255CBBE556C8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configuration", "Configuration", "{4E8D3ED7-0CD1-4F84-BE62-34270B8501FD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CompilerAdapter", "CompilerAdapter", "{FB339FAC-9F68-4CBC-9411-EB104DCBBEBB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.FileSystem", "CppPad.FileSystem\CppPad.FileSystem.csproj", "{8D7D93C7-50E3-4291-BA11-FA9C2F2CB608}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.FileSystem", "src\CppPad.FileSystem\CppPad.FileSystem.csproj", "{8D7D93C7-50E3-4291-BA11-FA9C2F2CB608}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Common", "CppPad.Common\CppPad.Common.csproj", "{03C928C7-A3E7-4A96-9B07-385B8A5378A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Common", "src\CppPad.Common\CppPad.Common.csproj", "{03C928C7-A3E7-4A96-9B07-385B8A5378A8}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{5AADBD6D-150E-4699-BB0E-8F598591FB8C}"
 EndProject
@@ -35,17 +35,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.CompilerAdapter.Msvc
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ScriptFile", "ScriptFile", "{6ADAE61C-8BEA-46DC-A287-841319BA0CA7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFile.Interface", "CppPad.ScriptFile.Interface\CppPad.ScriptFile.Interface.csproj", "{3F04A1A9-B08B-4E9D-99D0-76AE6B5A8698}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFile.Interface", "src\CppPad.ScriptFile.Interface\CppPad.ScriptFile.Interface.csproj", "{3F04A1A9-B08B-4E9D-99D0-76AE6B5A8698}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFile.Json", "CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj", "{AB14A943-2CFA-441C-A475-3DF5696279D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFile.Json", "src\CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj", "{AB14A943-2CFA-441C-A475-3DF5696279D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFile.Json.UnitTest", "test\CppPad.ScriptFile.Json.UnitTest\CppPad.ScriptFile.Json.UnitTest.csproj", "{B88B0698-EBFA-4A05-B3F5-BD753237C57E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Common.Test", "test\CppPad.Common.Test\CppPad.Common.Test.csproj", "{9BE27A7C-D672-4431-893C-C02029485D15}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.Interface", "CppPad.ScriptFileLoader.Interface\CppPad.ScriptFileLoader.Interface.csproj", "{0DAD8E69-BD19-4676-8782-8AF6201E5043}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.Interface", "src\CppPad.ScriptFileLoader.Interface\CppPad.ScriptFileLoader.Interface.csproj", "{0DAD8E69-BD19-4676-8782-8AF6201E5043}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem", "CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj", "{F7B0AA63-2076-4863-BFE4-F03FC244308C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem", "src\CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj", "{F7B0AA63-2076-4863-BFE4-F03FC244308C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.ScriptFileLoader.OnFileSystem.Test", "test\CppPad.ScriptFileLoader.OnFileSystem.Test\CppPad.ScriptFileLoader.OnFileSystem.Test.csproj", "{1FB19F5C-C51E-4AA3-ACB4-228535C553E8}"
 EndProject

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CppPad.Gui\CppPad.Gui.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.Gui\CppPad.Gui.csproj" />
     <ProjectReference Include="..\CppPad.MockFileSystem\CppPad.MockFileSystem.csproj" />
   </ItemGroup>
 

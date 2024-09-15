@@ -28,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CppPad.CompilerAdapter.Msvc\CppPad.CompilerAdapter.Msvc.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.CompilerAdapter.Msvc\CppPad.CompilerAdapter.Msvc.csproj" />
     <ProjectReference Include="..\CppPad.MockFileSystem\CppPad.MockFileSystem.csproj" />
   </ItemGroup>
 

@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CppPad.Common\CppPad.Common.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.Common\CppPad.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

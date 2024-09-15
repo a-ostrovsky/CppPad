@@ -23,8 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj" />
-    <ProjectReference Include="..\..\CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj" />
+    <ProjectReference Include="..\..\src\CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj" />
   </ItemGroup>
 
   <ItemGroup>
