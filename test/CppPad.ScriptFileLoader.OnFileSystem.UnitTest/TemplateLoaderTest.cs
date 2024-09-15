@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 #endregion
 
-namespace CppPad.ScriptFileLoader.OnFileSystem.Test;
+namespace CppPad.ScriptFileLoader.OnFileSystem.UnitTest;
 
 public class TemplateLoaderTest
 {

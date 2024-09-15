@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 #endregion
 
-namespace CppPad.Gui.Test.Helpers;
+namespace CppPad.Gui.UnitTest.Helpers;
 
 public class EditorHelper(ObjectTree objectTree)
 {

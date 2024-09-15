@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 
 #endregion
 
-namespace CppPad.Gui.Test.Mocks;
+namespace CppPad.Gui.UnitTest.Mocks;
 
 public class RouterMock : IRouter
 {

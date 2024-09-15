@@ -4,7 +4,7 @@ using CppPad.Gui.ErrorHandling;
 
 #endregion
 
-namespace CppPad.Gui.Test.Mocks;
+namespace CppPad.Gui.UnitTest.Mocks;
 
 public class ErrorHandlerMock : IErrorHandler
 {

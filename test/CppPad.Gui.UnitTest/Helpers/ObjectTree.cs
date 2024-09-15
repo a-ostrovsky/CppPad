@@ -1,11 +1,11 @@
 ﻿#region
 
-using CppPad.Gui.Test.Mocks;
+using CppPad.Gui.UnitTest.Mocks;
 using CppPad.Gui.ViewModels;
 
 #endregion
 
-namespace CppPad.Gui.Test.Helpers;
+namespace CppPad.Gui.UnitTest.Helpers;
 
 public class ObjectTree
 {

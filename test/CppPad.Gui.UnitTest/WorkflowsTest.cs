@@ -1,11 +1,11 @@
 #region
 
-using CppPad.Gui.Test.Helpers;
+using CppPad.Gui.UnitTest.Helpers;
 using System.Reactive.Linq;
 
 #endregion
 
-namespace CppPad.Gui.Test;
+namespace CppPad.Gui.UnitTest;
 
 public class WorkflowsTest : TestBase
 {

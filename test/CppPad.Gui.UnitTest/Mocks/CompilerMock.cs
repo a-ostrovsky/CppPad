@@ -4,7 +4,7 @@ using CppPad.CompilerAdapter.Interface;
 
 #endregion
 
-namespace CppPad.Gui.Test.Mocks;
+namespace CppPad.Gui.UnitTest.Mocks;
 
 public class CompilerMock : ICompiler, IExecutable
 {

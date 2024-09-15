@@ -3,7 +3,7 @@ using CppPad.ScriptFileLoader.Interface;
 using System.Collections.Concurrent;
 using System.Text.Json;
 
-namespace CppPad.Gui.Test.Mocks;
+namespace CppPad.Gui.UnitTest.Mocks;
 
 public class InMemoryScriptStore : IScriptLoader
 {

@@ -1,7 +1,7 @@
 ﻿using CppPad.Gui.ErrorHandling;
-using CppPad.Gui.Test.Helpers;
+using CppPad.Gui.UnitTest.Helpers;
 
-namespace CppPad.Gui.Test;
+namespace CppPad.Gui.UnitTest;
 
 public abstract class TestBase : IDisposable
 {

@@ -1,4 +1,4 @@
-namespace CppPad.Common.Test;
+namespace CppPad.Common.UnitTest;
 
 public class ClonerTest
 {

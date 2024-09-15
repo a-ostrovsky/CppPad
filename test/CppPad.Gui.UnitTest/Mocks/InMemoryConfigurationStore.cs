@@ -1,6 +1,6 @@
 ﻿using CppPad.Configuration.Interface;
 
-namespace CppPad.Gui.Test.Mocks;
+namespace CppPad.Gui.UnitTest.Mocks;
 
 public class InMemoryConfigurationStore : IConfigurationStore
 {
