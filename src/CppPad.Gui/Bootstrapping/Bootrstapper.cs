@@ -1,4 +1,9 @@
-﻿using Avalonia.Data.Core.Plugins;
+﻿#region
+
+using Avalonia.Data.Core.Plugins;
+using CppPad.Benchmark.Gbench.Impl;
+using CppPad.Benchmark.Gbench.Interface;
+using CppPad.Benchmark.Interface;
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.CompilerAdapter.Msvc.Impl;
@@ -21,6 +26,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
+#endregion
+
 namespace CppPad.Gui.Bootstrapping;
 
 public class Bootstrapper
@@ -33,7 +40,8 @@ public class Bootstrapper
         }
         catch (Exception ex)
         {
-            var box = MessageBoxManager.GetMessageBoxStandard("Error", $"Failed to clear temp folder: {ex}");
+            var box = MessageBoxManager.GetMessageBoxStandard("Error",
+                $"Failed to clear temp folder: {ex}");
             await box.ShowAsync();
             Environment.Exit(1);
         }
@@ -50,6 +58,7 @@ public class Bootstrapper
         AddCompilerAdapterServices(collection);
         AddStorage(collection);
         AddScriptFileHandling(collection);
+        AddBenchmark(collection);
 
         var services = collection.BuildServiceProvider();
 
@@ -66,7 +75,7 @@ public class Bootstrapper
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile("appsettings.json", false, true)
             .Build();
         collection.AddSingleton<IConfiguration>(configuration);
         collection.AddSingleton<IConfigurationStore, ConfigurationStore>();
@@ -80,13 +89,19 @@ public class Bootstrapper
         collection.AddTransient<ToolsetEditorWindowViewModel>();
         collection.AddTransient<ScriptSettingsWindowViewModel>();
         collection.AddSingleton<TemplatesViewModel>();
+        collection.AddSingleton<BenchmarkViewModel>();
+        collection.AddTransient<InstallationProgressWindowViewModel>();
 
         collection.AddSingleton<MainWindow>();
         collection.AddTransient<EditorView>();
-        collection.AddTransient<Views.ToolsetEditorWindow>();
+        collection.AddTransient<ToolsetEditorWindow>();
         collection.AddTransient<ScriptSettingsWindow>();
+        collection.AddTransient<InstallationProgressWindow>();
 
         collection.AddSingleton<IEditorViewModelFactory, EditorViewModelFactory>();
+        collection
+            .AddSingleton<IInstallationProgressWindowViewModelFactory,
+                InstallationProgressWindowViewModelFactory>();
         collection.AddSingleton<IRouter, Router>();
         collection.AddSingleton<ViewLocator>();
     }
@@ -110,5 +125,13 @@ public class Bootstrapper
         collection.AddSingleton<IScriptParser, ScriptParser>();
         collection.AddSingleton<IScriptLoader, ScriptLoader>();
         collection.AddSingleton<ITemplateLoader, TemplateLoader>();
+    }
+
+    private static void AddBenchmark(IServiceCollection collection)
+    {
+        collection.AddSingleton<IBenchmark, Benchmark.Gbench.Impl.Benchmark>();
+        collection.AddSingleton<BenchmarkInstaller>();
+        collection.AddSingleton<IBenchmarkBuilder, BenchmarkBuilder>();
+        collection.AddSingleton<IBenchmarkDownloader, HttpBenchmarkDownloader>();
     }
 }

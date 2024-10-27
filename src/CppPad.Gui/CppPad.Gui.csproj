@@ -38,6 +38,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CppPad.Benchmark.Gbench\CppPad.Benchmark.Gbench.csproj" />
+    <ProjectReference Include="..\CppPad.Benchmark.Interface\CppPad.Benchmark.Interface.csproj" />
     <ProjectReference Include="..\CppPad.CompilerAdapter.Interface\CppPad.CompilerAdapter.Interface.csproj" />
     <ProjectReference Include="..\CppPad.CompilerAdapter.Msvc\CppPad.CompilerAdapter.Msvc.csproj" />
     <ProjectReference Include="..\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj" />

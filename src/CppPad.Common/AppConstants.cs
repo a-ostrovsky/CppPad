@@ -18,4 +18,6 @@ public static class AppConstants
     public static readonly string TempFolder = Path.Combine(AppFolder, "Temp");
 
     public static readonly string TemplateFolder = Path.Combine(AppFolder, "Templates");
+
+    public static readonly string BenchmarkFolder = Path.Combine(AppFolder, "Benchmark");
 }

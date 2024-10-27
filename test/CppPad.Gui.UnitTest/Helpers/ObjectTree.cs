@@ -11,6 +11,8 @@ public class ObjectTree
 {
     public ObjectTree()
     {
+        ErrorHandler = new ErrorHandlerMock();
+        Benchmark = new BenchmarkMock();
         TemplateLoader = new InMemoryTemplateStore();
         Router = new RouterMock();
         Compiler = new CompilerMock();
@@ -20,13 +22,22 @@ public class ObjectTree
         ToolsetEditorWindowViewModel =
             new ToolsetEditorWindowViewModel(ToolsetDetector, ConfigurationStore);
         TemplatesViewModel = new TemplatesViewModel(TemplateLoader);
+        InstallationProgressWindowViewModelFactory =
+            new InstallationProgressWindowViewModelFactoryForTest();
+        BenchmarkViewModel =
+            new BenchmarkViewModel(Benchmark, Router, InstallationProgressWindowViewModelFactory);
         EditorViewModelFactory = new EditorViewModelFactoryForTest(TemplatesViewModel, Router,
             Compiler, ScriptLoader, ConfigurationStore);
-        MainWindowViewModel = new MainWindowViewModel(TemplatesViewModel, EditorViewModelFactory,
+        MainWindowViewModel = new MainWindowViewModel(
+            BenchmarkViewModel,
+            TemplatesViewModel,
+            EditorViewModelFactory,
             Router, ConfigurationStore);
     }
 
-    public ErrorHandlerMock ErrorHandler { get; } = new();
+    public BenchmarkMock Benchmark { get; }
+
+    public ErrorHandlerMock ErrorHandler { get; }
 
     public InMemoryTemplateStore TemplateLoader { get; }
 
@@ -34,11 +45,17 @@ public class ObjectTree
 
     public EditorViewModelFactoryForTest EditorViewModelFactory { get; }
 
+    public InstallationProgressWindowViewModelFactoryForTest
+        InstallationProgressWindowViewModelFactory
+    { get; }
+
     public ToolsetDetectorMock ToolsetDetector { get; }
 
     public ToolsetEditorWindowViewModel ToolsetEditorWindowViewModel { get; }
 
     public TemplatesViewModel TemplatesViewModel { get; }
+
+    public BenchmarkViewModel BenchmarkViewModel { get; }
 
     public MainWindowViewModel MainWindowViewModel { get; }
 
