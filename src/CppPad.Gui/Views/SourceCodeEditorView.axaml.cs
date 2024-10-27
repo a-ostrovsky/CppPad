@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Data;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
 using TextMateSharp.Grammars;
@@ -14,21 +15,22 @@ namespace CppPad.Gui.Views;
 
 public partial class SourceCodeEditorView : UserControl
 {
-    private bool _isInternalChange;
-    
     public static readonly StyledProperty<string> TextProperty =
-        AvaloniaProperty.Register<SourceCodeEditorView, string>(nameof(Text));
+        AvaloniaProperty.Register<SourceCodeEditorView, string>(nameof(Text),
+            defaultBindingMode: BindingMode.TwoWay);
 
-    public string Text
-    {
-        get => GetValue(TextProperty);
-        set => SetValue(TextProperty, value);
-    }
+    private bool _isInternalChange;
 
     public SourceCodeEditorView()
     {
         InitializeComponent();
         Init();
+    }
+
+    public string Text
+    {
+        get => GetValue(TextProperty);
+        set => SetValue(TextProperty, value);
     }
 
     public void ScrollToLine(int line)
@@ -49,16 +51,18 @@ public partial class SourceCodeEditorView : UserControl
             registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp")
                 .Id));
         textEditor.TextChanged += TextEditor_TextChanged;
-        
+
         this.GetObservable(TextProperty).Subscribe(text =>
         {
-            if (!_isInternalChange)
+            if (_isInternalChange)
             {
-                textEditor.Text = text;
+                return;
             }
+
+            textEditor.Text = text;
         });
     }
-    
+
     private void TextEditor_TextChanged(object? sender, EventArgs e)
     {
         try
