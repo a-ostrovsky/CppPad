@@ -1,0 +1,31 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:CppPad.Gui.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="400"
+        Width="800" Height="600"
+        x:Class="CppPad.Gui.Views.InstallationProgressWindow"
+        x:DataType="vm:InstallationProgressWindowViewModel"
+        Title="Installation Progress"
+        WindowStartupLocation="CenterScreen"
+        DataContextChanged="OnDataContextChanged"
+        Closed="OnWindowClosed"
+        d:DataContext="{x:Static vm:InstallationProgressWindowViewModel.DesignInstance}">
+
+    <Grid Margin="10" RowDefinitions="Auto,Auto,*,Auto" ColumnDefinitions="*">
+        <TextBlock Text="Installation Progress" 
+                   FontSize="16" 
+                   FontWeight="Bold" 
+                   Margin="0,0,0,10" 
+                   Grid.Row="0"/>
+        <ProgressBar Minimum="0" Maximum="100" IsIndeterminate="True" Height="20" Margin="0,0,0,10" Grid.Row="1"/>
+        <ScrollViewer Grid.Row="2" Margin="0,0,0,10">
+            <TextBox Text="{CompiledBinding StatusMessage}" 
+                     IsReadOnly="True" 
+                     CaretIndex="{CompiledBinding CaretIndex}" 
+                     AcceptsReturn="True"/>
+        </ScrollViewer>
+        <Button Content="Cancel" Command="{CompiledBinding CancelCommand}" IsEnabled="{CompiledBinding CanCancel}" HorizontalAlignment="Right" Grid.Row="3"/>
+    </Grid>
+</Window>

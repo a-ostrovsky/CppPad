@@ -1,5 +1,6 @@
 #region
 
+using CppPad.Benchmark.Interface;
 using CppPad.Common;
 using CppPad.Configuration.Interface;
 using CppPad.Gui.ErrorHandling;
@@ -32,11 +33,13 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     private EditorViewModel? _currentEditor;
 
     public MainWindowViewModel(
+        BenchmarkViewModel benchmarkViewModel,
         TemplatesViewModel templates,
         IEditorViewModelFactory editorViewModelFactory,
         IRouter router,
         IConfigurationStore configurationStore)
     {
+        Benchmark = benchmarkViewModel;
         Templates = templates;
         _editorViewModelFactory = editorViewModelFactory;
         _router = router;
@@ -83,6 +86,8 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
     public static MainWindowViewModel DesignInstance { get; } =
         new(
+            new BenchmarkViewModel(new DummyBenchmark(), new DummyRouter(),
+                new DummyInstallationProgressWindowViewModelFactory()),
             new TemplatesViewModel(new DummyTemplateLoader()),
             new DummyEditorViewModelFactory(),
             new DummyRouter(),
@@ -118,6 +123,8 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     }
 
     public TemplatesViewModel Templates { get; }
+
+    public BenchmarkViewModel Benchmark { get; }
 
     public ToolsetViewModel? DefaultToolset => _defaultToolset.Value;
 

@@ -1,17 +1,15 @@
-using Avalonia.Controls;
-using AvaloniaEdit;
-using AvaloniaEdit.TextMate;
-using CppPad.Gui.ViewModels;
+#region
+
 using System;
-using System.Diagnostics;
-using TextMateSharp.Grammars;
+using Avalonia.Controls;
+using CppPad.Gui.ViewModels;
+
+#endregion
 
 namespace CppPad.Gui.Views;
 
 public partial class EditorView : UserControl
 {
-    private bool _isInternalChange;
-
     public EditorView()
     {
         InitializeComponent();
@@ -27,12 +25,6 @@ public partial class EditorView : UserControl
 
     private void Init()
     {
-        var textEditor = this.FindControl<TextEditor>("Editor");
-        Debug.Assert(textEditor != null);
-        var registryOptions = new RegistryOptions(ThemeName.Light);
-        var textMateInstallation = textEditor.InstallTextMate(registryOptions);
-        textMateInstallation.SetGrammar(registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp").Id));
-        textEditor.TextChanged += TextEditor_TextChanged;
         DataContextChanged += EditorView_DataContextChanged;
     }
 
@@ -42,49 +34,12 @@ public partial class EditorView : UserControl
         {
             return;
         }
+
         if (DataContext is not EditorViewModel vm)
         {
             throw new InvalidOperationException("DataContext is not EditorViewModel");
         }
-        var textEditor = this.FindControl<TextEditor>("Editor");
-        Debug.Assert(textEditor != null);
-        vm.PropertyChanged += (_, args) =>
-        {
-            if (_isInternalChange)
-            {
-                return;
-            }
 
-            if (args.PropertyName == nameof(EditorViewModel.SourceCode))
-            {
-                textEditor.Text = ((EditorViewModel)DataContext!).SourceCode;
-            }
-        };
-        vm.GoToLineRequested += (_, args) =>
-        {
-            textEditor.ScrollToLine(args.Line);
-            textEditor.CaretOffset = GetCaretOffsetForLine(textEditor, args.Line);
-        };
-        textEditor.Text = vm.SourceCode;
-    }
-
-    private void TextEditor_TextChanged(object? sender, EventArgs e)
-    {
-        try
-        {
-            _isInternalChange = true;
-            ((EditorViewModel)DataContext!).SourceCode = ((TextEditor)sender!).Text;
-        }
-        finally
-        {
-            _isInternalChange = false;
-        }
-    }
-
-    private static int GetCaretOffsetForLine(TextEditor textEditor, int line)
-    {
-        var document = textEditor.Document;
-        var lineInfo = document.GetLineByNumber(line);
-        return lineInfo.Offset;
+        vm.GoToLineRequested += (_, args) => { SourceCodeEditor.ScrollToLine(args.Line); };
     }
 }

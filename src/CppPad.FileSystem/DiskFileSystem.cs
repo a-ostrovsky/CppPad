@@ -1,4 +1,9 @@
+#region
+
 using CppPad.Common;
+using System.IO.Compression;
+
+#endregion
 
 namespace CppPad.FileSystem;
 
@@ -32,6 +37,11 @@ public class DiskFileSystem
     public virtual Task<string[]> ListFilesAsync(string path, string searchPattern)
     {
         return Task.Run(() => Directory.GetFiles(path, searchPattern));
+    }
+
+    public virtual Task<string[]> ListFilesAsync(string path, string searchPattern, SearchOption searchOption)
+    {
+        return Task.Run(() => Directory.GetFiles(path, searchPattern, searchOption));
     }
 
     public virtual Task CreateDirectoryAsync(string path)
@@ -114,5 +124,84 @@ public class DiskFileSystem
     public virtual void DeleteFile(string path)
     {
         File.Delete(path);
+    }
+
+    public virtual void DeleteDirectory(string path)
+    {
+        // Use the \\?\ prefix to handle long paths
+        var longPath = @"\\?\" + Path.GetFullPath(path);
+
+        if (!Directory.Exists(longPath))
+        {
+            return;
+        }
+
+        RemoveReadOnlyAttributes(longPath);
+
+        Directory.Delete(longPath, true);
+    }
+
+    public virtual Task CopyFileAsync(string sourceFileName, string destFileName)
+    {
+        return Task.Run(() => File.Copy(sourceFileName, destFileName, true));
+    }
+
+    public virtual async Task UnzipAsync(string zipFilePath, string extractPath,
+        CancellationToken cancellationToken = default)
+    {
+        // Ensure the cancellation token is checked at the start
+        cancellationToken.ThrowIfCancellationRequested();
+
+        // Open the zip file
+        using var archive = ZipFile.OpenRead(zipFilePath);
+        foreach (var entry in archive.Entries)
+        {
+            // Check for cancellation before processing each entry
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var destinationPath = Path.Combine(extractPath, entry.FullName);
+
+            // Create the directory if it doesn't exist
+            if (entry.FullName.EndsWith('/'))
+            {
+                Directory.CreateDirectory(destinationPath);
+            }
+            else
+            {
+                // Ensure the directory for the file exists
+                var destinationFolder = Path.GetDirectoryName(destinationPath);
+                if (destinationFolder != null)
+                {
+                    Directory.CreateDirectory(destinationFolder);
+                }
+
+                // Extract the file
+                await using var entryStream = entry.Open();
+                await using var fileStream =
+                    new FileStream(destinationPath, FileMode.Create, FileAccess.Write);
+                await entryStream.CopyToAsync(fileStream, cancellationToken);
+            }
+        }
+    }
+
+    private static void RemoveReadOnlyAttributes(string path)
+    {
+        var directoryInfo = new DirectoryInfo(path);
+
+        foreach (var fileInfo in directoryInfo.GetFiles("*", SearchOption.AllDirectories))
+        {
+            if (fileInfo.IsReadOnly)
+            {
+                fileInfo.IsReadOnly = false;
+            }
+        }
+
+        foreach (var subDirectoryInfo in directoryInfo.GetDirectories("*", SearchOption.AllDirectories))
+        {
+            if ((subDirectoryInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
+            {
+                subDirectoryInfo.Attributes &= ~FileAttributes.ReadOnly;
+            }
+        }
     }
 }
