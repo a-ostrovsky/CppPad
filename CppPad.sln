@@ -58,9 +58,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{2D9AE1BB-45CF-4D0C-BFE1-23BBBC5DD74A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Benchmark.Interface", "src\CppPad.Benchmark.Interface\CppPad.Benchmark.Interface.csproj", "{57F8CEAF-3604-435F-81BF-0CF7047294E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Benchmark.Interface", "src\CppPad.Benchmark.Interface\CppPad.Benchmark.Interface.csproj", "{57F8CEAF-3604-435F-81BF-0CF7047294E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Benchmark.Gbench", "src\CppPad.Benchmark.Gbench\CppPad.Benchmark.Gbench.csproj", "{FAF94AF5-1AFD-413D-A893-4D3DFF312D12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Benchmark.Gbench", "src\CppPad.Benchmark.Gbench\CppPad.Benchmark.Gbench.csproj", "{FAF94AF5-1AFD-413D-A893-4D3DFF312D12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
