@@ -12,6 +12,7 @@ public class ObjectTree
     public ObjectTree()
     {
         ErrorHandler = new ErrorHandlerMock();
+        AutoCompletion = new AutoCompletionMock();
         Benchmark = new BenchmarkMock();
         TemplateLoader = new InMemoryTemplateStore();
         Router = new RouterMock();
@@ -24,16 +25,19 @@ public class ObjectTree
         TemplatesViewModel = new TemplatesViewModel(TemplateLoader);
         InstallationProgressWindowViewModelFactory =
             new InstallationProgressWindowViewModelFactoryForTest();
-        BenchmarkViewModel =
-            new BenchmarkViewModel(Benchmark, Router, InstallationProgressWindowViewModelFactory);
+        ComponentInstallationViewModel =
+            new ComponentInstallationViewModel(AutoCompletion, Benchmark, Router,
+                InstallationProgressWindowViewModelFactory);
         EditorViewModelFactory = new EditorViewModelFactoryForTest(TemplatesViewModel, Router,
             Compiler, ScriptLoader, ConfigurationStore);
         MainWindowViewModel = new MainWindowViewModel(
-            BenchmarkViewModel,
+            ComponentInstallationViewModel,
             TemplatesViewModel,
             EditorViewModelFactory,
             Router, ConfigurationStore);
     }
+
+    public AutoCompletionMock AutoCompletion { get; }
 
     public BenchmarkMock Benchmark { get; }
 
@@ -46,8 +50,7 @@ public class ObjectTree
     public EditorViewModelFactoryForTest EditorViewModelFactory { get; }
 
     public InstallationProgressWindowViewModelFactoryForTest
-        InstallationProgressWindowViewModelFactory
-    { get; }
+        InstallationProgressWindowViewModelFactory { get; }
 
     public ToolsetDetectorMock ToolsetDetector { get; }
 
@@ -55,7 +58,7 @@ public class ObjectTree
 
     public TemplatesViewModel TemplatesViewModel { get; }
 
-    public BenchmarkViewModel BenchmarkViewModel { get; }
+    public ComponentInstallationViewModel ComponentInstallationViewModel { get; }
 
     public MainWindowViewModel MainWindowViewModel { get; }
 

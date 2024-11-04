@@ -39,6 +39,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CppPad.AutoCompletion.Clangd\CppPad.AutoCompletion.Clangd.csproj" />
     <ProjectReference Include="..\CppPad.Benchmark.Gbench\CppPad.Benchmark.Gbench.csproj" />
     <ProjectReference Include="..\CppPad.Benchmark.Interface\CppPad.Benchmark.Interface.csproj" />
     <ProjectReference Include="..\CppPad.CompilerAdapter.Interface\CppPad.CompilerAdapter.Interface.csproj" />

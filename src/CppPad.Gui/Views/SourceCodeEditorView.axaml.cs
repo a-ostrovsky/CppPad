@@ -2,6 +2,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data;
@@ -61,6 +62,14 @@ public partial class SourceCodeEditorView : UserControl
 
             textEditor.Text = text;
         });
+    }
+
+    public Task SetAutoCompletionProviderAsync(AutoCompletionProvider autoCompletionProvider)
+    {
+        var textEditor = this.FindControl<TextEditor>("Editor");
+        Debug.Assert(textEditor != null);
+        autoCompletionProvider.Attach(textEditor);
+        return autoCompletionProvider.OpenNewFileAsync();
     }
 
     private void TextEditor_TextChanged(object? sender, EventArgs e)

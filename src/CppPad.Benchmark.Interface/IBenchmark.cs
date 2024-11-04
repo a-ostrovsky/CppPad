@@ -8,12 +8,12 @@ namespace CppPad.Benchmark.Interface;
 
 public record InitSettings
 {
-    public bool ForceReinstall { get; set; } = false;
+    public bool ForceReinstall { get; init; } = false;
 }
 
 public interface IBenchmark
 {
-    Task InitAsync(IInitCallbacks callbacks, InitSettings settings,
+    Task InitializeAsync(IInitCallbacks callbacks, InitSettings settings,
         CancellationToken token = default);
 
     Script ToBenchmark(Script script);
@@ -26,7 +26,7 @@ public class DummyBenchmark : IBenchmark
         return script;
     }
 
-    public Task InitAsync(IInitCallbacks callbacks, InitSettings initSettings,
+    public Task InitializeAsync(IInitCallbacks callbacks, InitSettings initSettings,
         CancellationToken token = default)
     {
         return Task.CompletedTask;

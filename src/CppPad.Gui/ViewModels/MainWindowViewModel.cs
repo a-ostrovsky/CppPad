@@ -16,6 +16,7 @@ using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using CppPad.AutoCompletion.Interface;
 
 #endregion
 
@@ -33,13 +34,13 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
     private EditorViewModel? _currentEditor;
 
     public MainWindowViewModel(
-        BenchmarkViewModel benchmarkViewModel,
+        ComponentInstallationViewModel componentInstallationViewModel,
         TemplatesViewModel templates,
         IEditorViewModelFactory editorViewModelFactory,
         IRouter router,
         IConfigurationStore configurationStore)
     {
-        Benchmark = benchmarkViewModel;
+        ComponentInstallation = componentInstallationViewModel;
         Templates = templates;
         _editorViewModelFactory = editorViewModelFactory;
         _router = router;
@@ -86,7 +87,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
     public static MainWindowViewModel DesignInstance { get; } =
         new(
-            new BenchmarkViewModel(new DummyBenchmark(), new DummyRouter(),
+            new ComponentInstallationViewModel(new DummyAutoCompletionInstaller(), new DummyBenchmark(), new DummyRouter(),
                 new DummyInstallationProgressWindowViewModelFactory()),
             new TemplatesViewModel(new DummyTemplateLoader()),
             new DummyEditorViewModelFactory(),
@@ -124,7 +125,7 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
     public TemplatesViewModel Templates { get; }
 
-    public BenchmarkViewModel Benchmark { get; }
+    public ComponentInstallationViewModel ComponentInstallation { get; }
 
     public ToolsetViewModel? DefaultToolset => _defaultToolset.Value;
 

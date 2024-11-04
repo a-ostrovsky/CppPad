@@ -12,7 +12,7 @@ public class Benchmark(ILoggerFactory loggerFactory, BenchmarkInstaller installe
 {
     private readonly ILogger _logger = loggerFactory.CreateLogger<Benchmark>();
 
-    public async Task InitAsync(IInitCallbacks callbacks, InitSettings initSettings,
+    public async Task InitializeAsync(IInitCallbacks callbacks, InitSettings initSettings,
         CancellationToken token = default)
     {
         if (!initSettings.ForceReinstall)

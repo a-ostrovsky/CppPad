@@ -62,6 +62,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Benchmark.Interface"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CppPad.Benchmark.Gbench", "src\CppPad.Benchmark.Gbench\CppPad.Benchmark.Gbench.csproj", "{FAF94AF5-1AFD-413D-A893-4D3DFF312D12}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AutoCompletion", "AutoCompletion", "{C5266A0C-532A-497F-9DBD-7C57C33E34AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.AutoCompletion.Interface", "src\CppPad.AutoCompletion.Interface\CppPad.AutoCompletion.Interface.csproj", "{D69CB52A-B543-4AE8-BA07-6E10DA22CE43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.AutoCompletion.Clangd", "src\CppPad.AutoCompletion.Clangd\CppPad.AutoCompletion.Clangd.csproj", "{5F164405-17FA-44A0-AC4C-77017A5A0C48}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -148,6 +154,14 @@ Global
 		{FAF94AF5-1AFD-413D-A893-4D3DFF312D12}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAF94AF5-1AFD-413D-A893-4D3DFF312D12}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAF94AF5-1AFD-413D-A893-4D3DFF312D12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D69CB52A-B543-4AE8-BA07-6E10DA22CE43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D69CB52A-B543-4AE8-BA07-6E10DA22CE43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D69CB52A-B543-4AE8-BA07-6E10DA22CE43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D69CB52A-B543-4AE8-BA07-6E10DA22CE43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5F164405-17FA-44A0-AC4C-77017A5A0C48}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5F164405-17FA-44A0-AC4C-77017A5A0C48}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5F164405-17FA-44A0-AC4C-77017A5A0C48}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5F164405-17FA-44A0-AC4C-77017A5A0C48}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -173,6 +187,8 @@ Global
 		{17D9CB5F-D54C-4560-B15E-15720CF42943} = {ACFBB731-A040-4DE3-A075-53C1873AFF18}
 		{57F8CEAF-3604-435F-81BF-0CF7047294E8} = {2D9AE1BB-45CF-4D0C-BFE1-23BBBC5DD74A}
 		{FAF94AF5-1AFD-413D-A893-4D3DFF312D12} = {2D9AE1BB-45CF-4D0C-BFE1-23BBBC5DD74A}
+		{D69CB52A-B543-4AE8-BA07-6E10DA22CE43} = {C5266A0C-532A-497F-9DBD-7C57C33E34AA}
+		{5F164405-17FA-44A0-AC4C-77017A5A0C48} = {C5266A0C-532A-497F-9DBD-7C57C33E34AA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69390040-E36B-43D6-B587-A8E6B7C3C67A}

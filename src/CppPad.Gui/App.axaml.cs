@@ -8,8 +8,11 @@ using CppPad.Gui.Bootstrapping;
 using CppPad.Gui.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using ReactiveUI;
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Reactive.Concurrency;
 
 #endregion
 
@@ -24,13 +27,48 @@ public class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
+    private class ObservableExceptionHandler : IObserver<Exception>
+    {
+        public void OnNext(Exception value)
+        {
+            if (Debugger.IsAttached)
+            {
+                Debugger.Break();
+            }
+
+            RxApp.MainThreadScheduler.Schedule(() => throw value);
+        }
+
+        public void OnError(Exception error)
+        {
+            if (Debugger.IsAttached)
+            {
+                Debugger.Break();
+            }
+
+            RxApp.MainThreadScheduler.Schedule(() => throw error);
+        }
+
+        public void OnCompleted()
+        {
+            if (Debugger.IsAttached)
+            {
+                Debugger.Break();
+            }
+
+            RxApp.MainThreadScheduler.Schedule(() => throw new NotSupportedException());
+        }
+    }
+
     public override async void OnFrameworkInitializationCompleted()
     {
         try
         {
+            RxApp.DefaultExceptionHandler = new ObservableExceptionHandler();
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                var services = await new Bootstrapper().InitializeAsync();
+                var services = await Bootstrapper.InitializeAsync();
 
                 var window = services.GetRequiredService<MainWindow>();
                 // TODO: Do we need this?

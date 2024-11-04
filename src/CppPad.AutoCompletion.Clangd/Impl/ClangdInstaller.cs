@@ -1,64 +1,42 @@
 ﻿#region
 
-using CppPad.Benchmark.Gbench.Interface;
-using CppPad.Benchmark.Interface;
+using CppPad.AutoCompletion.Interface;
 using CppPad.Common;
 using CppPad.FileSystem;
 using Microsoft.Extensions.Logging;
 
 #endregion
 
-namespace CppPad.Benchmark.Gbench.Impl;
+namespace CppPad.AutoCompletion.Clangd.Impl;
 
-public class BenchmarkInstaller(
+public class ClangdInstaller(
     ILoggerFactory loggerFactory,
     DiskFileSystem fileSystem,
-    Downloader benchmarkDownloader,
-    IBenchmarkBuilder benchmarkBuilder)
+    Downloader clangdDownloader)
 {
-    private const string GoogleBenchmarkUrl =
-        "https://github.com/google/benchmark/archive/refs/heads/main.zip";
+    private const string ClangdUrl =
+        "https://github.com/clangd/clangd/releases/download/19.1.2/clangd-windows-19.1.2.zip";
 
-    private const string CMakeUrl =
-        "https://github.com/Kitware/CMake/releases/download/v3.27.4/cmake-3.27.4-windows-x86_64.zip";
-
-    private readonly ILogger _logger = loggerFactory.CreateLogger<BenchmarkInstaller>();
+    private readonly ILogger _logger = loggerFactory.CreateLogger<ClangdInstaller>();
     private readonly AsyncLock _newMessageLock = new();
-
-    public bool IsBenchmarkInstalled()
-    {
-        var includeDir = Path.Combine(AppConstants.BenchmarkFolder, "include");
-        var libDir = Path.Combine(AppConstants.BenchmarkFolder, "lib");
-
-        return fileSystem.DirectoryExists(includeDir) && fileSystem.DirectoryExists(libDir) &&
-               fileSystem.ListFiles(includeDir).Length != 0 &&
-               fileSystem.ListFiles(libDir).Length != 0;
-    }
 
     public async Task InstallAsync(IInitCallbacks callbacks, CancellationToken token = default)
     {
-        var workDir = Path.Combine(AppConstants.TempFolder, "Benchmark");
-        var googleBenchDir = Path.Combine(workDir, "benchmark");
-        var cmakePath = Path.Combine(workDir, "cmake");
+        var workDir = Path.Combine(AppConstants.TempFolder, "Clangd");
+        var clangdDir = Path.Combine(workDir, "clangd");
 
         callbacks.OnNewMessage($"Preparing work directory: '{workDir}'...");
         ClearWorkDir(workDir);
 
-        var downloadTasks = new[]
-        {
-            DownloadAndExtractAsync(callbacks, GoogleBenchmarkUrl, googleBenchDir, "benchmark.zip",
-                token),
-            DownloadAndExtractAsync(callbacks, CMakeUrl, cmakePath, "cmake.zip", token)
-        };
+        await DownloadAndExtractAsync(callbacks, ClangdUrl, clangdDir, "clangd.zip", token);
 
-        await Task.WhenAll(downloadTasks);
-
-        var benchmarkSourceDir = Path.Combine(googleBenchDir, "benchmark-main");
-        var buildDir = Path.Combine(benchmarkSourceDir, "build");
-        await benchmarkBuilder.BuildAsync(callbacks, cmakePath, benchmarkSourceDir,
-            buildDir, token);
-
-        await CopyBenchmarkFilesAsync(callbacks, benchmarkSourceDir, token);
+        await CopyClangdFilesAsync(callbacks, clangdDir, token);
+    }
+    
+    public bool IsInstalled()
+    {
+        var clangdPath = Path.Combine(AppConstants.ClangdFolder, "bin", "clangd.exe");
+        return fileSystem.FileExists(clangdPath);
     }
 
     private void ClearWorkDir(string path)
@@ -87,7 +65,7 @@ public class BenchmarkInstaller(
         var zipPath = Path.Combine(extractDir, zipFileName);
         await fileSystem.CreateDirectoryAsync(extractDir);
 
-        await benchmarkDownloader.DownloadFileAsync(new Uri(url), zipPath, token);
+        await clangdDownloader.DownloadFileAsync(new Uri(url), zipPath, token);
 
         using (await _newMessageLock.LockAsync())
         {
@@ -102,22 +80,17 @@ public class BenchmarkInstaller(
         }
     }
 
-    private async Task CopyBenchmarkFilesAsync(IInitCallbacks callbacks, string sourceDir,
+    private async Task CopyClangdFilesAsync(IInitCallbacks callbacks, string sourceDir,
         CancellationToken token)
     {
         var filesToCopy = new[]
         {
-            "benchmark.lib",
-            "benchmark_main.lib",
-            "benchmark.h",
-            "export.h"
+            "clangd.exe"
         };
 
-        var destIncludeDir = Path.Combine(AppConstants.BenchmarkFolder, "include");
-        var destLibDir = Path.Combine(AppConstants.BenchmarkFolder, "lib");
+        var destDir = Path.Combine(AppConstants.ClangdFolder, "bin");
 
-        await fileSystem.CreateDirectoryAsync(destIncludeDir);
-        await fileSystem.CreateDirectoryAsync(destLibDir);
+        await fileSystem.CreateDirectoryAsync(destDir);
 
         foreach (var fileName in filesToCopy)
         {
@@ -128,7 +101,6 @@ public class BenchmarkInstaller(
                 callbacks.OnNewMessage($"Found {fileName} at {filePath}");
                 _logger.LogInformation("Found {fileName} at {filePath}", fileName, filePath);
 
-                var destDir = fileName.EndsWith(".lib") ? destLibDir : destIncludeDir;
                 var destFile = Path.Combine(destDir, fileName);
                 await fileSystem.CopyFileAsync(filePath, destFile);
             }
@@ -142,10 +114,10 @@ public class BenchmarkInstaller(
 
     private async Task<string?> FindFileAsync(string rootDir, string fileName)
     {
-        // List files in the current directory
         var files = await fileSystem.ListFilesAsync(rootDir, "*", SearchOption.AllDirectories);
         return files
             .AsParallel()
-            .FirstOrDefault(file => Path.GetFileName(file).Equals(fileName, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(file =>
+                Path.GetFileName(file).Equals(fileName, StringComparison.OrdinalIgnoreCase));
     }
 }

@@ -1,5 +1,6 @@
 ﻿#region
 
+using CppPad.AutoCompletion.Interface;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Configuration.Interface;
 using CppPad.Gui.Routing;
@@ -19,6 +20,12 @@ public class EditorViewModelFactoryForTest(
 {
     public EditorViewModel Create()
     {
-        return new EditorViewModel(templatesViewModel, router, compiler, scriptLoader, configurationStore);
+        return new EditorViewModel(
+            templatesViewModel,
+            router,
+            compiler,
+            scriptLoader,
+            configurationStore,
+            new AutoCompletionProvider(new DummyAutoCompletionService()));
     }
 }

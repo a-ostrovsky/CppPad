@@ -9,7 +9,7 @@ namespace CppPad.Gui.UnitTest.Mocks;
 
 public class BenchmarkMock : IBenchmark
 {
-    public Task InitAsync(IInitCallbacks callbacks, InitSettings settings,
+    public Task InitializeAsync(IInitCallbacks callbacks, InitSettings settings,
         CancellationToken token = default)
     {
         return Task.CompletedTask;

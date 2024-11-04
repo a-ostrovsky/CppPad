@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
+using CppPad.AutoCompletion.Interface;
 
 #endregion
 
@@ -67,13 +68,15 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         IRouter router,
         ICompiler compiler,
         IScriptLoader scriptLoader,
-        IConfigurationStore configurationStore)
+        IConfigurationStore configurationStore,
+        AutoCompletionProvider autoCompletionProvider)
     {
         _templatesViewModel = templatesViewModel;
         _router = router;
         _compiler = compiler;
         _scriptLoader = scriptLoader;
         _configurationStore = configurationStore;
+        AutoCompletionProvider = autoCompletionProvider;
         RunCommand = ReactiveCommand.CreateFromTask(RunAsync);
         SaveAsCommand = ReactiveCommand.CreateFromTask(SaveAsAsync);
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
@@ -87,7 +90,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         new DummyRouter(),
         new DummyCompiler(),
         new DummyScriptLoader(),
-        new DummyConfigurationStore()
+        new DummyConfigurationStore(),
+        new AutoCompletionProvider(new DummyAutoCompletionService())
     );
 
     public string Title
@@ -95,6 +99,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         get => _title;
         set => SetProperty(ref _title, value);
     }
+
+    public AutoCompletionProvider AutoCompletionProvider { get; }
 
     public string SourceCode
     {

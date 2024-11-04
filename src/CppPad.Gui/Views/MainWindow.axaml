@@ -100,9 +100,11 @@
                         <!--TODO: Implementation idea-->
                         <!--<MenuItem Header="_Stop"/>-->
                     </MenuItem>
-                    <MenuItem Header="_Benchmark">
+                    <MenuItem Header="_Settings">
                         <MenuItem Header="_Enable Benchmarks"
-                                  Command="{CompiledBinding Benchmark.InstallCommand}"/>
+                                  Command="{CompiledBinding ComponentInstallation.InstallBenchmarkCommand}"/>
+                        <MenuItem Header="_Enable Auto Completion"
+                                  Command="{CompiledBinding ComponentInstallation.InstallAutoCompletionCommand}"/>
                     </MenuItem>
                 </Menu>
                 <!-- TODO: Implementation idea -->

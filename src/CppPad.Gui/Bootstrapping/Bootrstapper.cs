@@ -1,6 +1,12 @@
 ﻿#region
 
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Data.Core.Plugins;
+using CppPad.AutoCompletion.Clangd.Impl;
+using CppPad.AutoCompletion.Clangd.Interface;
+using CppPad.AutoCompletion.Interface;
 using CppPad.Benchmark.Gbench.Impl;
 using CppPad.Benchmark.Gbench.Interface;
 using CppPad.Benchmark.Interface;
@@ -22,17 +28,14 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MsBox.Avalonia;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 #endregion
 
 namespace CppPad.Gui.Bootstrapping;
 
-public class Bootstrapper
+public static class Bootstrapper
 {
-    public async Task<IServiceProvider> InitializeAsync()
+    public static async Task<IServiceProvider> InitializeAsync()
     {
         try
         {
@@ -59,6 +62,7 @@ public class Bootstrapper
         AddStorage(collection);
         AddScriptFileHandling(collection);
         AddBenchmark(collection);
+        AddAutoCompletion(collection);
 
         var services = collection.BuildServiceProvider();
 
@@ -89,7 +93,7 @@ public class Bootstrapper
         collection.AddTransient<ToolsetEditorWindowViewModel>();
         collection.AddTransient<ScriptSettingsWindowViewModel>();
         collection.AddSingleton<TemplatesViewModel>();
-        collection.AddSingleton<BenchmarkViewModel>();
+        collection.AddSingleton<ComponentInstallationViewModel>();
         collection.AddTransient<InstallationProgressWindowViewModel>();
 
         collection.AddSingleton<MainWindow>();
@@ -118,6 +122,7 @@ public class Bootstrapper
     private static void AddStorage(IServiceCollection collection)
     {
         collection.AddSingleton<DiskFileSystem>();
+        collection.AddSingleton<Downloader>();
     }
 
     private static void AddScriptFileHandling(IServiceCollection collection)
@@ -132,6 +137,24 @@ public class Bootstrapper
         collection.AddSingleton<IBenchmark, Benchmark.Gbench.Impl.Benchmark>();
         collection.AddSingleton<BenchmarkInstaller>();
         collection.AddSingleton<IBenchmarkBuilder, BenchmarkBuilder>();
-        collection.AddSingleton<IBenchmarkDownloader, HttpBenchmarkDownloader>();
+    }
+
+    private static void AddAutoCompletion(IServiceCollection collection)
+    {
+        collection.AddSingleton<ILspClient, LspClient>();
+        collection.AddTransient<ClangdService>();
+        collection.AddSingleton<ClangdInstaller>();
+        collection.AddSingleton<ServiceWithInstaller>(provider =>
+        {
+            var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+            var clangdService = provider.GetRequiredService<ClangdService>();
+            var clangdInstaller = provider.GetRequiredService<ClangdInstaller>();
+            return new ServiceWithInstaller(loggerFactory, clangdService, clangdInstaller);
+        });
+        collection.AddSingleton<IAutoCompletionService>(provider =>
+            provider.GetRequiredService<ServiceWithInstaller>());
+        collection.AddSingleton<IAutoCompletionInstaller>(provider =>
+            provider.GetRequiredService<ServiceWithInstaller>());
+        collection.AddTransient<AutoCompletionProvider>();
     }
 }

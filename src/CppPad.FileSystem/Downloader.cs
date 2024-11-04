@@ -1,17 +1,11 @@
-﻿#region
+﻿namespace CppPad.FileSystem;
 
-using CppPad.Benchmark.Gbench.Interface;
-using CppPad.FileSystem;
-
-#endregion
-
-namespace CppPad.Benchmark.Gbench.Impl;
-
-public class HttpBenchmarkDownloader(DiskFileSystem fileSystem) : IBenchmarkDownloader
+public class Downloader(DiskFileSystem fileSystem)
 {
     private readonly HttpClient _httpClient = new();
 
-    public async Task DownloadFileAsync(Uri uri, string destinationPath, CancellationToken token)
+    public virtual async Task DownloadFileAsync(Uri uri, string destinationPath,
+        CancellationToken token)
     {
         using var response =
             await _httpClient.GetAsync(uri, HttpCompletionOption.ResponseHeadersRead, token);
