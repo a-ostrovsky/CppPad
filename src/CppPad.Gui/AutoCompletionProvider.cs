@@ -63,6 +63,7 @@ public class AutoCompletionProvider(IAutoCompletionService autoCompletionService
         }
     }
 
+    //TODO: Use this method
     public async Task RenameFileAsync(string fileName)
     {
         await _serviceUpdater.OpenOrRenameAsync(fileName);
@@ -101,7 +102,10 @@ public class AutoCompletionProvider(IAutoCompletionService autoCompletionService
         Debug.Assert(_editor != null);
         Debug.Assert(_serviceUpdater.FileName != null);
         await _serviceUpdater.UpdateAsync();
-        _completionWindow = new CompletionWindow(_editor.TextArea);
+        _completionWindow = new CompletionWindow(_editor.TextArea)
+        {
+            Width = 650
+        };
         IList<ICompletionData> data = _completionWindow.CompletionList.CompletionData;
 
         var caretOffset = _editor.TextArea.Caret.Offset;
@@ -195,7 +199,10 @@ public class MyCompletionData(AutoCompletionItem autoCompletionData) : ICompleti
 {
     public string Text { get; } = autoCompletionData.Label;
 
-    public object Content => new TextBlock { Text = Text };
+    public object Content => new TextBlock
+    {
+        Text = Text
+    };
 
     public object Description => autoCompletionData.Documentation ?? autoCompletionData.Label;
 
