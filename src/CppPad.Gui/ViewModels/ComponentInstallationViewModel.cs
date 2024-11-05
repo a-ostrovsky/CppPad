@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
 using ReactiveUI;
+using AutoCompletionInterface = CppPad.AutoCompletion.Interface;
+using BenchmarkInterface = CppPad.Benchmark.Interface;
 
 #endregion
 
@@ -15,8 +17,9 @@ namespace CppPad.Gui.ViewModels;
 
 public class ComponentInstallationViewModel : ViewModelBase
 {
-    private readonly Benchmark.Interface.IBenchmark _benchmark;
-    private readonly AutoCompletion.Interface.IAutoCompletionInstaller _autoCompletionInstaller;
+    private readonly AutoCompletionInterface.IAutoCompletionInstaller _autoCompletionInstaller;
+    private readonly BenchmarkInterface.IBenchmark _benchmark;
+
     private readonly IInstallationProgressWindowViewModelFactory
         _installationProgressWindowViewModelFactory;
 
@@ -24,8 +27,8 @@ public class ComponentInstallationViewModel : ViewModelBase
     private bool _isInstalling;
 
     public ComponentInstallationViewModel(
-        AutoCompletion.Interface.IAutoCompletionInstaller autoCompletionInstaller,
-        Benchmark.Interface.IBenchmark benchmark, 
+        AutoCompletionInterface.IAutoCompletionInstaller autoCompletionInstaller,
+        BenchmarkInterface.IBenchmark benchmark,
         IRouter router,
         IInstallationProgressWindowViewModelFactory installationProgressWindowViewModelFactory)
     {
@@ -48,14 +51,15 @@ public class ComponentInstallationViewModel : ViewModelBase
         get => _isInstalling;
         set => SetProperty(ref _isInstalling, value);
     }
-    
+
     private async Task InstallAutoCompletionAsync()
     {
         var installationProgressWindowViewModel =
             _installationProgressWindowViewModelFactory.Create();
         var installationProgressDialog =
             _router.ShowDialogAsync(installationProgressWindowViewModel);
-        var adapter = new AutoCompletionInstallationProgressAdapter(installationProgressWindowViewModel);
+        var adapter =
+            new AutoCompletionInstallationProgressAdapter(installationProgressWindowViewModel);
         var cancellationTokenSource = new CancellationTokenSource();
         installationProgressWindowViewModel.SetOnCancelAction(
             () => cancellationTokenSource.Cancel());
@@ -90,7 +94,8 @@ public class ComponentInstallationViewModel : ViewModelBase
             _installationProgressWindowViewModelFactory.Create();
         var installationProgressDialog =
             _router.ShowDialogAsync(installationProgressWindowViewModel);
-        var adapter = new BenchmarkInstallationProgressAdapter(_router, installationProgressWindowViewModel);
+        var adapter =
+            new BenchmarkInstallationProgressAdapter(_router, installationProgressWindowViewModel);
         var cancellationTokenSource = new CancellationTokenSource();
         installationProgressWindowViewModel.SetOnCancelAction(
             () => cancellationTokenSource.Cancel());
@@ -103,7 +108,7 @@ public class ComponentInstallationViewModel : ViewModelBase
                     try
                     {
                         await _benchmark.InitializeAsync(adapter,
-                            new Benchmark.Interface.InitSettings { ForceReinstall = true },
+                            new BenchmarkInterface.InitSettings { ForceReinstall = true },
                             cancellationTokenSource.Token);
                     }
                     catch (OperationCanceledException)
@@ -119,9 +124,10 @@ public class ComponentInstallationViewModel : ViewModelBase
             IsInstalling = false;
         }
     }
-    
+
     private class AutoCompletionInstallationProgressAdapter(
-        InstallationProgressWindowViewModel installationProgressWindowViewModel) : AutoCompletion.Interface.IInitCallbacks
+        InstallationProgressWindowViewModel installationProgressWindowViewModel)
+        : AutoCompletionInterface.IInitCallbacks
     {
         public void OnNewMessage(string message)
         {
@@ -131,7 +137,8 @@ public class ComponentInstallationViewModel : ViewModelBase
 
     private class BenchmarkInstallationProgressAdapter(
         IRouter router,
-        InstallationProgressWindowViewModel installationProgressWindowViewModel) : Benchmark.Interface.IInitCallbacks
+        InstallationProgressWindowViewModel installationProgressWindowViewModel)
+        : BenchmarkInterface.IInitCallbacks
     {
         public Task<bool> AskUserWhetherToInstallAsync(string message)
         {

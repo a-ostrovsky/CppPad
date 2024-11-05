@@ -17,6 +17,7 @@ using CppPad.CompilerAdapter.Msvc.Interface;
 using CppPad.Configuration.Interface;
 using CppPad.Configuration.Json;
 using CppPad.FileSystem;
+using CppPad.Gui.AutoCompletion;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
 using CppPad.Gui.Views;
@@ -71,6 +72,7 @@ public static class Bootstrapper
 
     private static void AddCommonServices(IServiceCollection collection)
     {
+        collection.AddTransient<ITimer, Timer>();
         collection.AddCommonServices();
         collection.AddLogging(builder => builder.AddDebug());
     }

@@ -18,6 +18,7 @@ using System.Linq;
 using System.Reactive;
 using System.Threading.Tasks;
 using CppPad.AutoCompletion.Interface;
+using CppPad.Gui.AutoCompletion;
 
 #endregion
 
@@ -91,7 +92,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         new DummyCompiler(),
         new DummyScriptLoader(),
         new DummyConfigurationStore(),
-        new AutoCompletionProvider(new DummyAutoCompletionService())
+        new AutoCompletionProvider(new DummyAutoCompletionService(), new DummyTimer())
     );
 
     public string Title

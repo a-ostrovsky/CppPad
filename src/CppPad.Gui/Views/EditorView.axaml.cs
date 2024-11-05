@@ -43,6 +43,15 @@ public partial class EditorView : UserControl
         
         var sourceCodeEditor = this.FindControl<SourceCodeEditorView>("SourceCodeEditor");
         Debug.Assert(sourceCodeEditor != null);
+        
+        vm.PropertyChanged += (s, args) =>
+        {
+            if (args.PropertyName == nameof(vm.CurrentFileUri) && vm.CurrentFileUri != null)
+            {
+                _ = sourceCodeEditor.RenameFileAsync(vm.CurrentFileUri.LocalPath);
+            }
+        };
+        
         await sourceCodeEditor.SetAutoCompletionProviderAsync(vm.AutoCompletionProvider);
 
         vm.GoToLineRequested += (_, args) => { SourceCodeEditor.ScrollToLine(args.Line); };

@@ -43,17 +43,6 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
         return _autoCompletionService.CloseFileAsync(filePath);
     }
 
-    public Task RenameFileAsync(string oldFilePath, string newFilePath)
-    {
-        if (!Volatile.Read(ref _isInstalled))
-        {
-            _logger.LogWarning("Clangd is not installed. No auto completion is possible.");
-            return Task.CompletedTask;
-        }
-
-        return _autoCompletionService.RenameFileAsync(oldFilePath, newFilePath);
-    }
-
     public Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character)
     {
         if (!Volatile.Read(ref _isInstalled))

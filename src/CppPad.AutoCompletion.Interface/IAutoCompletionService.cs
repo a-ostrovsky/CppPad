@@ -6,8 +6,6 @@ public interface IAutoCompletionService
 
     Task CloseFileAsync(string filePath);
 
-    Task RenameFileAsync(string oldFilePath, string newFilePath);
-
     Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character);
 
     Task DidChangeAsync(string filePath, string newText);
@@ -34,11 +32,6 @@ public class DummyAutoCompletionService : IAutoCompletionService
     }
 
     public Task CloseFileAsync(string filePath)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task RenameFileAsync(string oldFilePath, string newFilePath)
     {
         return Task.CompletedTask;
     }
