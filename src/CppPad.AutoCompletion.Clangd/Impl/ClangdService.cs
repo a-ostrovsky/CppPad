@@ -1,6 +1,5 @@
 ﻿#region
 
-using System.Diagnostics;
 using System.Reflection;
 using System.Text.Json;
 using CppPad.AutoCompletion.Clangd.Interface;
@@ -15,7 +14,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
 {
     private readonly ILspClient _client;
     private readonly Dictionary<string, int> _documentVersions = new();
-    private readonly Lazy<Task> _initializeTask;
+    private readonly Lazy<Task<ServerCapabilities>> _initializeTask;
     private readonly string _rootUri;
 
     public ClangdService(ILspClient lspClient)
@@ -24,7 +23,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         _rootUri = new Uri(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
                            string.Empty).AbsoluteUri;
         _client.OnServerNotification += HandleServerNotification;
-        _initializeTask = new Lazy<Task>(InitializeAsync,
+        _initializeTask = new Lazy<Task<ServerCapabilities>>(InitializeAsync,
             LazyThreadSafetyMode.ExecutionAndPublication);
     }
 
@@ -37,8 +36,6 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
 
         GC.SuppressFinalize(this);
     }
-
-    public event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
 
     public async Task OpenFileAsync(string filePath, string fileContent)
     {
@@ -122,6 +119,11 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         await _client.SendMessageAsync(didChangeNotification);
     }
 
+    public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
+    {
+        return _initializeTask.Value;
+    }
+
     public async Task CloseFileAsync(string filePath)
     {
         await EnsureInitializedAsync();
@@ -142,6 +144,8 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         await _client.SendMessageAsync(didCloseNotification);
         _documentVersions.Remove(uri);
     }
+
+    public event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
 
     public async Task RenameFileAsync(string oldFilePath, string newFilePath)
     {
@@ -181,7 +185,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         await _initializeTask.Value;
     }
 
-    private async Task InitializeAsync()
+    private async Task<ServerCapabilities> InitializeAsync()
     {
         await _client.InitializeAsync();
         var requestId = _client.GetNextRequestId();
@@ -192,13 +196,14 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
             method = "initialize",
             @params = new
             {
-                processId = Process.GetCurrentProcess().Id,
+                processId = Environment.ProcessId,
                 rootUri = _rootUri,
                 capabilities = new { }
             }
         };
         await _client.SendMessageAsync(initRequest);
-        await _client.ReadResponseAsync(requestId);
+        var capabilitiesResponse = await _client.ReadResponseAsync(requestId);
+        var capabilities = ParseCapabilities(capabilitiesResponse);
 
         var initializedNotification = new
         {
@@ -207,6 +212,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
             @params = new { }
         };
         await _client.SendMessageAsync(initializedNotification);
+        return capabilities;
     }
 
     private int GetNextDocumentVersion(string uri)
@@ -227,12 +233,11 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
 
     private void HandleServerNotification(object? sender, ServerNotificationEventArgs args)
     {
-        var jsonDoc = JsonDocument.Parse(args.Message);
-        var method = jsonDoc.RootElement.GetProperty("method").GetString() ?? "EMPTY_METHOD";
+        var method = args.Message.RootElement.GetProperty("method").GetString() ?? "EMPTY_METHOD";
 
         if (method == "textDocument/publishDiagnostics")
         {
-            var @params = jsonDoc.RootElement.GetProperty("params");
+            var @params = args.Message.RootElement.GetProperty("params");
             var uri = @params.GetProperty("uri").GetString() ?? "http://EMPTY_URI";
             var diagnosticsJson = @params.GetProperty("diagnostics");
 
@@ -280,16 +285,46 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         };
     }
 
-    private static AutoCompletionItem[] ParseCompletions(string? response)
+    private static ServerCapabilities ParseCapabilities(JsonDocument? response)
+    {
+        if (response == null)
+        {
+            return new ServerCapabilities();
+        }
+
+        // TODO: Parse errors
+        var capabilities = new ServerCapabilities();
+        if (response.RootElement.TryGetProperty("result", out var resultElement) &&
+            resultElement.TryGetProperty("capabilities", out var capabilitiesElement) &&
+            capabilitiesElement.TryGetProperty("completionProvider",
+                out var completionProviderElement) &&
+            completionProviderElement.TryGetProperty("triggerCharacters",
+                out var triggerCharactersElement))
+        {
+            var triggerCharacters = triggerCharactersElement.EnumerateArray()
+                .Select(tc => tc.GetString())
+                .Where(tc => !string.IsNullOrEmpty(tc))
+                .Select(tc => tc![0])
+                .ToHashSet();
+
+            capabilities = new ServerCapabilities
+            {
+                TriggerCharacters = triggerCharacters
+            };
+        }
+
+        return capabilities;
+    }
+
+    private static AutoCompletionItem[] ParseCompletions(JsonDocument? response)
     {
         //TODO: Parse errors
-        if (string.IsNullOrEmpty(response))
+        if (response == null)
         {
             return Array.Empty<AutoCompletionItem>();
         }
 
-        using var jsonDoc = JsonDocument.Parse(response);
-        var items = jsonDoc.RootElement.GetProperty("result").GetProperty("items");
+        var items = response.RootElement.GetProperty("result").GetProperty("items");
 
         var completions = items.EnumerateArray()
             .Select(item => new AutoCompletionItem
@@ -309,7 +344,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
     {
         return item.GetProperty("label").GetString();
     }
-    
+
     private static double ParseScore(JsonElement item)
     {
         return item.GetProperty("score").GetDouble();

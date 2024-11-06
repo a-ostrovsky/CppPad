@@ -1,4 +1,6 @@
-﻿namespace CppPad.AutoCompletion.Clangd.Interface
+﻿using System.Text.Json;
+
+namespace CppPad.AutoCompletion.Clangd.Interface
 {
     public interface ILspClient
     {
@@ -8,7 +10,7 @@
 
         Task SendMessageAsync(object message);
 
-        Task<string?> ReadResponseAsync(int expectedId);
+        Task<JsonDocument?> ReadResponseAsync(int expectedId);
 
         event EventHandler<ServerNotificationEventArgs>? OnServerNotification;
     }

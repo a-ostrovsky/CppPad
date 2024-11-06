@@ -9,6 +9,8 @@ public interface IAutoCompletionService
     Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character);
 
     Task DidChangeAsync(string filePath, string newText);
+    
+    Task<ServerCapabilities> RetrieveServerCapabilitiesAsync();
 
     // TODO: Not yet used
     // event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
@@ -34,6 +36,11 @@ public class DummyAutoCompletionService : IAutoCompletionService
     public Task CloseFileAsync(string filePath)
     {
         return Task.CompletedTask;
+    }
+    
+    public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
+    {
+        return Task.FromResult(new ServerCapabilities());
     }
 
     // TODO: Not yet used

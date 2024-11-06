@@ -1,14 +1,18 @@
-﻿using CppPad.AutoCompletion.Interface;
+﻿#region
+
+using CppPad.AutoCompletion.Interface;
 using Microsoft.Extensions.Logging;
+
+#endregion
 
 namespace CppPad.AutoCompletion.Clangd.Impl;
 
 public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInstaller
 {
-    private bool _isInstalled;
     private readonly IAutoCompletionService _autoCompletionService;
     private readonly ClangdInstaller _clangdInstaller;
     private readonly ILogger _logger;
+    private bool _isInstalled;
 
     public ServiceWithInstaller(
         ILoggerFactory loggerFactory,
@@ -19,6 +23,25 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
         _autoCompletionService = autoCompletionService;
         _clangdInstaller = clangdInstaller;
         _isInstalled = IsClangdInstalled();
+    }
+
+    public async Task InstallAsync(IInitCallbacks initCallbacks, CancellationToken token)
+    {
+        try
+        {
+            _logger.LogInformation("Installing Clangd...");
+            await _clangdInstaller.InstallAsync(initCallbacks, token);
+            _logger.LogInformation("Clangd installed.");
+        }
+        finally
+        {
+            Volatile.Write(ref _isInstalled, IsClangdInstalled());
+        }
+    }
+
+    public bool IsClangdInstalled()
+    {
+        return _clangdInstaller.IsInstalled();
     }
 
     public Task OpenFileAsync(string filePath, string fileContent)
@@ -61,26 +84,17 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             _logger.LogWarning("Clangd is not installed. No auto completion is possible.");
             return Task.CompletedTask;
         }
-        
+
         return _autoCompletionService.DidChangeAsync(filePath, newText);
     }
 
-    public async Task InstallAsync(IInitCallbacks initCallbacks, CancellationToken token)
+    public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
     {
-        try
+        if (!Volatile.Read(ref _isInstalled))
         {
-            _logger.LogInformation("Installing Clangd...");
-            await _clangdInstaller.InstallAsync(initCallbacks, token);
-            _logger.LogInformation("Clangd installed.");
+            _logger.LogWarning("Clangd is not installed. No auto completion is possible.");
+            return Task.FromResult(new ServerCapabilities());
         }
-        finally
-        {
-            Volatile.Write(ref _isInstalled, IsClangdInstalled());
-        }
-    }
-
-    public bool IsClangdInstalled()
-    {
-        return _clangdInstaller.IsInstalled();
+        return _autoCompletionService.RetrieveServerCapabilitiesAsync();
     }
 }

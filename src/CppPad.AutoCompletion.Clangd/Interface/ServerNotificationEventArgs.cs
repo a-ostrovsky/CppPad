@@ -1,7 +1,9 @@
-﻿namespace CppPad.AutoCompletion.Clangd.Interface
+﻿using System.Text.Json;
+
+namespace CppPad.AutoCompletion.Clangd.Interface
 {
-    public class ServerNotificationEventArgs(string message) : EventArgs
+    public class ServerNotificationEventArgs(JsonDocument jsonDoc) : EventArgs
     {
-        public string Message { get; } = message;
+        public JsonDocument Message { get; } = jsonDoc;
     }
 }

@@ -21,8 +21,6 @@ public partial class SourceCodeEditorView : UserControl
         AvaloniaProperty.Register<SourceCodeEditorView, string>(nameof(Text),
             defaultBindingMode: BindingMode.TwoWay);
 
-    private AutoCompletionProvider? _autoCompletionProvider;
-
     private bool _isInternalChange;
 
     public SourceCodeEditorView()
@@ -70,7 +68,6 @@ public partial class SourceCodeEditorView : UserControl
     public Task SetAutoCompletionProviderAsync(AutoCompletionProvider autoCompletionProvider)
     {
         var textEditor = this.FindControl<TextEditor>("Editor");
-        _autoCompletionProvider = autoCompletionProvider;
         Debug.Assert(textEditor != null);
         autoCompletionProvider.Attach(textEditor);
         return autoCompletionProvider.OpenNewFileAsync();
@@ -94,12 +91,5 @@ public partial class SourceCodeEditorView : UserControl
         var document = textEditor.Document;
         var lineInfo = document.GetLineByNumber(line);
         return lineInfo.Offset;
-    }
-
-    public Task RenameFileAsync(string localPath)
-    {
-        return _autoCompletionProvider == null
-            ? Task.CompletedTask
-            : _autoCompletionProvider.RenameFileAsync(localPath);
     }
 }

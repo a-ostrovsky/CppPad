@@ -1,22 +1,21 @@
-﻿#region
-
+﻿using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using CppPad.AutoCompletion.Clangd.Interface;
 using CppPad.Common;
-
-#endregion
+using Microsoft.Extensions.Logging;
 
 namespace CppPad.AutoCompletion.Clangd.Impl
 {
-    public class LspClient : ILspClient, IAsyncDisposable
+    public class LspClient(ILoggerFactory loggerFactory) : ILspClient, IAsyncDisposable
     {
         private static readonly string ClangdPath =
             Path.Combine(AppConstants.ClangdFolder, "bin", "clangd.exe");
+        
+        private readonly ILogger _logger = loggerFactory.CreateLogger<LspClient>();
 
-        private readonly AsyncLock _lock = new();
-
+        private readonly AsyncLock _writeLock = new();
         private readonly Process _process = new()
         {
             StartInfo = new ProcessStartInfo(ClangdPath)
@@ -25,13 +24,15 @@ namespace CppPad.AutoCompletion.Clangd.Impl
                 RedirectStandardInput = true,
                 RedirectStandardOutput = true,
                 CreateNoWindow = true,
-                Arguments = "--log=verbose"
+                // Uncomment for verbose logging
+                //Arguments = "--log=verbose"
             }
         };
 
         private StreamWriter? _inputWriter;
         private StreamReader? _outputReader;
         private int _requestId = 1;
+        private readonly BlockingCollection<JsonDocument> _responseQueue = new();
 
         public async ValueTask DisposeAsync()
         {
@@ -67,33 +68,31 @@ namespace CppPad.AutoCompletion.Clangd.Impl
 
             var json = JsonSerializer.Serialize(message);
             var jsonBytes = Encoding.UTF8.GetBytes(json);
-            using var lck = await _lock.LockAsync();
+            using var lck = await _writeLock.LockAsync();
             await _inputWriter.WriteAsync($"Content-Length: {jsonBytes.Length}\r\n\r\n");
             await _inputWriter.WriteAsync(json);
             await _inputWriter.FlushAsync();
         }
 
-        public async Task<string?> ReadResponseAsync(int expectedId)
+        public async Task<JsonDocument?> ReadResponseAsync(int expectedId)
         {
-            while (true)
+            return await Task.Run(() =>
             {
-                var response = await ReadMessageAsync();
-                if (response == null)
+                while (true)
                 {
-                    continue;
+                    var response = _responseQueue.Take();
+                    if (response.RootElement.TryGetProperty("id", out var idElement) &&
+                        idElement.GetInt32() == expectedId)
+                    {
+                        return response;
+                    }
                 }
-
-                var jsonDoc = JsonDocument.Parse(response);
-                if (jsonDoc.RootElement.TryGetProperty("id", out var idElement) &&
-                    idElement.GetInt32() == expectedId)
-                {
-                    return response;
-                }
-            }
+            });
         }
 
         public async Task InitializeAsync()
         {
+            using var lck = await _writeLock.LockAsync();
             await Task.Run(() =>
             {
                 _process.Start();
@@ -104,7 +103,7 @@ namespace CppPad.AutoCompletion.Clangd.Impl
                 _outputReader =
                     new StreamReader(_process.StandardOutput.BaseStream, new UTF8Encoding(false));
 
-                //StartListening();
+                StartListening();
             });
         }
 
@@ -117,9 +116,7 @@ namespace CppPad.AutoCompletion.Clangd.Impl
 
             string? line;
             var contentLength = 0;
-
-            using var lck = await _lock.LockAsync();
-
+            
             // Read headers
             while (!string.IsNullOrEmpty(line = await _outputReader.ReadLineAsync()))
             {
@@ -139,8 +136,6 @@ namespace CppPad.AutoCompletion.Clangd.Impl
             return new string(buffer, 0, read);
         }
 
-        // TODO: This is not yet used. It's for handling server notifications which will 
-        // be implemented later.
         private void StartListening()
         {
             Task.Run(async () =>
@@ -148,16 +143,23 @@ namespace CppPad.AutoCompletion.Clangd.Impl
                 while (!_process.HasExited)
                 {
                     var message = await ReadMessageAsync();
-                    if (message != null)
+                    _logger.LogInformation("Received message: {message}", message);
+                    if (message == null)
                     {
-                        var jsonDoc = JsonDocument.Parse(message);
-                        if (jsonDoc.RootElement.TryGetProperty("method", out _))
-                        {
-                            // It's a server notification
-                            OnServerNotification?.Invoke(this,
-                                new ServerNotificationEventArgs(message));
-                        }
-                        // Handle response messages if necessary
+                        continue;
+                    }
+
+                    var jsonDoc = JsonDocument.Parse(message);
+                    if (jsonDoc.RootElement.TryGetProperty("method", out _))
+                    {
+                        // It's a server notification
+                        OnServerNotification?.Invoke(this,
+                            new ServerNotificationEventArgs(jsonDoc));
+                    }
+                    else
+                    {
+                        // It's a response
+                        _responseQueue.Add(jsonDoc);
                     }
                 }
             });

@@ -10,12 +10,17 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
 {
     public Task InstallAsync(IInitCallbacks initCallbacks, CancellationToken token)
     {
-        throw new NotImplementedException();
+        return Task.CompletedTask;
     }
 
     public bool IsClangdInstalled()
     {
-        throw new NotImplementedException();
+        return true;
+    }
+
+    public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
+    {
+        return Task.FromResult(new ServerCapabilities());
     }
 
     public Task OpenFileAsync(string filePath, string fileContent)
@@ -28,17 +33,17 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
         return Task.CompletedTask;
     }
 
-    public Task RenameFileAsync(string oldFilePath, string newFilePath)
-    {
-        return Task.CompletedTask;
-    }
-
     public Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character)
     {
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }
 
     public Task DidChangeAsync(string filePath, string newText)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task RenameFileAsync(string oldFilePath, string newFilePath)
     {
         return Task.CompletedTask;
     }
