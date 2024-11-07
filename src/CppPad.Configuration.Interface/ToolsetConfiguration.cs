@@ -4,5 +4,5 @@ public record ToolsetConfiguration
 {
     public List<Toolset> Toolsets { get; set; } = [];
 
-    public Guid? DefaultToolsetId { get; set; } = null;
+    public Guid? DefaultToolsetId { get; set; }
 }

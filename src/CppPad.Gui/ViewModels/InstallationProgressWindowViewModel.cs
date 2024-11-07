@@ -18,7 +18,7 @@ public class InstallationProgressWindowViewModel : ViewModelBase, IReactiveObjec
     private readonly Subject<Action?> _onCancelActionSubject = new();
     private Action? _onCancelAction;
     private string _statusMessage = string.Empty;
-    private int _caretIndex = 0;
+    private int _caretIndex;
 
     public event EventHandler? OnFinished;
 

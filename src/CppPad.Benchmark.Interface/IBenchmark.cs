@@ -8,7 +8,7 @@ namespace CppPad.Benchmark.Interface;
 
 public record InitSettings
 {
-    public bool ForceReinstall { get; init; } = false;
+    public bool ForceReinstall { get; init; }
 }
 
 public interface IBenchmark
