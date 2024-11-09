@@ -1,6 +1,7 @@
 ﻿#region
 
 using CppPad.AutoCompletion.Interface;
+using CppPad.ScriptFile.Interface;
 using Microsoft.Extensions.Logging;
 
 #endregion
@@ -77,7 +78,7 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
         return _autoCompletionService.GetCompletionsAsync(filePath, line, character);
     }
 
-    public Task DidChangeAsync(string filePath, string newText)
+    public Task UpdateSettingsAsync(string filePath, Script script)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -85,7 +86,18 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             return Task.CompletedTask;
         }
 
-        return _autoCompletionService.DidChangeAsync(filePath, newText);
+        return _autoCompletionService.UpdateSettingsAsync(filePath, script);
+    }
+
+    public Task UpdateContentAsync(string filePath, string newText)
+    {
+        if (!Volatile.Read(ref _isInstalled))
+        {
+            _logger.LogWarning("Clangd is not installed. No auto completion is possible.");
+            return Task.CompletedTask;
+        }
+
+        return _autoCompletionService.UpdateContentAsync(filePath, newText);
     }
 
     public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()

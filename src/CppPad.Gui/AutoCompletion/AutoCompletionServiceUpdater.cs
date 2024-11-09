@@ -1,10 +1,12 @@
 ﻿#region
 
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using CppPad.AutoCompletion.Interface;
 using CppPad.Common;
+using CppPad.Gui.ErrorHandling;
 using ITimer = CppPad.Common.ITimer;
 
 #endregion
@@ -51,7 +53,8 @@ public class AutoCompletionServiceUpdater : IDisposable
         using var lck = await _lock.LockAsync();
         if (_newText != null)
         {
-            await _autoCompletionService.DidChangeAsync(FileIdentifier, _newText);
+            await ErrorHandler.Instance.RunWithErrorHandlingAsync(
+                () => _autoCompletionService.UpdateContentAsync(FileIdentifier, _newText));
             _newText = null;
         }
 

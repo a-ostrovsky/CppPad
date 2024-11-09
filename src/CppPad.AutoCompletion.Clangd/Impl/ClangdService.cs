@@ -1,9 +1,11 @@
 ﻿#region
 
-using System.Reflection;
 using System.Text.Json;
 using CppPad.AutoCompletion.Clangd.Interface;
 using CppPad.AutoCompletion.Interface;
+using CppPad.Common;
+using CppPad.CompilerAdapter.Interface;
+using CppPad.ScriptFile.Interface;
 using Range = CppPad.AutoCompletion.Interface.Range;
 
 #endregion
@@ -20,8 +22,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
     public ClangdService(ILspClient lspClient)
     {
         _client = lspClient;
-        _rootUri = new Uri(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ??
-                           string.Empty).AbsoluteUri;
+        _rootUri = AppConstants.TempFolder;
         _client.OnServerNotification += HandleServerNotification;
         _initializeTask = new Lazy<Task<ServerCapabilities>>(InitializeAsync,
             LazyThreadSafetyMode.ExecutionAndPublication);
@@ -37,28 +38,38 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task OpenFileAsync(string filePath, string fileContent)
+    public async Task UpdateSettingsAsync(string filePath, Script script)
+    {
+        var cppStandard = script.CppStandard switch
+        {
+            CppStandard.Cpp11 => "c++11",
+            CppStandard.Cpp14 => "c++14",
+            CppStandard.Cpp17 => "c++17",
+            CppStandard.Cpp20 => "c++20",
+            CppStandard.Cpp23 => "c++23",
+            CppStandard.CppLatest => "c++latest",
+            _ => "c++latest"
+        };
+        var settings = new Dictionary<string, object>
+        {
+            [filePath] = new
+            {
+                workingDirectory = AppConstants.TempFolder,
+                compilationCommand = new[] { "clang++", $"-std={cppStandard}", "-c", filePath }
+            }
+        };
+        
+        //TODO: This doesn't work yet. The file must be saved in order to change settings
+        //TODO: Don't use dict of anonymous types.
+        await SendDidChangeConfigurationAsync(settings);
+    }
+
+    public async Task OpenFileAsync(string filePath, string content)
     {
         await EnsureInitializedAsync();
 
-        var uri = $"file:///{filePath.Replace('\\', '/')}";
-        var didOpenNotification = new
-        {
-            jsonrpc = "2.0",
-            method = "textDocument/didOpen",
-            @params = new
-            {
-                textDocument = new
-                {
-                    uri,
-                    languageId = "cpp",
-                    version = 1,
-                    text = fileContent
-                }
-            }
-        };
-        await _client.SendMessageAsync(didOpenNotification);
-        _documentVersions[uri] = 1;
+        await SendDidOpenAsync(filePath, content);
+        _documentVersions[filePath] = 1;
     }
 
     public async Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line,
@@ -91,34 +102,6 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         return ParseCompletions(response);
     }
 
-    public async Task DidChangeAsync(string filePath, string newText)
-    {
-        await EnsureInitializedAsync();
-
-        var uri = $"file:///{filePath.Replace('\\', '/')}";
-        var version = GetNextDocumentVersion(uri);
-
-        var didChangeNotification = new
-        {
-            jsonrpc = "2.0",
-            method = "textDocument/didChange",
-            @params = new
-            {
-                textDocument = new
-                {
-                    uri,
-                    version
-                },
-                contentChanges = new[]
-                {
-                    new { text = newText }
-                }
-            }
-        };
-
-        await _client.SendMessageAsync(didChangeNotification);
-    }
-
     public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
     {
         return _initializeTask.Value;
@@ -145,40 +128,72 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         _documentVersions.Remove(uri);
     }
 
-    public event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
-
-    public async Task RenameFileAsync(string oldFilePath, string newFilePath)
+    public async Task UpdateContentAsync(string filePath, string newText)
     {
         await EnsureInitializedAsync();
 
-        var oldUri = $"file:///{oldFilePath.Replace('\\', '/')}";
-        var newUri = $"file:///{newFilePath.Replace('\\', '/')}";
+        var uri = $"file:///{filePath.Replace('\\', '/')}";
+        var version = GetNextDocumentVersion(uri);
 
-        var didRenameFilesNotification = new
+        var didChangeNotification = new
         {
             jsonrpc = "2.0",
-            method = "workspace/didRenameFiles",
+            method = "textDocument/didChange",
             @params = new
             {
-                files = new[]
+                textDocument = new
                 {
-                    new
-                    {
-                        oldUri,
-                        newUri
-                    }
+                    uri,
+                    version
+                },
+                contentChanges = new[]
+                {
+                    new { text = newText }
                 }
             }
         };
 
-        await _client.SendMessageAsync(didRenameFilesNotification);
-
-        // Update the document versions dictionary
-        if (_documentVersions.Remove(oldUri, out var value))
-        {
-            _documentVersions[newUri] = value;
-        }
+        await _client.SendMessageAsync(didChangeNotification);
     }
+    
+    private async Task SendDidChangeConfigurationAsync(IDictionary<string, object> settings)
+    {
+        var didChangeConfigurationNotification = new
+        {
+            jsonrpc = "2.0",
+            method = "workspace/didChangeConfiguration",
+            @params = new
+            {
+                settings = new
+                {
+                    compilationDatabaseChanges = settings
+                }
+            }
+        };
+        await _client.SendMessageAsync(didChangeConfigurationNotification);
+    }
+
+    private async Task SendDidOpenAsync(string filePath, string content)
+    {
+        var didOpenNotification = new
+        {
+            jsonrpc = "2.0",
+            method = "textDocument/didOpen",
+            @params = new
+            {
+                textDocument = new
+                {
+                    uri = $"file:///{filePath.Replace('\\', '/')}",
+                    languageId = "cpp",
+                    version = 1,
+                    text = content
+                }
+            }
+        };
+        await _client.SendMessageAsync(didOpenNotification);
+    }
+
+    public event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
 
     private async Task EnsureInitializedAsync()
     {
@@ -198,7 +213,11 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
             {
                 processId = Environment.ProcessId,
                 rootUri = _rootUri,
-                capabilities = new { }
+                capabilities = new { },
+                initializationOptions = new
+                {
+                    fallbackFlags = new []{ "-std=c++20" }
+                }
             }
         };
         await _client.SendMessageAsync(initRequest);
@@ -321,7 +340,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         //TODO: Parse errors
         if (response == null)
         {
-            return Array.Empty<AutoCompletionItem>();
+            return [];
         }
 
         var items = response.RootElement.GetProperty("result").GetProperty("items");

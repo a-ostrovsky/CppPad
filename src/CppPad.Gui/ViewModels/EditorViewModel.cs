@@ -193,6 +193,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
 
+    public event EventHandler? ScriptSettingsChanged;
+
     private static string TruncateTitle(string title)
     {
         if (title.Length <= MaxTitleLength)
@@ -243,6 +245,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             if (vm.ShouldApplySettings)
             {
                 ScriptSettings = vm.ScriptSettings;
+                ScriptSettingsChanged?.Invoke(this, EventArgs.Empty);
                 IsModified = true;
             }
         });
@@ -402,7 +405,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         ScriptSettings.OptimizationLevel = script.OptimizationLevel;
     }
 
-    private Script GetScript()
+    public Script GetScript()
     {
         return new Script
         {

@@ -1,6 +1,7 @@
 ﻿#region
 
 using CppPad.AutoCompletion.Interface;
+using CppPad.ScriptFile.Interface;
 
 #endregion
 
@@ -16,6 +17,11 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
     public bool IsClangdInstalled()
     {
         return true;
+    }
+
+    public Task UpdateSettingsAsync(string filePath, Script script)
+    {
+        return Task.CompletedTask;
     }
 
     public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
@@ -38,12 +44,7 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }
 
-    public Task DidChangeAsync(string filePath, string newText)
-    {
-        return Task.CompletedTask;
-    }
-
-    public Task RenameFileAsync(string oldFilePath, string newFilePath)
+    public Task UpdateContentAsync(string filePath, string content)
     {
         return Task.CompletedTask;
     }

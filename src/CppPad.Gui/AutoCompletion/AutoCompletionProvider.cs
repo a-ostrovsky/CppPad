@@ -12,6 +12,7 @@ using AvaloniaEdit.CodeCompletion;
 using CppPad.AutoCompletion.Interface;
 using CppPad.Common;
 using CppPad.Gui.ErrorHandling;
+using CppPad.ScriptFile.Interface;
 
 #endregion
 
@@ -139,5 +140,11 @@ public class AutoCompletionProvider
 
         _completionWindow.Show();
         _completionWindow.Closed += (_, _) => { _completionWindow = null; };
+    }
+
+    public Task UpdateSettingsAsync(Script script)
+    {
+        return ErrorHandler.Instance.RunWithErrorHandlingAsync(() =>
+            _autoCompletionService.UpdateSettingsAsync(_serviceUpdater.FileIdentifier, script));
     }
 }

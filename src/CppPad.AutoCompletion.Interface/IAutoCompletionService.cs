@@ -1,15 +1,23 @@
-﻿namespace CppPad.AutoCompletion.Interface;
+﻿#region
+
+using CppPad.ScriptFile.Interface;
+
+#endregion
+
+namespace CppPad.AutoCompletion.Interface;
 
 public interface IAutoCompletionService
 {
-    Task OpenFileAsync(string filePath, string fileContent);
+    Task OpenFileAsync(string filePath, string content);
 
     Task CloseFileAsync(string filePath);
 
     Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character);
 
-    Task DidChangeAsync(string filePath, string newText);
-    
+    Task UpdateContentAsync(string filePath, string content);
+
+    Task UpdateSettingsAsync(string filePath, Script script);
+
     Task<ServerCapabilities> RetrieveServerCapabilitiesAsync();
 
     // TODO: Not yet used
@@ -28,7 +36,12 @@ public class DummyAutoCompletionService : IAutoCompletionService
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }
 
-    public Task DidChangeAsync(string filePath, string newText)
+    public Task UpdateContentAsync(string filePath, string content)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateSettingsAsync(string filePath, Script script)
     {
         return Task.CompletedTask;
     }
@@ -37,7 +50,7 @@ public class DummyAutoCompletionService : IAutoCompletionService
     {
         return Task.CompletedTask;
     }
-    
+
     public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
     {
         return Task.FromResult(new ServerCapabilities());

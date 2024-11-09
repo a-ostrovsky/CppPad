@@ -45,6 +45,9 @@ public partial class EditorView : UserControl
         Debug.Assert(sourceCodeEditor != null);
         await sourceCodeEditor.SetAutoCompletionProviderAsync(vm.AutoCompletionProvider);
 
+        vm.ScriptSettingsChanged += async (_, _) => { await sourceCodeEditor.UpdateSettingsAsync(vm.GetScript()); };
+        await sourceCodeEditor.UpdateSettingsAsync(vm.GetScript());
+        
         vm.GoToLineRequested += (_, args) => { SourceCodeEditor.ScrollToLine(args.Line); };
     }
 }

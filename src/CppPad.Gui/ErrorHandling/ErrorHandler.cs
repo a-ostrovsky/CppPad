@@ -2,6 +2,7 @@
 using MsBox.Avalonia.Enums;
 using System;
 using System.Threading.Tasks;
+using Avalonia.Threading;
 
 namespace CppPad.Gui.ErrorHandling;
 
@@ -24,8 +25,12 @@ public class ErrorHandler : IErrorHandler
                        ------------------------------
                        Details: {ex}
                        """;
-        var box = MessageBoxManager.GetMessageBoxStandard(title, message, ButtonEnum.Ok, Icon.Error);
-        await box.ShowAsync();
+        await Dispatcher.UIThread.InvokeAsync(() =>
+        {
+            var box = MessageBoxManager.GetMessageBoxStandard(title, message, ButtonEnum.Ok,
+                Icon.Error);
+            return box.ShowAsync();
+        });
     }
 
     public async Task RunWithErrorHandlingAsync(Func<Task> task)

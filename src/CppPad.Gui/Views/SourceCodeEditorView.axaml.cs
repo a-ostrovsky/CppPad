@@ -9,6 +9,7 @@ using Avalonia.Data;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
 using CppPad.Gui.AutoCompletion;
+using CppPad.ScriptFile.Interface;
 using TextMateSharp.Grammars;
 
 #endregion
@@ -22,6 +23,7 @@ public partial class SourceCodeEditorView : UserControl
             defaultBindingMode: BindingMode.TwoWay);
 
     private bool _isInternalChange;
+    private AutoCompletionProvider? _autoCompletionProvider;
 
     public SourceCodeEditorView()
     {
@@ -70,6 +72,7 @@ public partial class SourceCodeEditorView : UserControl
         var textEditor = this.FindControl<TextEditor>("Editor");
         Debug.Assert(textEditor != null);
         autoCompletionProvider.Attach(textEditor);
+        _autoCompletionProvider = autoCompletionProvider;
         return autoCompletionProvider.OpenNewFileAsync();
     }
 
@@ -91,5 +94,11 @@ public partial class SourceCodeEditorView : UserControl
         var document = textEditor.Document;
         var lineInfo = document.GetLineByNumber(line);
         return lineInfo.Offset;
+    }
+
+    public Task UpdateSettingsAsync(Script script)
+    {
+        Debug.Assert(_autoCompletionProvider != null);
+        return _autoCompletionProvider.UpdateSettingsAsync(script);
     }
 }
