@@ -1,11 +1,13 @@
 #region
 
+using CppPad.ScriptFile.Implementation;
 using CppPad.ScriptFile.Interface;
 using Microsoft.Extensions.Logging.Abstractions;
+using ParsingException = CppPad.ScriptFile.Interface.ParsingException;
 
 #endregion
 
-namespace CppPad.ScriptFile.Json.UnitTest;
+namespace CppPad.ScriptFile.UnitTest;
 
 public class ScriptParserTest
 {
@@ -51,17 +53,6 @@ public class ScriptParserTest
         Assert.NotNull(json);
         Assert.NotNull(deserializedScript);
         Assert.Equal(script.Content, deserializedScript.Content);
-    }
-
-    [Fact]
-    public void SerializeAndDeserialize_UnsupportedVersion_ThrowsException()
-    {
-        // Arrange
-        var script = new Script { Version = 2 };
-        var json = _scriptParser.Serialize(script);
-
-        // Act & Assert
-        Assert.Throws<ParsingException>(() => _scriptParser.Parse(json));
     }
 
     [Fact]

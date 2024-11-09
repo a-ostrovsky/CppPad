@@ -1,4 +1,4 @@
-﻿namespace CppPad.ScriptFile.Json;
+﻿namespace CppPad.ScriptFile.Implementation;
 
 public record ScriptDto
 {

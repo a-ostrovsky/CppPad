@@ -46,9 +46,7 @@
     <ProjectReference Include="..\CppPad.Configuration.Json\CppPad.Configuration.Json.csproj" />
     <ProjectReference Include="..\CppPad.FileSystem\CppPad.FileSystem.csproj" />
     <ProjectReference Include="..\CppPad.ScriptFile.Interface\CppPad.ScriptFile.Interface.csproj" />
-    <ProjectReference Include="..\CppPad.ScriptFile.Json\CppPad.ScriptFile.Json.csproj" />
-    <ProjectReference Include="..\CppPad.ScriptFileLoader.Interface\CppPad.ScriptFileLoader.Interface.csproj" />
-    <ProjectReference Include="..\CppPad.ScriptFileLoader.OnFileSystem\CppPad.ScriptFileLoader.OnFileSystem.csproj" />
+    <ProjectReference Include="..\CppPad.ScriptFile.Implementation\CppPad.ScriptFile.Implementation.csproj" />
   </ItemGroup>
 
   <ItemGroup>

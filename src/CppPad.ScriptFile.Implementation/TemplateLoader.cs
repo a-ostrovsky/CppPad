@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 #endregion
 
-namespace CppPad.ScriptFileLoader.OnFileSystem;
+namespace CppPad.ScriptFile.Implementation;
 
 public class TemplateLoader(
     DiskFileSystem fileSystem,

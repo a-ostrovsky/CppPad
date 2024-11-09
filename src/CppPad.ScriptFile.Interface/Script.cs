@@ -4,8 +4,6 @@ namespace CppPad.ScriptFile.Interface;
 
 public record Script
 {
-    public int Version { get; init; } = 1;
-
     public string Content { get; init; } = string.Empty;
 
     public IReadOnlyList<string> AdditionalIncludeDirs { get; init; } = [];

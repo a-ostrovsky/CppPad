@@ -7,7 +7,7 @@ using CppPad.CompilerAdapter.Interface;
 
 #endregion
 
-namespace CppPad.ScriptFile.Json;
+namespace CppPad.ScriptFile.Implementation;
 
 public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
 {
@@ -71,7 +71,6 @@ public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
         {
             var scriptDto = new ScriptDto
             {
-                Version = script.Version,
                 Content = script.Content,
                 AdditionalIncludeDirs = script.AdditionalIncludeDirs,
                 LibrarySearchPaths = script.LibrarySearchPaths,

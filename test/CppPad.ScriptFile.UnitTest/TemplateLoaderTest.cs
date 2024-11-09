@@ -3,14 +3,14 @@
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.MockFileSystem;
+using CppPad.ScriptFile.Implementation;
 using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFile.Json;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.Logging.Abstractions;
 
 #endregion
 
-namespace CppPad.ScriptFileLoader.OnFileSystem.UnitTest;
+namespace CppPad.ScriptFile.UnitTest;
 
 public class TemplateLoaderTest
 {
@@ -102,7 +102,8 @@ public class TemplateLoaderTest
     {
         // Arrange
         _fileSystem.AlwaysCreateDirectoriesIfNotExist(false); // Folder will not be found
-        var templateLoader = new TemplateLoader(_fileSystem, new ScriptParser(NullLoggerFactory.Instance), NullLoggerFactory.Instance);
+        var templateLoader = new TemplateLoader(_fileSystem,
+            new ScriptParser(NullLoggerFactory.Instance), NullLoggerFactory.Instance);
 
         // Act
         var templates = await templateLoader.GetAllTemplatesAsync();

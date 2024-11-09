@@ -3,14 +3,15 @@
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.MockFileSystem;
+using CppPad.ScriptFile.Implementation;
 using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFile.Json;
+using CppPad.ScriptFileLoader.OnFileSystem;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.Logging.Abstractions;
 
 #endregion
 
-namespace CppPad.ScriptFileLoader.OnFileSystem.UnitTest;
+namespace CppPad.ScriptFile.UnitTest;
 
 public class ScriptLoaderTest
 {
