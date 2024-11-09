@@ -44,7 +44,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private string? _compilerOutput;
     private int _compilerOutputCaretIndex;
 
-    private Uri? _currentFilePath;
+    private string? _currentFilePath;
 
     private bool _isModified;
     private ScriptSettingsViewModel _scriptSettings = new();
@@ -108,7 +108,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         set => SetPropertyAndUpdateModified(ref _sourceCode, value);
     }
 
-    public Uri? CurrentFileUri
+    public string? CurrentFilePath
     {
         get => _currentFilePath;
         set => SetProperty(ref _currentFilePath, value);
@@ -213,7 +213,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private void UpdateTitle()
     {
         var baseTitle = _currentFilePath != null
-            ? TruncateTitle(Path.GetFileName(_currentFilePath.LocalPath))
+            ? TruncateTitle(Path.GetFileName(_currentFilePath))
             : "Untitled";
         Title = IsModified ? $"{baseTitle}*" : baseTitle;
     }
@@ -222,15 +222,15 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            if (CurrentFileUri == null)
+            if (CurrentFilePath == null)
             {
                 await SaveAsAsync();
                 return;
             }
 
-            var scriptDocument = GetScriptDocument(CurrentFileUri.LocalPath);
+            var scriptDocument = GetScriptDocument(CurrentFilePath);
             await _scriptLoader.SaveAsync(scriptDocument);
-            await _configurationStore.SaveLastOpenedFileNameAsync(CurrentFileUri.LocalPath);
+            await _configurationStore.SaveLastOpenedFileNameAsync(CurrentFilePath);
             IsModified = false;
         });
     }
@@ -267,16 +267,16 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
             var uri = await _router.ShowSaveFileDialogAsync(AppConstants.SaveFileFilter);
-            var filePath = uri?.LocalPath;
-            if (filePath == null)
+            var path = uri?.LocalPath;
+            if (path == null)
             {
                 return;
             }
 
-            var scriptDocument = GetScriptDocument(filePath);
+            var scriptDocument = GetScriptDocument(path);
             await _scriptLoader.SaveAsync(scriptDocument);
-            SetCurrentFilePath(uri!);
-            await _configurationStore.SaveLastOpenedFileNameAsync(uri!.LocalPath);
+            SetCurrentFilePath(path!);
+            await _configurationStore.SaveLastOpenedFileNameAsync(path!);
             IsModified = false;
         });
     }
@@ -299,9 +299,9 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         });
     }
 
-    private void SetCurrentFilePath(Uri uri)
+    private void SetCurrentFilePath(string path)
     {
-        CurrentFileUri = uri;
+        CurrentFilePath = path;
         UpdateTitle();
     }
 
@@ -362,14 +362,14 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         });
     }
 
-    public Task LoadSourceCodeAsync(Uri uri)
+    public Task LoadSourceCodeAsync(string path)
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            var scriptDocument = await _scriptLoader.LoadAsync(uri.LocalPath);
+            var scriptDocument = await _scriptLoader.LoadAsync(path);
             SetScript(scriptDocument.Script);
             _currentIdentifier = scriptDocument.Identifier;
-            SetCurrentFilePath(uri);
+            SetCurrentFilePath(path);
         });
     }
 

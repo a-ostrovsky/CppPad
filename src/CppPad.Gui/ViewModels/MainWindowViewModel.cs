@@ -139,16 +139,16 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         this.RaisePropertyChanged(args.PropertyName);
     }
 
-    private Task OpenRecentFileAsync(string filePath)
+    private Task OpenRecentFileAsync(string path)
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
             var editor = _editorViewModelFactory.Create();
-            await editor.LoadSourceCodeAsync(new Uri(filePath, UriKind.Absolute));
+            await editor.LoadSourceCodeAsync(path);
             editor.IsModified = false;
             Editors.Add(editor);
             CurrentEditor = editor;
-            await _configurationStore.SaveLastOpenedFileNameAsync(filePath);
+            await _configurationStore.SaveLastOpenedFileNameAsync(path);
         });
     }
 
@@ -203,17 +203,18 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
             var uri = await _router.ShowOpenFileDialogAsync(AppConstants.OpenFileFilter);
-            if (uri == null)
+            var path = uri?.LocalPath;
+            if (path == null)
             {
                 return;
             }
 
             var editor = _editorViewModelFactory.Create();
-            await editor.LoadSourceCodeAsync(uri);
+            await editor.LoadSourceCodeAsync(path);
             editor.IsModified = false;
             Editors.Add(editor);
             CurrentEditor = editor;
-            await _configurationStore.SaveLastOpenedFileNameAsync(uri.LocalPath);
+            await _configurationStore.SaveLastOpenedFileNameAsync(path);
         });
     }
 
