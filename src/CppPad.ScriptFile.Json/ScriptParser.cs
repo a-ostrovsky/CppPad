@@ -3,6 +3,7 @@
 using CppPad.ScriptFile.Interface;
 using Microsoft.Extensions.Logging;
 using System.Text.Json;
+using CppPad.CompilerAdapter.Interface;
 
 #endregion
 
@@ -22,17 +23,29 @@ public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
         _logger.LogInformation("Parsing script content.");
         try
         {
-            var script = JsonSerializer.Deserialize<Script>(content, SerializerOptions);
-            if (script == null)
+            var scriptDto = JsonSerializer.Deserialize<ScriptDto>(content, SerializerOptions);
+            if (scriptDto == null)
             {
                 throw new ParsingException("Failed to parse script content.");
             }
 
-            if (script.Version != 1)
+            if (scriptDto.Version != 1)
             {
-                throw new ParsingException($"Unsupported script version: {script.Version}.");
+                throw new ParsingException($"Unsupported script version: {scriptDto.Version}.");
             }
 
+            var script = new Script
+            {
+                Content = scriptDto.Content,
+                AdditionalIncludeDirs = scriptDto.AdditionalIncludeDirs,
+                LibrarySearchPaths = scriptDto.LibrarySearchPaths,
+                AdditionalEnvironmentPaths = scriptDto.AdditionalEnvironmentPaths,
+                StaticallyLinkedLibraries = scriptDto.StaticallyLinkedLibraries,
+                CppStandard = Enum.Parse<CppStandard>(scriptDto.CppStandard),
+                OptimizationLevel = Enum.Parse<OptimizationLevel>(scriptDto.OptimizationLevel),
+                AdditionalBuildArgs = scriptDto.AdditionalBuildArgs,
+                PreBuildCommand = scriptDto.PreBuildCommand
+            };
             return script;
         }
         catch (Exception ex)
@@ -56,7 +69,20 @@ public class ScriptParser(ILoggerFactory loggerFactory) : IScriptParser
     {
         try
         {
-            var json = JsonSerializer.Serialize(script, SerializerOptions);
+            var scriptDto = new ScriptDto
+            {
+                Version = script.Version,
+                Content = script.Content,
+                AdditionalIncludeDirs = script.AdditionalIncludeDirs,
+                LibrarySearchPaths = script.LibrarySearchPaths,
+                AdditionalEnvironmentPaths = script.AdditionalEnvironmentPaths,
+                StaticallyLinkedLibraries = script.StaticallyLinkedLibraries,
+                CppStandard = script.CppStandard.ToString(),
+                OptimizationLevel = script.OptimizationLevel.ToString(),
+                AdditionalBuildArgs = script.AdditionalBuildArgs,
+                PreBuildCommand = script.PreBuildCommand
+            };
+            var json = JsonSerializer.Serialize(scriptDto, SerializerOptions);
             return json;
         }
         catch (Exception ex)
