@@ -5,7 +5,6 @@ using CppPad.CompilerAdapter.Interface;
 using CppPad.MockFileSystem;
 using CppPad.ScriptFile.Implementation;
 using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFileLoader.OnFileSystem;
 using DeepEqual.Syntax;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -33,11 +32,11 @@ public class ScriptLoaderTest
         await _fileSystem.WriteAllTextAsync(path, content);
 
         // Act
-        var script = await _scriptLoader.LoadAsync(path);
+        var scriptDocument = await _scriptLoader.LoadAsync(path);
 
         // Assert
-        Assert.NotNull(script);
-        Assert.Equal(content, script.Content);
+        Assert.NotNull(scriptDocument);
+        Assert.Equal(content, scriptDocument.Script.Content);
     }
 
     [Fact]
@@ -68,11 +67,18 @@ public class ScriptLoaderTest
             PreBuildCommand = "PreBuildCommand1"
         };
 
+        var scriptDocument = new ScriptDocument
+        {
+            Identifier = IdGenerator.GenerateUniqueId(),
+            FileName = path,
+            Script = script
+        };
+
         // Act
-        await _scriptLoader.SaveAsync(path, script);
+        await _scriptLoader.SaveAsync(scriptDocument);
         var loadedScript = await _scriptLoader.LoadAsync(path);
 
         // Assert
-        loadedScript.ShouldDeepEqual(script);
+        loadedScript.ShouldDeepEqual(scriptDocument);
     }
 }

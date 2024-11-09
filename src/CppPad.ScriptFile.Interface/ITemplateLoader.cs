@@ -1,10 +1,8 @@
 ﻿#region
 
-using CppPad.ScriptFile.Interface;
-
 #endregion
 
-namespace CppPad.ScriptFileLoader.Interface;
+namespace CppPad.ScriptFile.Interface;
 
 public interface ITemplateLoader
 {

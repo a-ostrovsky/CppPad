@@ -20,6 +20,6 @@ public static class AppConstants
     public static readonly string TemplateFolder = Path.Combine(AppFolder, "Templates");
 
     public static readonly string BenchmarkFolder = Path.Combine(AppFolder, "Benchmark");
-    
+
     public static readonly string ClangdFolder = Path.Combine(AppFolder, "Clangd");
 }

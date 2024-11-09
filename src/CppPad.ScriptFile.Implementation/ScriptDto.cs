@@ -1,8 +1,16 @@
-﻿namespace CppPad.ScriptFile.Implementation;
+﻿#region
+
+using CppPad.Common;
+
+#endregion
+
+namespace CppPad.ScriptFile.Implementation;
 
 public record ScriptDto
 {
     public int Version { get; init; } = 1;
+
+    public Identifier? Identifier { get; init; }
 
     public string Content { get; init; } = string.Empty;
 

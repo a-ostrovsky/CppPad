@@ -1,7 +1,6 @@
 ﻿#region
 
 using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFileLoader.Interface;
 using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;

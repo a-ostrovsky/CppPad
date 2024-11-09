@@ -5,7 +5,6 @@ using CppPad.Common;
 using CppPad.Configuration.Interface;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
-using CppPad.ScriptFileLoader.Interface;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -17,6 +16,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CppPad.AutoCompletion.Interface;
+using CppPad.ScriptFile.Interface;
 
 #endregion
 

@@ -1,28 +1,33 @@
-﻿using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFileLoader.Interface;
+﻿#region
+
 using System.Collections.Concurrent;
 using System.Text.Json;
+using CppPad.ScriptFile.Interface;
+
+#endregion
 
 namespace CppPad.Gui.UnitTest.Mocks;
 
 public class InMemoryScriptStore : IScriptLoader
 {
-    private readonly ConcurrentDictionary<string, string> _serializedScripts = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, string> _serializedScripts =
+        new(StringComparer.OrdinalIgnoreCase);
 
-    public async Task<Script> LoadAsync(string path)
+    public async Task<ScriptDocument> LoadAsync(string path)
     {
-        if (!_serializedScripts.TryGetValue(path, out var serializedScript))
+        if (!_serializedScripts.TryGetValue(path, out var serializedScriptDocument))
         {
             throw new FileNotFoundException($"Script '{path}' not found.");
         }
 
-        return await Task.FromResult(Deserialize(serializedScript));
+        var result = Deserialize(serializedScriptDocument);
+        return await Task.FromResult(result);
     }
 
-    public async Task SaveAsync(string path, Script script)
+    public async Task SaveAsync(ScriptDocument scriptDocument)
     {
-        var serializedScript = Serialize(script);
-        _serializedScripts[path] = serializedScript;
+        var serializedScript = Serialize(scriptDocument);
+        _serializedScripts[scriptDocument.FileName!] = serializedScript;
         await Task.CompletedTask;
     }
 
@@ -31,13 +36,13 @@ public class InMemoryScriptStore : IScriptLoader
         return _serializedScripts.Keys.ToList();
     }
 
-    private static string Serialize(Script script)
+    private static string Serialize(ScriptDocument script)
     {
         return JsonSerializer.Serialize(script);
     }
 
-    private static Script Deserialize(string content)
+    private static ScriptDocument Deserialize(string content)
     {
-        return JsonSerializer.Deserialize<Script>(content)!;
+        return JsonSerializer.Deserialize<ScriptDocument>(content)!;
     }
 }

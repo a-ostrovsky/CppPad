@@ -3,12 +3,11 @@
 using CppPad.Common;
 using CppPad.FileSystem;
 using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFileLoader.Interface;
 using Microsoft.Extensions.Logging;
 
 #endregion
 
-namespace CppPad.ScriptFileLoader.OnFileSystem;
+namespace CppPad.ScriptFile.Implementation;
 
 public class ScriptLoader(
     DiskFileSystem fileSystem,
@@ -17,7 +16,7 @@ public class ScriptLoader(
 {
     private readonly ILogger _logger = loggerFactory.CreateLogger<ScriptLoader>();
 
-    public async Task<Script> LoadAsync(string path)
+    public async Task<ScriptDocument> LoadAsync(string path)
     {
         if (!fileSystem.FileExists(path))
         {
@@ -27,16 +26,33 @@ public class ScriptLoader(
         _logger.LogInformation("Loading script from {Path}", path);
         var content = await fileSystem.ReadAllTextAsync(path);
         _logger.LogInformation("Loaded script from {Path}", path);
-        return path.EndsWith(AppConstants.DefaultFileExtension)
+        var isScriptFile = path.EndsWith(AppConstants.DefaultFileExtension);
+        var scriptDto = isScriptFile
             ? parser.Parse(content)
             : parser.FromCppFile(content);
+
+        var (identifier, script) = ScriptConverter.DtoToScript(scriptDto);
+
+        identifier ??= IdGenerator.GenerateUniqueId();
+        return new ScriptDocument
+        {
+            FileName = isScriptFile ? path : null,
+            Identifier = identifier,
+            Script = script
+        };
     }
 
-    public async Task SaveAsync(string path, Script script)
+    public async Task SaveAsync(ScriptDocument scriptDocument)
     {
-        _logger.LogInformation("Saving script to {Path}", path);
-        var content = parser.Serialize(script);
-        await fileSystem.WriteAllTextAsync(path, content);
-        _logger.LogInformation("Saved script to {Path}", path);
+        if (scriptDocument.FileName == null)
+        {
+            throw new InvalidOperationException("Cannot save script without a file name.");
+        }
+
+        _logger.LogInformation("Saving script to {Path}", scriptDocument.FileName);
+        var dto = ScriptConverter.ScriptToDto(scriptDocument.Script, scriptDocument.Identifier);
+        var content = parser.Serialize(dto);
+        await fileSystem.WriteAllTextAsync(scriptDocument.FileName, content);
+        _logger.LogInformation("Saved script to {Path}", scriptDocument.FileName);
     }
 }

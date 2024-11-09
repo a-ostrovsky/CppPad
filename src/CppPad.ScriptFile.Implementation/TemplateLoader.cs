@@ -3,7 +3,6 @@
 using CppPad.Common;
 using CppPad.FileSystem;
 using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFileLoader.Interface;
 using Microsoft.Extensions.Logging;
 
 #endregion
@@ -31,7 +30,9 @@ public class TemplateLoader(
             fileName);
         var content = await fileSystem.ReadAllTextAsync(fileName);
         _logger.LogInformation("Loaded template {fileName}.", fileName);
-        return parser.Parse(content);
+        var dto = parser.Parse(content);
+        var (_, script) = ScriptConverter.DtoToScript(dto);
+        return script;
     }
 
     public async Task SaveAsync(string templateName, Script template)
@@ -39,7 +40,8 @@ public class TemplateLoader(
         var fileName = GetTemplateFileName(templateName);
         _logger.LogInformation("Saving template {name}. File name: {fileName}", templateName,
             fileName);
-        var content = parser.Serialize(template);
+        var dto = ScriptConverter.ScriptToDto(template);
+        var content = parser.Serialize(dto);
         await fileSystem.WriteAllTextAsync(fileName, content);
         _logger.LogInformation("Saved template to {fileName}", fileName);
         TemplatesChanged?.Invoke(this, EventArgs.Empty);

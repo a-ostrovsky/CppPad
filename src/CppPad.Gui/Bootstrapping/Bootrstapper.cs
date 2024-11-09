@@ -23,8 +23,6 @@ using CppPad.Gui.ViewModels;
 using CppPad.Gui.Views;
 using CppPad.ScriptFile.Interface;
 using CppPad.ScriptFile.Implementation;
-using CppPad.ScriptFileLoader.Interface;
-using CppPad.ScriptFileLoader.OnFileSystem;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

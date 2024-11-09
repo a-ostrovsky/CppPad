@@ -7,7 +7,7 @@ using CppPad.Configuration.Interface;
 using CppPad.Gui.AutoCompletion;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
-using CppPad.ScriptFileLoader.Interface;
+using CppPad.ScriptFile.Interface;
 
 #endregion
 

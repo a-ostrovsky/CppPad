@@ -8,7 +8,6 @@ using CppPad.Configuration.Interface;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
 using CppPad.ScriptFile.Interface;
-using CppPad.ScriptFileLoader.Interface;
 using ReactiveUI;
 using System;
 using System.ComponentModel;
@@ -114,6 +113,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         get => _currentFilePath;
         set => SetProperty(ref _currentFilePath, value);
     }
+
+    private Identifier _currentIdentifier = IdGenerator.GenerateUniqueId();
 
     public string? ApplicationOutput
     {
@@ -227,8 +228,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 return;
             }
 
-            var script = GetScript();
-            await _scriptLoader.SaveAsync(CurrentFileUri.LocalPath, script);
+            var scriptDocument = GetScriptDocument(CurrentFileUri.LocalPath);
+            await _scriptLoader.SaveAsync(scriptDocument);
             await _configurationStore.SaveLastOpenedFileNameAsync(CurrentFileUri.LocalPath);
             IsModified = false;
         });
@@ -272,8 +273,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 return;
             }
 
-            var script = GetScript();
-            await _scriptLoader.SaveAsync(filePath, script);
+            var scriptDocument = GetScriptDocument(filePath);
+            await _scriptLoader.SaveAsync(scriptDocument);
             SetCurrentFilePath(uri!);
             await _configurationStore.SaveLastOpenedFileNameAsync(uri!.LocalPath);
             IsModified = false;
@@ -365,8 +366,9 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            var script = await _scriptLoader.LoadAsync(uri.LocalPath);
-            SetScript(script);
+            var scriptDocument = await _scriptLoader.LoadAsync(uri.LocalPath);
+            SetScript(scriptDocument.Script);
+            _currentIdentifier = scriptDocument.Identifier;
             SetCurrentFilePath(uri);
         });
     }
@@ -405,6 +407,16 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         ScriptSettings.OptimizationLevel = script.OptimizationLevel;
     }
 
+    private ScriptDocument GetScriptDocument(string fileName)
+    {
+        return new ScriptDocument
+        {
+            FileName = fileName,
+            Identifier = _currentIdentifier,
+            Script = GetScript()
+        };
+    }
+    
     public Script GetScript()
     {
         return new Script

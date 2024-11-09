@@ -1,5 +1,6 @@
 #region
 
+using CppPad.Common;
 using CppPad.ScriptFile.Implementation;
 using CppPad.ScriptFile.Interface;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -46,7 +47,7 @@ public class ScriptParserTest
         var script = new Script { Content = "test content" };
 
         // Act
-        var json = _scriptParser.Serialize(script);
+        var json = _scriptParser.Serialize(ScriptConverter.ScriptToDto(script, Identifier.Empty));
         var deserializedScript = _scriptParser.Parse(json);
 
         // Assert

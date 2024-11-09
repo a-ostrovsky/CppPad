@@ -1,22 +1,30 @@
-﻿using CppPad.ScriptFile.Interface;
+﻿#region
 
-namespace CppPad.ScriptFileLoader.Interface;
+using CppPad.Common;
+
+#endregion
+
+namespace CppPad.ScriptFile.Interface;
 
 public interface IScriptLoader
 {
-    Task<Script> LoadAsync(string path);
+    Task<ScriptDocument> LoadAsync(string path);
 
-    Task SaveAsync(string path, Script script);
+    Task SaveAsync(ScriptDocument scriptDocument);
 }
 
 public class DummyScriptLoader : IScriptLoader
 {
-    public Task<Script> LoadAsync(string path)
+    public Task<ScriptDocument> LoadAsync(string path)
     {
-        return Task.FromResult(new Script());
+        return Task.FromResult(new ScriptDocument
+        {
+            Identifier = Identifier.Empty,
+            Script = new Script()
+        });
     }
 
-    public Task SaveAsync(string path, Script script)
+    public Task SaveAsync(ScriptDocument scriptDocument)
     {
         return Task.CompletedTask;
     }
