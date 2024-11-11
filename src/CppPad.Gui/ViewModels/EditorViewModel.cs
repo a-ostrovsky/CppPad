@@ -194,23 +194,15 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     public async Task InitAsNewFileAsync()
     {
-        try
-        {
-            _autoCompletionUpdater.PauseUpdate();
-            SourceCode =
-                """
-                #include <iostream>
+        _sourceCode = // Just update the source code. Do not raise any events.
+            """
+            #include <iostream>
 
-                int main() {
-                    std::cout << "Hello, World!" << '\n';
-                    return 0;
-                }
-                """;
-        }
-        finally
-        {
-            _autoCompletionUpdater.ResumeUpdate();
-        }
+            int main() {
+                std::cout << "Hello, World!" << '\n';
+                return 0;
+            }
+            """;
 
         Title = "Untitled";
         await AutoCompletionService.OpenFileAsync(GetScriptDocument(null));
