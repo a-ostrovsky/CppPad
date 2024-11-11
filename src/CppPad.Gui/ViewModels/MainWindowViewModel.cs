@@ -50,12 +50,13 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         OpenFileCommand = ReactiveCommand.CreateFromTask(OpenFileAsync);
         OpenRecentFileCommand = ReactiveCommand.CreateFromTask<string>(OpenRecentFileAsync);
         ExitCommand = ReactiveCommand.Create(() => Environment.Exit(0));
-        CreateNewFileCommand = ReactiveCommand.Create(CreateNewFile);
+        CreateNewFileCommand = ReactiveCommand.CreateFromTask(CreateNewFileAsync);
         CreateNewFileFromTemplateCommand =
             ReactiveCommand.CreateFromTask<string>(CreateNewFileFromTemplateAsync);
         CloseEditorCommand = ReactiveCommand.CreateFromTask<EditorViewModel>(CloseEditorAsync);
 
         Editors.Add(_editorViewModelFactory.Create());
+        _ = Editors[^1].InitAsNewFileAsync();
         CurrentEditor = Editors.FirstOrDefault();
 
         ReloadToolsets();
@@ -179,9 +180,10 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         CurrentEditor = Editors.FirstOrDefault();
     }
 
-    private void CreateNewFile()
+    private async Task CreateNewFileAsync()
     {
         var editor = _editorViewModelFactory.Create();
+        await editor.InitAsNewFileAsync();
         Editors.Add(editor);
         CurrentEditor = editor;
     }
@@ -191,7 +193,8 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
             var editor = _editorViewModelFactory.Create();
-            await editor.LoadFromTemplateAsync(templateName);
+            await editor.InitAsNewFileAsync();
+            await editor.InitFromTemplateAsync(templateName);
             editor.IsModified = false;
             Editors.Add(editor);
             CurrentEditor = editor;

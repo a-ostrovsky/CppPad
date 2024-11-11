@@ -6,7 +6,7 @@ using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using CppPad.AutoCompletion.Interface;
 
-namespace CppPad.Gui.AutoCompletion;
+namespace CppPad.Gui.Views;
 
 public class CompletionData(AutoCompletionItem autoCompletionData) : ICompletionData
 {

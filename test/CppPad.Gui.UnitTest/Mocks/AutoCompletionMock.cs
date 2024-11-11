@@ -19,7 +19,7 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
         return true;
     }
 
-    public Task UpdateSettingsAsync(string filePath, Script script)
+    public Task UpdateSettingsAsync(ScriptDocument document)
     {
         return Task.CompletedTask;
     }
@@ -29,22 +29,22 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
         return Task.FromResult(new ServerCapabilities());
     }
 
-    public Task OpenFileAsync(string filePath, string fileContent)
+    public Task OpenFileAsync(ScriptDocument scriptDocument)
     {
         return Task.CompletedTask;
     }
 
-    public Task CloseFileAsync(string filePath)
+    public Task CloseFileAsync(ScriptDocument document)
     {
         return Task.CompletedTask;
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, int line, int character)
     {
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }
 
-    public Task UpdateContentAsync(string filePath, string content)
+    public Task UpdateContentAsync(ScriptDocument document)
     {
         return Task.CompletedTask;
     }

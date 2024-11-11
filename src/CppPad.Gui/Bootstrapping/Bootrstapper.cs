@@ -17,7 +17,6 @@ using CppPad.CompilerAdapter.Msvc.Interface;
 using CppPad.Configuration.Interface;
 using CppPad.Configuration.Json;
 using CppPad.FileSystem;
-using CppPad.Gui.AutoCompletion;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
 using CppPad.Gui.Views;

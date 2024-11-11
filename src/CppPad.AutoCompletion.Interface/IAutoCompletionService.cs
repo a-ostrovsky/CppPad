@@ -8,15 +8,15 @@ namespace CppPad.AutoCompletion.Interface;
 
 public interface IAutoCompletionService
 {
-    Task OpenFileAsync(string filePath, string content);
+    Task OpenFileAsync(ScriptDocument scriptDocument);
 
-    Task CloseFileAsync(string filePath);
+    Task CloseFileAsync(ScriptDocument document);
 
-    Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character);
+    Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, int line, int character);
 
-    Task UpdateContentAsync(string filePath, string content);
+    Task UpdateContentAsync(ScriptDocument document);
 
-    Task UpdateSettingsAsync(string filePath, Script script);
+    Task UpdateSettingsAsync(ScriptDocument document);
 
     Task<ServerCapabilities> RetrieveServerCapabilitiesAsync();
 
@@ -26,27 +26,27 @@ public interface IAutoCompletionService
 
 public class DummyAutoCompletionService : IAutoCompletionService
 {
-    public Task OpenFileAsync(string filePath, string fileContent)
+    public Task OpenFileAsync(ScriptDocument scriptDocument)
     {
         return Task.CompletedTask;
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, int line, int character)
     {
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }
 
-    public Task UpdateContentAsync(string filePath, string content)
+    public Task UpdateContentAsync(ScriptDocument document)
     {
         return Task.CompletedTask;
     }
 
-    public Task UpdateSettingsAsync(string filePath, Script script)
+    public Task UpdateSettingsAsync(ScriptDocument document)
     {
         return Task.CompletedTask;
     }
 
-    public Task CloseFileAsync(string filePath)
+    public Task CloseFileAsync(ScriptDocument document)
     {
         return Task.CompletedTask;
     }

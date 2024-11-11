@@ -2,14 +2,10 @@
 
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Data;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
-using CppPad.Gui.AutoCompletion;
-using CppPad.ScriptFile.Interface;
+using CppPad.Gui.ViewModels;
 using TextMateSharp.Grammars;
 
 #endregion
@@ -18,23 +14,12 @@ namespace CppPad.Gui.Views;
 
 public partial class SourceCodeEditorView : UserControl
 {
-    public static readonly StyledProperty<string> TextProperty =
-        AvaloniaProperty.Register<SourceCodeEditorView, string>(nameof(Text),
-            defaultBindingMode: BindingMode.TwoWay);
-
     private bool _isInternalChange;
-    private AutoCompletionProvider? _autoCompletionProvider;
 
     public SourceCodeEditorView()
     {
         InitializeComponent();
         Init();
-    }
-
-    public string Text
-    {
-        get => GetValue(TextProperty);
-        set => SetValue(TextProperty, value);
     }
 
     public void ScrollToLine(int line)
@@ -54,26 +39,38 @@ public partial class SourceCodeEditorView : UserControl
         textMateInstallation.SetGrammar(
             registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp")
                 .Id));
+        
         textEditor.TextChanged += TextEditor_TextChanged;
-
-        this.GetObservable(TextProperty).Subscribe(text =>
-        {
-            if (_isInternalChange)
-            {
-                return;
-            }
-
-            textEditor.Text = text;
-        });
+        DataContextChanged += SourceCodeEditorView_DataContextChanged;
     }
 
-    public Task SetAutoCompletionProviderAsync(AutoCompletionProvider autoCompletionProvider)
+    private void SourceCodeEditorView_DataContextChanged(object? sender, EventArgs e)
     {
+        if (DataContext is null)
+        {
+            return;
+        }
+
+        if (DataContext is not EditorViewModel vm)
+        {
+            throw new InvalidOperationException("DataContext is not EditorViewModel");
+        }
+        
         var textEditor = this.FindControl<TextEditor>("Editor");
         Debug.Assert(textEditor != null);
+    
+        textEditor.Text = vm.SourceCode;
+        
+        vm.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(EditorViewModel.SourceCode) && !_isInternalChange)
+            {
+                textEditor.Text = vm.SourceCode;
+            }
+        };
+        
+        var autoCompletionProvider = new AutoCompletionProvider(vm);
         autoCompletionProvider.Attach(textEditor);
-        _autoCompletionProvider = autoCompletionProvider;
-        return autoCompletionProvider.OpenNewFileAsync();
     }
 
     private void TextEditor_TextChanged(object? sender, EventArgs e)
@@ -81,7 +78,7 @@ public partial class SourceCodeEditorView : UserControl
         try
         {
             _isInternalChange = true;
-            Text = ((TextEditor)sender!).Text;
+            ((EditorViewModel)DataContext!).SourceCode = ((TextEditor)sender!).Text;
         }
         finally
         {
@@ -94,11 +91,5 @@ public partial class SourceCodeEditorView : UserControl
         var document = textEditor.Document;
         var lineInfo = document.GetLineByNumber(line);
         return lineInfo.Offset;
-    }
-
-    public Task UpdateSettingsAsync(Script script)
-    {
-        Debug.Assert(_autoCompletionProvider != null);
-        return _autoCompletionProvider.UpdateSettingsAsync(script);
     }
 }

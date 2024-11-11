@@ -29,7 +29,7 @@ public partial class EditorView : UserControl
         DataContextChanged += EditorView_DataContextChanged;
     }
 
-    private async void EditorView_DataContextChanged(object? sender, EventArgs e)
+    private void EditorView_DataContextChanged(object? sender, EventArgs e)
     {
         if (DataContext is null)
         {
@@ -40,14 +40,10 @@ public partial class EditorView : UserControl
         {
             throw new InvalidOperationException("DataContext is not EditorViewModel");
         }
-        
+
         var sourceCodeEditor = this.FindControl<SourceCodeEditorView>("SourceCodeEditor");
         Debug.Assert(sourceCodeEditor != null);
-        await sourceCodeEditor.SetAutoCompletionProviderAsync(vm.AutoCompletionProvider);
 
-        vm.ScriptSettingsChanged += async (_, _) => { await sourceCodeEditor.UpdateSettingsAsync(vm.GetScript()); };
-        await sourceCodeEditor.UpdateSettingsAsync(vm.GetScript());
-        
         vm.GoToLineRequested += (_, args) => { SourceCodeEditor.ScrollToLine(args.Line); };
     }
 }

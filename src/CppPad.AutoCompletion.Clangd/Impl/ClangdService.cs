@@ -18,9 +18,11 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
     private readonly Dictionary<string, int> _documentVersions = new();
     private readonly Lazy<Task<ServerCapabilities>> _initializeTask;
     private readonly string _rootUri;
+    private readonly IScriptLoader _scriptLoader;
 
-    public ClangdService(ILspClient lspClient)
+    public ClangdService(IScriptLoader scriptLoader, ILspClient lspClient)
     {
+        _scriptLoader = scriptLoader;
         _client = lspClient;
         _rootUri = AppConstants.TempFolder;
         _client.OnServerNotification += HandleServerNotification;
@@ -38,43 +40,64 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task UpdateSettingsAsync(string filePath, Script script)
+    public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
     {
-        var cppStandard = script.CppStandard switch
+        return _initializeTask.Value;
+    }
+
+    public async Task UpdateSettingsAsync(ScriptDocument scriptDocument)
+    {
+        await _scriptLoader.CreateCppFileAsync(scriptDocument);
+        var settings = CreateScriptDocumentSettings(scriptDocument);
+
+        //TODO: Don't use dict of anonymous types.
+        await SendDidChangeConfigurationAsync(settings);
+    }
+
+    private Dictionary<string, object> CreateScriptDocumentSettings(ScriptDocument scriptDocument)
+    {
+        var path = _scriptLoader.GetCppFilePath(scriptDocument);
+
+        var cppStandard = scriptDocument.Script.CppStandard switch
         {
             CppStandard.Cpp11 => "c++11",
             CppStandard.Cpp14 => "c++14",
             CppStandard.Cpp17 => "c++17",
             CppStandard.Cpp20 => "c++20",
             CppStandard.Cpp23 => "c++23",
-            CppStandard.CppLatest => "c++latest",
-            _ => "c++latest"
+            CppStandard.CppLatest => "c++2c",
+            _ => "c++2c"
         };
         var settings = new Dictionary<string, object>
         {
-            [filePath] = new
+            [path] = new
             {
                 workingDirectory = AppConstants.TempFolder,
-                compilationCommand = new[] { "clang++", $"-std={cppStandard}", "-c", filePath }
+                compilationCommand = new[] { "clang++", $"-std={cppStandard}", "-c", path }
             }
         };
-        
-        //TODO: This doesn't work yet. The file must be saved in order to change settings
-        //TODO: Don't use dict of anonymous types.
-        await SendDidChangeConfigurationAsync(settings);
+        return settings;
     }
 
-    public async Task OpenFileAsync(string filePath, string content)
+    public async Task OpenFileAsync(ScriptDocument scriptDocument)
     {
         await EnsureInitializedAsync();
 
-        await SendDidOpenAsync(filePath, content);
-        _documentVersions[filePath] = 1;
+        await _scriptLoader.CreateCppFileAsync(scriptDocument);
+        var path = _scriptLoader.GetCppFilePath(scriptDocument);
+        var content = scriptDocument.Script.Content;
+        var settings = CreateScriptDocumentSettings(scriptDocument);
+
+        await SendDidOpenAsync(path, content);
+        _documentVersions[path] = 1;
+        
+        await SendDidChangeConfigurationAsync(settings);
     }
 
-    public async Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line,
-        int character)
+    public async Task<AutoCompletionItem[]> GetCompletionsAsync(
+        ScriptDocument scriptDocument, int line, int character)
     {
+        var path = _scriptLoader.GetCppFilePath(scriptDocument);
         await EnsureInitializedAsync();
 
         var requestId = _client.GetNextRequestId();
@@ -87,7 +110,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
             {
                 textDocument = new
                 {
-                    uri = $"file:///{filePath.Replace('\\', '/')}"
+                    uri = PathToUriFormat(path)
                 },
                 position = new
                 {
@@ -102,16 +125,17 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         return ParseCompletions(response);
     }
 
-    public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()
+    private static string PathToUriFormat(string path)
     {
-        return _initializeTask.Value;
+        return $"file:///{path.Replace('\\', '/')}";
     }
 
-    public async Task CloseFileAsync(string filePath)
+    public async Task CloseFileAsync(ScriptDocument scriptDocument)
     {
         await EnsureInitializedAsync();
+        var path = _scriptLoader.GetCppFilePath(scriptDocument);
 
-        var uri = $"file:///{filePath.Replace('\\', '/')}";
+        var uri = PathToUriFormat(path);
         var didCloseNotification = new
         {
             jsonrpc = "2.0",
@@ -128,11 +152,12 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         _documentVersions.Remove(uri);
     }
 
-    public async Task UpdateContentAsync(string filePath, string newText)
+    public async Task UpdateContentAsync(ScriptDocument scriptDocument)
     {
         await EnsureInitializedAsync();
-
-        var uri = $"file:///{filePath.Replace('\\', '/')}";
+        var path = _scriptLoader.GetCppFilePath(scriptDocument);
+        
+        var uri = PathToUriFormat(path);
         var version = GetNextDocumentVersion(uri);
 
         var didChangeNotification = new
@@ -148,14 +173,14 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
                 },
                 contentChanges = new[]
                 {
-                    new { text = newText }
+                    new { text = scriptDocument.Script.Content }
                 }
             }
         };
 
         await _client.SendMessageAsync(didChangeNotification);
     }
-    
+
     private async Task SendDidChangeConfigurationAsync(IDictionary<string, object> settings)
     {
         var didChangeConfigurationNotification = new
@@ -173,7 +198,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
         await _client.SendMessageAsync(didChangeConfigurationNotification);
     }
 
-    private async Task SendDidOpenAsync(string filePath, string content)
+    private async Task SendDidOpenAsync(string path, string content)
     {
         var didOpenNotification = new
         {
@@ -183,7 +208,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
             {
                 textDocument = new
                 {
-                    uri = $"file:///{filePath.Replace('\\', '/')}",
+                    uri = PathToUriFormat(path),
                     languageId = "cpp",
                     version = 1,
                     text = content
@@ -216,7 +241,7 @@ public class ClangdService : IAutoCompletionService, IAsyncDisposable
                 capabilities = new { },
                 initializationOptions = new
                 {
-                    fallbackFlags = new []{ "-std=c++20" }
+                    fallbackFlags = new[] { "-std=c++20" }
                 }
             }
         };

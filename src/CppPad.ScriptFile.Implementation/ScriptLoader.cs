@@ -14,6 +14,9 @@ public class ScriptLoader(
     IScriptParser parser,
     ILoggerFactory loggerFactory) : IScriptLoader
 {
+    private static readonly string TempCppFileLocation =
+        Path.Combine(AppConstants.TempFolder, "Buffer_Cpp");
+
     private readonly ILogger _logger = loggerFactory.CreateLogger<ScriptLoader>();
 
     public async Task<ScriptDocument> LoadAsync(string path)
@@ -54,5 +57,21 @@ public class ScriptLoader(
         var content = parser.Serialize(dto);
         await fileSystem.WriteAllTextAsync(scriptDocument.FileName, content);
         _logger.LogInformation("Saved script to {Path}", scriptDocument.FileName);
+    }
+
+    public async Task CreateCppFileAsync(ScriptDocument scriptDocument)
+    {
+        _logger.LogInformation("Ensuring cpp file is create for {Path}",
+            scriptDocument.FileName);
+        await fileSystem.CreateDirectoryAsync(TempCppFileLocation);
+        var cppFilePath = GetCppFilePath(scriptDocument);
+        await fileSystem.WriteAllTextAsync(cppFilePath, scriptDocument.Script.Content);
+    }
+
+    public string GetCppFilePath(ScriptDocument scriptDocument)
+    {
+        var cppFilePath = Path.Combine(TempCppFileLocation,
+            $"{scriptDocument.Identifier}.cpp");
+        return cppFilePath;
     }
 }

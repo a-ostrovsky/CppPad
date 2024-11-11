@@ -4,7 +4,6 @@ using CppPad.AutoCompletion.Interface;
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Configuration.Interface;
-using CppPad.Gui.AutoCompletion;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
 using CppPad.ScriptFile.Interface;
@@ -28,6 +27,7 @@ public class EditorViewModelFactoryForTest(
             compiler,
             scriptLoader,
             configurationStore,
-            new AutoCompletionProvider(new DummyAutoCompletionService(), new DummyTimer()));
+            new DummyAutoCompletionService(),
+            new DummyTimer());
     }
 }

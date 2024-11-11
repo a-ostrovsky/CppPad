@@ -45,7 +45,7 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
         return _clangdInstaller.IsInstalled();
     }
 
-    public Task OpenFileAsync(string filePath, string fileContent)
+    public Task OpenFileAsync(ScriptDocument scriptDocument)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -53,10 +53,10 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             return Task.CompletedTask;
         }
 
-        return _autoCompletionService.OpenFileAsync(filePath, fileContent);
+        return _autoCompletionService.OpenFileAsync(scriptDocument);
     }
 
-    public Task CloseFileAsync(string filePath)
+    public Task CloseFileAsync(ScriptDocument document)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -64,10 +64,10 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             return Task.CompletedTask;
         }
 
-        return _autoCompletionService.CloseFileAsync(filePath);
+        return _autoCompletionService.CloseFileAsync(document);
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(string filePath, int line, int character)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, int line, int character)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -75,10 +75,10 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             return Task.FromResult(Array.Empty<AutoCompletionItem>());
         }
 
-        return _autoCompletionService.GetCompletionsAsync(filePath, line, character);
+        return _autoCompletionService.GetCompletionsAsync(document, line, character);
     }
 
-    public Task UpdateSettingsAsync(string filePath, Script script)
+    public Task UpdateSettingsAsync(ScriptDocument document)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -86,10 +86,10 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             return Task.CompletedTask;
         }
 
-        return _autoCompletionService.UpdateSettingsAsync(filePath, script);
+        return _autoCompletionService.UpdateSettingsAsync(document);
     }
 
-    public Task UpdateContentAsync(string filePath, string newText)
+    public Task UpdateContentAsync(ScriptDocument document)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -97,7 +97,7 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             return Task.CompletedTask;
         }
 
-        return _autoCompletionService.UpdateContentAsync(filePath, newText);
+        return _autoCompletionService.UpdateContentAsync(document);
     }
 
     public Task<ServerCapabilities> RetrieveServerCapabilitiesAsync()

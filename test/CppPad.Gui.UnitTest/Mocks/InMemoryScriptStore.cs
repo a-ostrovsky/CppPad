@@ -24,6 +24,16 @@ public class InMemoryScriptStore : IScriptLoader
         return await Task.FromResult(result);
     }
 
+    public Task CreateCppFileAsync(ScriptDocument scriptDocument)
+    {
+        return Task.CompletedTask;
+    }
+    
+    public string GetCppFilePath(ScriptDocument scriptDocument)
+    {
+        return "file.cpp";
+    }
+
     public async Task SaveAsync(ScriptDocument scriptDocument)
     {
         var serializedScript = Serialize(scriptDocument);

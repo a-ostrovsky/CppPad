@@ -1,6 +1,5 @@
 ﻿#region
 
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,30 +8,25 @@ using System.Threading.Tasks;
 using Avalonia.Input;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
-using CppPad.AutoCompletion.Interface;
-using CppPad.Common;
 using CppPad.Gui.ErrorHandling;
-using CppPad.ScriptFile.Interface;
+using CppPad.Gui.ViewModels;
 
 #endregion
 
-namespace CppPad.Gui.AutoCompletion;
+namespace CppPad.Gui.Views;
 
 public class AutoCompletionProvider
 {
-    private readonly IAutoCompletionService _autoCompletionService;
-
-    private readonly AutoCompletionServiceUpdater _serviceUpdater;
+    private readonly EditorViewModel _editorViewModel;
 
     // Set of trigger characters. Value is not used
     private readonly ConcurrentDictionary<char, byte> _triggerCharacters = [];
     private CompletionWindow? _completionWindow;
     private TextEditor? _editor;
 
-    public AutoCompletionProvider(IAutoCompletionService autoCompletionService, ITimer timer)
+    public AutoCompletionProvider(EditorViewModel editorViewModel)
     {
-        _autoCompletionService = autoCompletionService;
-        _serviceUpdater = new AutoCompletionServiceUpdater(autoCompletionService, timer);
+        _editorViewModel = editorViewModel;
         _ = RetrieveAndSetServerCapabilitiesAsync();
     }
 
@@ -40,7 +34,8 @@ public class AutoCompletionProvider
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
-            var capabilities = await _autoCompletionService.RetrieveServerCapabilitiesAsync();
+            var capabilities =
+                await _editorViewModel.AutoCompletionService.RetrieveServerCapabilitiesAsync();
             foreach (var c in capabilities.TriggerCharacters)
             {
                 _triggerCharacters.TryAdd(c, 0);
@@ -52,9 +47,7 @@ public class AutoCompletionProvider
     {
         _editor = editor;
         _editor.KeyDown += OnKeyDown;
-        _editor.TextChanged += OnEditorTextChanged;
         _editor.TextArea.TextEntered += OnTextEntered;
-        _serviceUpdater.SetText(_editor.Text);
     }
 
     private async void OnTextEntered(object? sender, TextInputEventArgs e)
@@ -71,32 +64,16 @@ public class AutoCompletionProvider
         }
     }
 
-    private void OnEditorTextChanged(object? sender, EventArgs e)
-    {
-        Debug.Assert(_editor != null);
-        _serviceUpdater.SetText(_editor.Text);
-    }
-
     public void Detach()
     {
         if (_editor == null)
         {
             return;
         }
-        
+
         _editor.KeyDown -= OnKeyDown;
-        _editor.TextChanged -= OnEditorTextChanged;
         _editor.TextArea.TextEntered -= OnTextEntered;
         _editor = null;
-    }
-
-    public async Task OpenNewFileAsync()
-    {
-        await _serviceUpdater.OpenOrRenameAsync();
-        if (_editor != null)
-        {
-            _serviceUpdater.SetText(_editor.Text);
-        }
     }
 
 #pragma warning disable VSTHRD100
@@ -113,7 +90,8 @@ public class AutoCompletionProvider
     private async Task ShowCompletionWindowAsync()
     {
         Debug.Assert(_editor != null);
-        await _serviceUpdater.UpdateAsync();
+        var scriptDocument = _editorViewModel.GetCurrentScriptDocument();
+        await _editorViewModel.AutoCompletionService.UpdateContentAsync(scriptDocument);
         _completionWindow = new CompletionWindow(_editor.TextArea)
         {
             Width = 650
@@ -125,8 +103,8 @@ public class AutoCompletionProvider
         var lineNumber = line.LineNumber - 1;
         var column = caretOffset - line.Offset;
 
-        var autoCompletions = await _autoCompletionService.GetCompletionsAsync(
-            _serviceUpdater.FileIdentifier, lineNumber, column);
+        var autoCompletions = await _editorViewModel.AutoCompletionService.GetCompletionsAsync(
+            scriptDocument, lineNumber, column);
         foreach (var autoCompletion in autoCompletions)
         {
             data.Add(new CompletionData(autoCompletion));
@@ -140,11 +118,5 @@ public class AutoCompletionProvider
 
         _completionWindow.Show();
         _completionWindow.Closed += (_, _) => { _completionWindow = null; };
-    }
-
-    public Task UpdateSettingsAsync(Script script)
-    {
-        return ErrorHandler.Instance.RunWithErrorHandlingAsync(() =>
-            _autoCompletionService.UpdateSettingsAsync(_serviceUpdater.FileIdentifier, script));
     }
 }

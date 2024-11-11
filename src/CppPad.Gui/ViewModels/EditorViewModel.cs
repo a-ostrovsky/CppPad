@@ -1,7 +1,16 @@
 #region
 
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reactive;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaEdit.Utils;
+using CppPad.AutoCompletion.Interface;
 using CppPad.Common;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Configuration.Interface;
@@ -9,15 +18,7 @@ using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
 using CppPad.ScriptFile.Interface;
 using ReactiveUI;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reactive;
-using System.Threading.Tasks;
-using CppPad.AutoCompletion.Interface;
-using CppPad.Gui.AutoCompletion;
+using ITimer = CppPad.Common.ITimer;
 
 #endregion
 
@@ -34,10 +35,11 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private const int MaxTitleLength = 13;
 
     private readonly ICompiler _compiler;
+    private readonly IConfigurationStore _configurationStore;
     private readonly IRouter _router;
     private readonly IScriptLoader _scriptLoader;
-    private readonly IConfigurationStore _configurationStore;
     private readonly TemplatesViewModel _templatesViewModel;
+    private readonly ThrottledAutoCompletionUpdater _autoCompletionUpdater;
 
     private string? _applicationOutput;
     private int _applicationOutputCaretIndex;
@@ -46,21 +48,14 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     private string? _currentFilePath;
 
+    private Identifier _currentIdentifier = IdGenerator.GenerateUniqueId();
+
     private bool _isModified;
     private ScriptSettingsViewModel _scriptSettings = new();
     private OutputIndex _selectedOutputIndex;
 
-    private string _sourceCode =
-        """
-        #include <iostream>
-
-        int main() {
-            std::cout << "Hello, World!" << '\n';
-            return 0;
-        }
-        """;
-
-    private string _title = "Untitled";
+    private string _sourceCode = string.Empty;
+    private string _title = string.Empty;
     private ToolsetViewModel? _toolset;
 
     public EditorViewModel(
@@ -69,14 +64,16 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         ICompiler compiler,
         IScriptLoader scriptLoader,
         IConfigurationStore configurationStore,
-        AutoCompletionProvider autoCompletionProvider)
+        IAutoCompletionService autoCompletionService,
+        ITimer timer)
     {
         _templatesViewModel = templatesViewModel;
         _router = router;
         _compiler = compiler;
         _scriptLoader = scriptLoader;
         _configurationStore = configurationStore;
-        AutoCompletionProvider = autoCompletionProvider;
+        _autoCompletionUpdater = new ThrottledAutoCompletionUpdater(timer, autoCompletionService);
+        AutoCompletionService = autoCompletionService;
         RunCommand = ReactiveCommand.CreateFromTask(RunAsync);
         SaveAsCommand = ReactiveCommand.CreateFromTask(SaveAsAsync);
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
@@ -91,7 +88,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         new DummyCompiler(),
         new DummyScriptLoader(),
         new DummyConfigurationStore(),
-        new AutoCompletionProvider(new DummyAutoCompletionService(), new DummyTimer())
+        new DummyAutoCompletionService(),
+        new DummyTimer()
     );
 
     public string Title
@@ -100,12 +98,16 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         set => SetProperty(ref _title, value);
     }
 
-    public AutoCompletionProvider AutoCompletionProvider { get; }
+    public IAutoCompletionService AutoCompletionService { get; }
 
     public string SourceCode
     {
         get => _sourceCode;
-        set => SetPropertyAndUpdateModified(ref _sourceCode, value);
+        set
+        {
+            SetPropertyAndUpdateModified(ref _sourceCode, value);
+            _autoCompletionUpdater.SetDocument(GetCurrentScriptDocument());
+        }
     }
 
     public string? CurrentFilePath
@@ -113,8 +115,6 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         get => _currentFilePath;
         set => SetProperty(ref _currentFilePath, value);
     }
-
-    private Identifier _currentIdentifier = IdGenerator.GenerateUniqueId();
 
     public string? ApplicationOutput
     {
@@ -192,9 +192,31 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         this.RaisePropertyChanged(args.PropertyName);
     }
 
-    public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
+    public async Task InitAsNewFileAsync()
+    {
+        try
+        {
+            _autoCompletionUpdater.PauseUpdate();
+            SourceCode =
+                """
+                #include <iostream>
 
-    public event EventHandler? ScriptSettingsChanged;
+                int main() {
+                    std::cout << "Hello, World!" << '\n';
+                    return 0;
+                }
+                """;
+        }
+        finally
+        {
+            _autoCompletionUpdater.ResumeUpdate();
+        }
+
+        Title = "Untitled";
+        await AutoCompletionService.OpenFileAsync(GetScriptDocument(null));
+    }
+
+    public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
 
     private static string TruncateTitle(string title)
     {
@@ -228,7 +250,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 return;
             }
 
-            var scriptDocument = GetScriptDocument(CurrentFilePath);
+            var scriptDocument = GetCurrentScriptDocument();
             await _scriptLoader.SaveAsync(scriptDocument);
             await _configurationStore.SaveLastOpenedFileNameAsync(CurrentFilePath);
             IsModified = false;
@@ -246,7 +268,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             if (vm.ShouldApplySettings)
             {
                 ScriptSettings = vm.ScriptSettings;
-                ScriptSettingsChanged?.Invoke(this, EventArgs.Empty);
+                await AutoCompletionService.UpdateSettingsAsync(GetCurrentScriptDocument());
                 IsModified = true;
             }
         });
@@ -275,8 +297,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
             var scriptDocument = GetScriptDocument(path);
             await _scriptLoader.SaveAsync(scriptDocument);
-            SetCurrentFilePath(path!);
-            await _configurationStore.SaveLastOpenedFileNameAsync(path!);
+            SetCurrentFilePath(path);
+            await _configurationStore.SaveLastOpenedFileNameAsync(path);
             IsModified = false;
         });
     }
@@ -370,15 +392,17 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             SetScript(scriptDocument.Script);
             _currentIdentifier = scriptDocument.Identifier;
             SetCurrentFilePath(path);
+            await AutoCompletionService.OpenFileAsync(GetScriptDocument(path));
         });
     }
 
-    public Task LoadFromTemplateAsync(string templateName)
+    public Task InitFromTemplateAsync(string templateName)
     {
         return ErrorHandler.Instance.RunWithErrorHandlingAsync(async () =>
         {
             var script = await _templatesViewModel.LoadAsync(templateName);
             SetScript(script);
+            await AutoCompletionService.OpenFileAsync(GetScriptDocument(null));
         });
     }
 
@@ -392,7 +416,16 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     private void SetScript(Script script)
     {
-        SourceCode = script.Content;
+        try
+        {
+            _autoCompletionUpdater.PauseUpdate();
+            SourceCode = script.Content;
+        }
+        finally
+        {
+            _autoCompletionUpdater.ResumeUpdate();
+        }
+
         ScriptSettings.CppStandard = script.CppStandard;
         ScriptSettings.AdditionalBuildArgs = script.AdditionalBuildArgs;
         ScriptSettings.PreBuildCommand = script.PreBuildCommand;
@@ -407,7 +440,12 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         ScriptSettings.OptimizationLevel = script.OptimizationLevel;
     }
 
-    private ScriptDocument GetScriptDocument(string fileName)
+    public ScriptDocument GetCurrentScriptDocument()
+    {
+        return GetScriptDocument(CurrentFilePath);
+    }
+
+    private ScriptDocument GetScriptDocument(string? fileName)
     {
         return new ScriptDocument
         {
@@ -416,7 +454,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             Script = GetScript()
         };
     }
-    
+
     public Script GetScript()
     {
         return new Script
@@ -447,6 +485,83 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             PreBuildCommand = ScriptSettings.PreBuildCommand
         };
         return buildArgs;
+    }
+
+    private class ThrottledAutoCompletionUpdater : IAsyncDisposable
+    {
+        private static readonly TimeSpan ThrottleTime = TimeSpan.FromMilliseconds(500);
+        private readonly ITimer _timer;
+        private readonly IAutoCompletionService _autoCompletionService;
+        private ScriptDocument? _document;
+        private readonly object _documentLock = new();
+        private bool _pauseUpdates;
+
+        public ThrottledAutoCompletionUpdater(ITimer timer,
+            IAutoCompletionService autoCompletionService)
+        {
+            _timer = timer;
+            _autoCompletionService = autoCompletionService;
+            _timer.Elapsed += TimerOnElapsed;
+            _timer.Change(ThrottleTime, Timeout.InfiniteTimeSpan);
+        }
+
+        
+        private async void TimerOnElapsed(object? sender, EventArgs e)
+        {
+            ScriptDocument? document;
+            lock (_documentLock)
+            {
+                document = _document;
+                _document = null;
+            }
+
+            if (document == null)
+            {
+                _timer.Change(ThrottleTime, Timeout.InfiniteTimeSpan);
+                return;
+            }
+            await ErrorHandler.Instance.RunWithErrorHandlingAsync(() =>
+            {
+                try
+                {
+                    return _autoCompletionService.UpdateContentAsync(document);
+                }
+                finally
+                {
+                    _timer.Change(ThrottleTime, Timeout.InfiniteTimeSpan);
+                }
+            });
+        }
+
+        public void PauseUpdate()
+        {
+            _pauseUpdates = true;
+        }
+        
+        public void ResumeUpdate()
+        {
+            _pauseUpdates = false;
+        }
+        
+        public void SetDocument(ScriptDocument document)
+        {
+            lock (_documentLock)
+            {
+                if (_pauseUpdates)
+                {
+                    return;
+                }
+                _document = document;
+            }
+        }
+        
+        public ValueTask DisposeAsync()
+        {
+            _timer.Elapsed -= TimerOnElapsed;
+            return _timer is IAsyncDisposable asyncDisposable
+                ? asyncDisposable.DisposeAsync()
+                : ValueTask.CompletedTask;
+        }
     }
 }
 
