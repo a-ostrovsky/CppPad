@@ -140,10 +140,11 @@ public static class Bootstrapper
 
     private static void AddAutoCompletion(IServiceCollection collection)
     {
-        collection.AddTransient<IRequestSender, RequestSender>();
-        collection.AddTransient<IResponseReceiver, ResponseReceiver>();
+        collection.AddSingleton<IClangdProcessProxy, ClangdProcessProxy>();
+        collection.AddSingleton<IRequestSender, RequestSender>();
+        collection.AddSingleton<IResponseReceiver, ResponseReceiver>();
         collection.AddSingleton<ILspClient, LspClient>();
-        collection.AddTransient<ClangdService>();
+        collection.AddSingleton<ClangdService>();
         collection.AddSingleton<ClangdInstaller>();
         collection.AddSingleton<ServiceWithInstaller>(provider =>
         {
