@@ -2,8 +2,8 @@
 
 public interface IClangdProcessProxy
 {
-    StreamReader? OutputReader { get; }
-    StreamWriter? InputWriter { get; }
+    TextReader? OutputReader { get; }
+    TextWriter? InputWriter { get; }
     bool HasExited { get; }
     void Start();
     void Kill();

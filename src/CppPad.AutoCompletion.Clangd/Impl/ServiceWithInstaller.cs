@@ -67,7 +67,7 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
         return _autoCompletionService.CloseFileAsync(document);
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, int line, int character)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, Position position)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -75,7 +75,7 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             return Task.FromResult(Array.Empty<AutoCompletionItem>());
         }
 
-        return _autoCompletionService.GetCompletionsAsync(document, line, character);
+        return _autoCompletionService.GetCompletionsAsync(document, position);
     }
 
     public Task UpdateSettingsAsync(ScriptDocument document)

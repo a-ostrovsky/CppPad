@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Avalonia.Input;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
+using CppPad.AutoCompletion.Interface;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.ViewModels;
 
@@ -102,9 +103,10 @@ public class AutoCompletionProvider
         var line = _editor.Document.GetLineByOffset(caretOffset);
         var lineNumber = line.LineNumber - 1;
         var column = caretOffset - line.Offset;
+        var position = new Position { Line = lineNumber, Character = column };
 
         var autoCompletions = await _editorViewModel.AutoCompletionService.GetCompletionsAsync(
-            scriptDocument, lineNumber, column);
+            scriptDocument, position);
         foreach (var autoCompletion in autoCompletions)
         {
             data.Add(new CompletionData(autoCompletion));

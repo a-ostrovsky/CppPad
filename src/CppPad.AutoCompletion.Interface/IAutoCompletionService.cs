@@ -12,7 +12,7 @@ public interface IAutoCompletionService
 
     Task CloseFileAsync(ScriptDocument document);
 
-    Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, int line, int character);
+    Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, Position position);
 
     Task UpdateContentAsync(ScriptDocument document);
 
@@ -31,7 +31,7 @@ public class DummyAutoCompletionService : IAutoCompletionService
         return Task.CompletedTask;
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, int line, int character)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, Position position)
     {
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }

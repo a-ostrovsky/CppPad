@@ -62,12 +62,14 @@ public class ClangdService : IAutoCompletionService, IDisposable
     }
 
     public async Task<AutoCompletionItem[]> GetCompletionsAsync(
-        ScriptDocument scriptDocument, int line, int character)
+        ScriptDocument scriptDocument, Position position)
     {
         var path = _scriptLoader.GetCppFilePath(scriptDocument);
         await EnsureInitializedAsync();
 
-        var requestId = await _requestSender.SendCompletionRequestAsync(path, line, character);
+        var requestId =
+            await _requestSender.SendCompletionRequestAsync(path, 
+                position.Line, position.Character);
         return await _responseReceiver.ReadCompletionsAsync(requestId);
     }
 

@@ -21,9 +21,9 @@ public class ClangdProcessProxy : IClangdProcessProxy, IAsyncDisposable
         }
     };
     
-    public StreamReader? OutputReader { get; private set; }
+    public TextReader? OutputReader { get; private set; }
     
-    public StreamWriter? InputWriter { get; private set; }
+    public TextWriter? InputWriter { get; private set; }
     
     public bool HasExited => _process.HasExited;
 
