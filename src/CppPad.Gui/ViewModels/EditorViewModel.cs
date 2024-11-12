@@ -481,7 +481,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     private class ThrottledAutoCompletionUpdater : IAsyncDisposable
     {
-        private static readonly TimeSpan ThrottleTime = TimeSpan.FromMilliseconds(500);
+        private static readonly TimeSpan ThrottleTime = TimeSpan.FromMilliseconds(1000);
         private readonly ITimer _timer;
         private readonly IAutoCompletionService _autoCompletionService;
         private ScriptDocument? _document;

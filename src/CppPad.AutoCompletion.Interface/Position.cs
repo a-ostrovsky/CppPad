@@ -1,8 +1,7 @@
-﻿namespace CppPad.AutoCompletion.Interface
+﻿namespace CppPad.AutoCompletion.Interface;
+
+public record Position
 {
-    public record Position
-    {
-        public required int Line { get; init; }
-        public required int Character { get; init; }
-    }
+    public required int Line { get; init; }
+    public required int Character { get; init; }
 }

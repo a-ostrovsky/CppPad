@@ -1,8 +1,7 @@
-﻿namespace CppPad.AutoCompletion.Interface
+﻿namespace CppPad.AutoCompletion.Interface;
+
+public class DiagnosticsReceivedEventArgs(Uri uri, Diagnostic[] diagnostics) : EventArgs
 {
-    public class DiagnosticsReceivedEventArgs(Uri uri, Diagnostic[] diagnostics) : EventArgs
-    {
-        public Uri Uri { get; } = uri;
-        public Diagnostic[] Diagnostics { get; } = diagnostics;
-    }
+    public Uri Uri { get; } = uri;
+    public Diagnostic[] Diagnostics { get; } = diagnostics;
 }
