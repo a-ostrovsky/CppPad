@@ -11,8 +11,7 @@ public class DummyTimer : ITimer
 {
     public void Change(TimeSpan dueTime, TimeSpan period)
     {
-        // Raise event to avoid compiler warning
-        Elapsed?.Invoke(this, EventArgs.Empty);
+
     }
 
     public event EventHandler? Elapsed;
