@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AvaloniaProject">
+    <option name="projectPerEditor">
+      <map>
+        <entry key="src/CppPad.Gui/App.axaml" value="src/CppPad.Gui/CppPad.Gui.csproj" />
+        <entry key="src/CppPad.Gui/Views/AppSettingsWindow.axaml" value="src/CppPad.Gui/CppPad.Gui.csproj" />
+        <entry key="src/CppPad.Gui/Views/EditorView.axaml" value="src/CppPad.Gui/CppPad.Gui.csproj" />
+        <entry key="src/CppPad.Gui/Views/InstallationProgressWindow.axaml" value="src/CppPad.Gui/CppPad.Gui.csproj" />
+        <entry key="src/CppPad.Gui/Views/MainWindow.axaml" value="src/CppPad.Gui/CppPad.Gui.csproj" />
+        <entry key="src/CppPad.Gui/Views/SourceCodeEditorView.axaml" value="src/CppPad.Gui/CppPad.Gui.csproj" />
+        <entry key="src/CppPad.Gui/Views/SourceCodeEditorViewMonaco.axaml" value="src/CppPad.Gui/CppPad.Gui.csproj" />
+      </map>
+    </option>
+  </component>
+</project>
