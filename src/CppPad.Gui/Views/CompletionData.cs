@@ -1,10 +1,14 @@
-﻿using Avalonia.Controls;
+﻿#region
+
+using System;
+using Avalonia.Controls;
 using Avalonia.Media;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using CppPad.AutoCompletion.Interface;
-using System;
+
+#endregion
 
 namespace CppPad.Gui.Views;
 
@@ -43,6 +47,7 @@ public class CompletionData(AutoCompletionItem autoCompletionData) : ICompletion
         {
             return Priority.Equals(other.Priority) && string.Equals(Text, other.Text);
         }
+
         return false;
     }
 
@@ -50,5 +55,4 @@ public class CompletionData(AutoCompletionItem autoCompletionData) : ICompletion
     {
         return HashCode.Combine(Priority, Text);
     }
-
 }

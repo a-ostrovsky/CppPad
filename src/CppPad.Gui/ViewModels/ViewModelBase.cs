@@ -1,6 +1,10 @@
+#region
+
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+
+#endregion
 
 namespace CppPad.Gui.ViewModels;
 
@@ -19,7 +23,8 @@ public class ViewModelBase : INotifyPropertyChanged, INotifyPropertyChanging
         PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
     }
 
-    protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
+    protected bool SetProperty<T>(ref T field, T value,
+        [CallerMemberName] string? propertyName = null)
     {
         if (EqualityComparer<T>.Default.Equals(field, value))
         {

@@ -1,7 +1,7 @@
 #region
 
-using CppPad.Common;
 using System.IO.Compression;
+using CppPad.Common;
 
 #endregion
 
@@ -39,7 +39,8 @@ public class DiskFileSystem
         return Task.Run(() => Directory.GetFiles(path, searchPattern));
     }
 
-    public virtual Task<string[]> ListFilesAsync(string path, string searchPattern, SearchOption searchOption)
+    public virtual Task<string[]> ListFilesAsync(string path, string searchPattern,
+        SearchOption searchOption)
     {
         return Task.Run(() => Directory.GetFiles(path, searchPattern, searchOption));
     }
@@ -196,7 +197,8 @@ public class DiskFileSystem
             }
         }
 
-        foreach (var subDirectoryInfo in directoryInfo.GetDirectories("*", SearchOption.AllDirectories))
+        foreach (var subDirectoryInfo in directoryInfo.GetDirectories("*",
+                     SearchOption.AllDirectories))
         {
             if ((subDirectoryInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
             {

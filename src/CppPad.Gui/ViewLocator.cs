@@ -1,7 +1,11 @@
+#region
+
+using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using CppPad.Gui.ViewModels;
-using System;
+
+#endregion
 
 namespace CppPad.Gui;
 

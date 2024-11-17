@@ -146,6 +146,7 @@ public class BenchmarkInstaller(
         var files = await fileSystem.ListFilesAsync(rootDir, "*", SearchOption.AllDirectories);
         return files
             .AsParallel()
-            .FirstOrDefault(file => Path.GetFileName(file).Equals(fileName, StringComparison.OrdinalIgnoreCase));
+            .FirstOrDefault(file =>
+                Path.GetFileName(file).Equals(fileName, StringComparison.OrdinalIgnoreCase));
     }
 }

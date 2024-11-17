@@ -1,11 +1,11 @@
 #region
 
+using System.Reactive.Linq;
 using CppPad.AutoCompletion.Interface;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Gui.UnitTest.Helpers;
 using CppPad.Gui.ViewModels;
 using CppPad.ScriptFile.Interface;
-using System.Reactive.Linq;
 
 #endregion
 
@@ -130,7 +130,7 @@ public class WorkflowsTest : TestBase
             new PositionInFile
             {
                 FileName = "c:\\tmp.cpp",
-                Position = new Position{ Line = 1, Character = 1 }
+                Position = new Position { Line = 1, Character = 1 }
             }
         ]);
         Assert.True(ObjectTree.Router.WasDialogShownForViewModel<DefinitionsWindowViewModel>());
@@ -144,7 +144,7 @@ public class WorkflowsTest : TestBase
         var currentFileName =
             ObjectTree.ScriptLoader.GetCppFilePath(editor.GetCurrentScriptDocument());
         await ObjectTree.FileSystem.WriteAllTextAsync(currentFileName, "void main(){}");
-        bool goToLineRequested = false;
+        var goToLineRequested = false;
         editor.GoToLineRequested += (_, args) =>
         {
             Assert.Equal(1, args.Line); // Line is 1-based
@@ -155,7 +155,7 @@ public class WorkflowsTest : TestBase
             new PositionInFile
             {
                 FileName = currentFileName,
-                Position = new Position{ Line = 0, Character = 1 }
+                Position = new Position { Line = 0, Character = 1 }
             }
         ]);
         Assert.False(ObjectTree.Router.WasDialogShownForViewModel<DefinitionsWindowViewModel>());

@@ -1,9 +1,9 @@
 #region
 
-using Avalonia.Controls;
-using CppPad.Gui.ViewModels;
 using System;
 using System.Threading.Tasks;
+using Avalonia.Controls;
+using CppPad.Gui.ViewModels;
 
 #endregion
 

@@ -42,6 +42,7 @@ public class InMemoryConfigurationStore : IConfigurationStore
         {
             _recentFiles.RemoveAt(IConfigurationStore.MaxRecentFiles);
         }
+
         LastOpenedFileNamesChanged?.Invoke(this, EventArgs.Empty);
 
         return Task.CompletedTask;

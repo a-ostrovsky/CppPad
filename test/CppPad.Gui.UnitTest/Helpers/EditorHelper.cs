@@ -1,8 +1,8 @@
 ﻿#region
 
+using System.Diagnostics;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Gui.ViewModels;
-using System.Diagnostics;
 
 #endregion
 

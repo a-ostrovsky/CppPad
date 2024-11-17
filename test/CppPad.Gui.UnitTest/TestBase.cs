@@ -1,16 +1,20 @@
-﻿using CppPad.Gui.ErrorHandling;
+﻿#region
+
+using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.UnitTest.Helpers;
+
+#endregion
 
 namespace CppPad.Gui.UnitTest;
 
 public abstract class TestBase : IDisposable
 {
-    protected ObjectTree ObjectTree { get; } = new();
-
     protected TestBase()
     {
         ErrorHandler.Instance = ObjectTree.ErrorHandler;
     }
+
+    protected ObjectTree ObjectTree { get; } = new();
 
     public void Dispose()
     {

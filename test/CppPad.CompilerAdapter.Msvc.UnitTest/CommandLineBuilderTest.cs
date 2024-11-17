@@ -1,7 +1,11 @@
-﻿using CppPad.CompilerAdapter.Interface;
+﻿#region
+
+using CppPad.CompilerAdapter.Interface;
 using CppPad.CompilerAdapter.Msvc.Impl;
 using CppPad.CompilerAdapter.Msvc.Interface;
 using CppPad.MockFileSystem;
+
+#endregion
 
 namespace CppPad.CompilerAdapter.Msvc.UnitTest;
 
@@ -14,7 +18,8 @@ public class CommandLineBuilderTest
     {
         // Arrange
         _fileSystem.CreateDirectory(@"C:\path\to");
-        _fileSystem.WriteAllText(@"C:\path\to\cl.exe", string.Empty); // Simulate the existence of cl.exe
+        _fileSystem.WriteAllText(@"C:\path\to\cl.exe",
+            string.Empty); // Simulate the existence of cl.exe
 
         var toolset = new Toolset("type", CpuArchitecture.X64, "name", @"C:\path\to\cl.exe");
         var buildArgs = new BuildBatchFileArgs
@@ -36,7 +41,8 @@ public class CommandLineBuilderTest
         var result = commandLineBuilder.BuildBatchFile(toolset, buildArgs);
 
         // Assert
-        var expectedVcvarsallPath = Path.GetFullPath(Path.Combine(@"C:\path\to\cl.exe", @"..\..\..\..\..\..\Auxiliary\Build\vcvarsall.bat"));
+        var expectedVcvarsallPath = Path.GetFullPath(Path.Combine(@"C:\path\to\cl.exe",
+            @"..\..\..\..\..\..\Auxiliary\Build\vcvarsall.bat"));
 
         Assert.Contains("echo PreBuild", result);
         Assert.Contains($"call \"{expectedVcvarsallPath}\" x64", result);
@@ -73,6 +79,7 @@ public class CommandLineBuilderTest
         var commandLineBuilder = new CommandLineBuilder(fileSystem);
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => commandLineBuilder.BuildBatchFile(toolset, buildArgs));
+        Assert.Throws<ArgumentException>(
+            () => commandLineBuilder.BuildBatchFile(toolset, buildArgs));
     }
 }

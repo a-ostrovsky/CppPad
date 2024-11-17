@@ -50,7 +50,7 @@ public class App : Application
             }
 
             base.OnFrameworkInitializationCompleted();
-            
+
 #if DEBUG
             this.AttachDevTools(new DevToolsOptions
             {

@@ -1,10 +1,10 @@
 ﻿#region
 
-using CppPad.ScriptFile.Interface;
-using ReactiveUI;
 using System.Collections.ObjectModel;
 using System.Reactive;
 using System.Threading.Tasks;
+using CppPad.ScriptFile.Interface;
+using ReactiveUI;
 
 #endregion
 
@@ -43,6 +43,7 @@ public class TemplatesViewModel : ViewModelBase
         {
             TemplateFileNames.Add(template);
         }
+
         HasTemplates = TemplateFileNames.Count > 0;
     }
 

@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\CppPad.Configuration.Interface\CppPad.Configuration.Interface.csproj"/>
+    </ItemGroup>
 
 </Project>

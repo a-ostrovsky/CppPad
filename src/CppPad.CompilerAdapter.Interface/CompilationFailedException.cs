@@ -10,7 +10,8 @@ public class CompilationFailedException : Exception
     {
     }
 
-    public CompilationFailedException(string message, Exception innerException) : base(message, innerException)
+    public CompilationFailedException(string message, Exception innerException) : base(message,
+        innerException)
     {
     }
 }

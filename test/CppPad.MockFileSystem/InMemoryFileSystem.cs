@@ -1,11 +1,11 @@
 ﻿#region
 
-using CppPad.Common;
-using CppPad.FileSystem;
 using System.Collections.Concurrent;
 using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
+using CppPad.Common;
+using CppPad.FileSystem;
 
 #endregion
 
@@ -169,7 +169,8 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         return Task.FromResult(files);
     }
 
-    public override Task<string[]> ListFilesAsync(string path, string searchPattern, SearchOption searchOption)
+    public override Task<string[]> ListFilesAsync(string path, string searchPattern,
+        SearchOption searchOption)
     {
         // Convert the search pattern to a regex pattern
         var regexPattern = "^" + Regex.Escape(searchPattern)
@@ -188,10 +189,14 @@ public sealed class InMemoryFileSystem : DiskFileSystem
             var directory = Path.GetDirectoryName(filePath);
             if (searchOption == SearchOption.AllDirectories)
             {
-                return directory != null && directory.StartsWith(path, StringComparison.OrdinalIgnoreCase) && regex.IsMatch(Path.GetFileName(filePath));
+                return directory != null &&
+                       directory.StartsWith(path, StringComparison.OrdinalIgnoreCase) &&
+                       regex.IsMatch(Path.GetFileName(filePath));
             }
 
-            return directory != null && string.Equals(directory, path, StringComparison.OrdinalIgnoreCase) && regex.IsMatch(Path.GetFileName(filePath));
+            return directory != null &&
+                   string.Equals(directory, path, StringComparison.OrdinalIgnoreCase) &&
+                   regex.IsMatch(Path.GetFileName(filePath));
         }
     }
 

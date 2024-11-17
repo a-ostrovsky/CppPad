@@ -1,5 +1,9 @@
-﻿using CppPad.CompilerAdapter.Interface;
+﻿#region
+
+using CppPad.CompilerAdapter.Interface;
 using CppPad.CompilerAdapter.Msvc.Interface;
+
+#endregion
 
 namespace CppPad.CompilerAdapter.Msvc.UnitTest.Mocks;
 

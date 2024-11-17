@@ -11,10 +11,10 @@ namespace CppPad.CompilerAdapter.Msvc.Impl;
 
 public class Compiler : ICompiler
 {
-    private readonly ILogger<Compiler> _logger;
-    private readonly DiskFileSystem _fileSystem;
     private readonly ICommandLineBuilder _commandLineBuilder;
     private readonly ICompilerProcessExecutor _compilerProcessExecutor;
+    private readonly DiskFileSystem _fileSystem;
+    private readonly ILogger<Compiler> _logger;
     private readonly ILoggerFactory _loggerFactory;
 
     public Compiler(DiskFileSystem fileSystem,
@@ -41,7 +41,8 @@ public class Compiler : ICompiler
 
     public async Task<IExecutable> BuildAsync(Toolset toolset, BuildArgs args)
     {
-        _logger.LogInformation("Build process started. Toolset: {toolset}. Args: {args}", toolset, args);
+        _logger.LogInformation("Build process started. Toolset: {toolset}. Args: {args}", toolset,
+            args);
         try
         {
             var tempSourceFilePath = _fileSystem.CreateTempFile("cpp");
@@ -59,21 +60,24 @@ public class Compiler : ICompiler
 
             _logger.LogInformation("Source code written to temporary file.");
 
-            var tempBatchFileContent = _commandLineBuilder.BuildBatchFile(toolset, new BuildBatchFileArgs
-            {
-                SourceFilePath = tempSourceFilePath,
-                TargetFilePath = tempExeFilePath,
-                AdditionalBuildArgs = args.AdditionalBuildArgs,
-                OptimizationLevel = args.OptimizationLevel,
-                CppStandard = args.CppStandard,
-                AdditionalIncludeDirs = args.AdditionalIncludeDirs,
-                LibrarySearchPaths = args.LibrarySearchPaths,
-                StaticallyLinkedLibraries = args.StaticallyLinkedLibraries,
-                PreBuildCommand = args.PreBuildCommand
-            });
+            var tempBatchFileContent = _commandLineBuilder.BuildBatchFile(toolset,
+                new BuildBatchFileArgs
+                {
+                    SourceFilePath = tempSourceFilePath,
+                    TargetFilePath = tempExeFilePath,
+                    AdditionalBuildArgs = args.AdditionalBuildArgs,
+                    OptimizationLevel = args.OptimizationLevel,
+                    CppStandard = args.CppStandard,
+                    AdditionalIncludeDirs = args.AdditionalIncludeDirs,
+                    LibrarySearchPaths = args.LibrarySearchPaths,
+                    StaticallyLinkedLibraries = args.StaticallyLinkedLibraries,
+                    PreBuildCommand = args.PreBuildCommand
+                });
 
             await _fileSystem.WriteAllTextAsync(tempBatchFilePath, tempBatchFileContent);
-            _logger.LogInformation("Batch file created at {TempBatchFile}. Content: {TempBatchContent}", tempBatchFilePath, tempBatchFileContent);
+            _logger.LogInformation(
+                "Batch file created at {TempBatchFile}. Content: {TempBatchContent}",
+                tempBatchFilePath, tempBatchFileContent);
             await _compilerProcessExecutor.ExecuteAsync("cmd.exe", $"/c \"{tempBatchFilePath}\"");
 
             _logger.LogInformation("Compilation succeeded.");

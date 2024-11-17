@@ -1,13 +1,5 @@
 #region
 
-using CppPad.Benchmark.Interface;
-using CppPad.Common;
-using CppPad.Configuration.Interface;
-using CppPad.Gui.ErrorHandling;
-using CppPad.Gui.Routing;
-using DynamicData;
-using DynamicData.Binding;
-using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -16,7 +8,15 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using CppPad.AutoCompletion.Interface;
+using CppPad.Benchmark.Interface;
+using CppPad.Common;
+using CppPad.Configuration.Interface;
+using CppPad.Gui.ErrorHandling;
+using CppPad.Gui.Routing;
 using CppPad.ScriptFile.Interface;
+using DynamicData;
+using DynamicData.Binding;
+using ReactiveUI;
 
 #endregion
 
@@ -88,7 +88,8 @@ public class MainWindowViewModel : ViewModelBase, IReactiveObject
 
     public static MainWindowViewModel DesignInstance { get; } =
         new(
-            new ComponentInstallationViewModel(new DummyAutoCompletionInstaller(), new DummyBenchmark(), new DummyRouter(),
+            new ComponentInstallationViewModel(new DummyAutoCompletionInstaller(),
+                new DummyBenchmark(), new DummyRouter(),
                 new DummyInstallationProgressWindowViewModelFactory()),
             new TemplatesViewModel(new DummyTemplateLoader()),
             new DummyEditorViewModelFactory(),

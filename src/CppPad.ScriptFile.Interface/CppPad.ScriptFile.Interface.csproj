@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\CppPad.Common\CppPad.Common.csproj" />
-        <ProjectReference Include="..\CppPad.CompilerAdapter.Interface\CppPad.CompilerAdapter.Interface.csproj" />
+        <ProjectReference Include="..\CppPad.Common\CppPad.Common.csproj"/>
+        <ProjectReference Include="..\CppPad.CompilerAdapter.Interface\CppPad.CompilerAdapter.Interface.csproj"/>
     </ItemGroup>
 
 </Project>

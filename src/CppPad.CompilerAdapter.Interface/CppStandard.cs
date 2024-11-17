@@ -8,5 +8,5 @@ public enum CppStandard
     Cpp17,
     Cpp20,
     Cpp23,
-    CppLatest,
+    CppLatest
 }

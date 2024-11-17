@@ -1,7 +1,11 @@
-﻿using System.Diagnostics;
+﻿#region
+
+using System.Diagnostics;
 using System.Text;
 using CppPad.AutoCompletion.Clangd.Interface;
 using CppPad.Common;
+
+#endregion
 
 namespace CppPad.AutoCompletion.Clangd.Impl;
 
@@ -9,7 +13,7 @@ public class ClangdProcessProxy : IClangdProcessProxy, IAsyncDisposable
 {
     private static readonly string ClangdPath =
         Path.Combine(AppConstants.ClangdFolder, "bin", "clangd.exe");
-    
+
     private readonly Process _process = new()
     {
         StartInfo = new ProcessStartInfo(ClangdPath)
@@ -20,27 +24,6 @@ public class ClangdProcessProxy : IClangdProcessProxy, IAsyncDisposable
             CreateNoWindow = true
         }
     };
-    
-    public TextReader? OutputReader { get; private set; }
-    
-    public TextWriter? InputWriter { get; private set; }
-    
-    public bool HasExited => _process.HasExited;
-
-    public void Start()
-    {
-        _process.Start();
-        InputWriter = new StreamWriter(_process.StandardInput.BaseStream, new UTF8Encoding(false))
-        {
-            AutoFlush = true
-        };
-        OutputReader = new StreamReader(_process.StandardOutput.BaseStream, new UTF8Encoding(false));
-    }
-
-    public void Kill()
-    {
-        _process.Kill();
-    }
 
     public async ValueTask DisposeAsync()
     {
@@ -58,5 +41,27 @@ public class ClangdProcessProxy : IClangdProcessProxy, IAsyncDisposable
         OutputReader?.Dispose();
 
         GC.SuppressFinalize(this);
+    }
+
+    public TextReader? OutputReader { get; private set; }
+
+    public TextWriter? InputWriter { get; private set; }
+
+    public bool HasExited => _process.HasExited;
+
+    public void Start()
+    {
+        _process.Start();
+        InputWriter = new StreamWriter(_process.StandardInput.BaseStream, new UTF8Encoding(false))
+        {
+            AutoFlush = true
+        };
+        OutputReader =
+            new StreamReader(_process.StandardOutput.BaseStream, new UTF8Encoding(false));
+    }
+
+    public void Kill()
+    {
+        _process.Kill();
     }
 }

@@ -1,10 +1,10 @@
 ﻿#region
 
+using System.Diagnostics;
 using CppPad.Benchmark.Gbench.Interface;
 using CppPad.Benchmark.Interface;
 using CppPad.FileSystem;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 #endregion
 

@@ -14,8 +14,6 @@ namespace CppPad.Gui.Views;
 
 public partial class DefinitionsView : UserControl
 {
-    private DefinitionsViewModel? ViewModel => DataContext as DefinitionsViewModel;
-    
     public DefinitionsView()
     {
         InitializeComponent();
@@ -28,6 +26,8 @@ public partial class DefinitionsView : UserControl
         Init();
         DataContext = viewModel;
     }
+
+    private DefinitionsViewModel? ViewModel => DataContext as DefinitionsViewModel;
 
     private void Init()
     {
@@ -62,6 +62,7 @@ public partial class DefinitionsView : UserControl
         {
             return;
         }
+
         Editor.Text = ViewModel.SelectedDefinition?.SourceCode ?? string.Empty;
         if (ViewModel.SelectedDefinition != null)
         {
@@ -73,7 +74,7 @@ public partial class DefinitionsView : UserControl
             Editor.SelectionStart = startOffset;
             Editor.SelectionLength = endOffset - startOffset;
             Editor.ScrollToLine(ViewModel.SelectedDefinition.Line);
-            
+
             Editor.Focus();
         }
     }

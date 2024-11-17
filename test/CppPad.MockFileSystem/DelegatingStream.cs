@@ -2,8 +2,6 @@
 
 public class DelegatingStream(Stream baseStream) : Stream
 {
-    public event EventHandler? Disposing;
-
     public override bool CanRead => baseStream.CanRead;
     public override bool CanSeek => baseStream.CanSeek;
     public override bool CanWrite => baseStream.CanWrite;
@@ -14,6 +12,8 @@ public class DelegatingStream(Stream baseStream) : Stream
         get => baseStream.Position;
         set => baseStream.Position = value;
     }
+
+    public event EventHandler? Disposing;
 
     public override void Flush()
     {
@@ -47,6 +47,7 @@ public class DelegatingStream(Stream baseStream) : Stream
             baseStream.Dispose();
             Disposing?.Invoke(this, EventArgs.Empty);
         }
+
         base.Dispose(disposing);
     }
 }

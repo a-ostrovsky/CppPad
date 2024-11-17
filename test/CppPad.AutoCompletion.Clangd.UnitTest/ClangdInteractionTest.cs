@@ -145,9 +145,9 @@ public class ClangdInteractionTest : IDisposable
 
         // Assert
         Assert.NotEmpty(definitions);
-        Assert.Contains(definitions, def => def.FileName == new Uri(expectedDefinition.FileName).LocalPath &&
-                                            def.Position.Line == expectedDefinition.Position.Line &&
-                                            def.Position.Character == expectedDefinition.Position.Character);
+        Assert.Contains(definitions, def =>
+            def.FileName == new Uri(expectedDefinition.FileName).LocalPath &&
+            def.Position.Line == expectedDefinition.Position.Line &&
+            def.Position.Character == expectedDefinition.Position.Character);
     }
-
 }

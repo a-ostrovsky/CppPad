@@ -1,8 +1,12 @@
-﻿using MsBox.Avalonia;
-using MsBox.Avalonia.Enums;
+﻿#region
+
 using System;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using MsBox.Avalonia;
+using MsBox.Avalonia.Enums;
+
+#endregion
 
 namespace CppPad.Gui.ErrorHandling;
 

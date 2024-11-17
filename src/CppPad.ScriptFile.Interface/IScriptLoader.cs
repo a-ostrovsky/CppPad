@@ -13,7 +13,7 @@ public interface IScriptLoader
     Task SaveAsync(ScriptDocument scriptDocument);
 
     Task CreateCppFileAsync(ScriptDocument scriptDocument);
-    
+
     string GetCppFilePath(ScriptDocument scriptDocument);
 }
 
@@ -27,12 +27,12 @@ public class DummyScriptLoader : IScriptLoader
             Script = new Script()
         });
     }
-    
+
     public Task SaveAsync(ScriptDocument scriptDocument)
     {
         return Task.CompletedTask;
     }
-    
+
     public Task CreateCppFileAsync(ScriptDocument scriptDocument)
     {
         return Task.CompletedTask;

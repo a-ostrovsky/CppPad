@@ -1,7 +1,10 @@
-using Avalonia.Controls;
+#region
 
+using Avalonia.Controls;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
+
+#endregion
 
 namespace CppPad.Gui.Views;
 

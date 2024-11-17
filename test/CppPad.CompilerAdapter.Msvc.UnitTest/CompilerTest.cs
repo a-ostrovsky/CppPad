@@ -1,17 +1,21 @@
-﻿using CppPad.CompilerAdapter.Interface;
+﻿#region
+
+using CppPad.CompilerAdapter.Interface;
 using CppPad.CompilerAdapter.Msvc.Impl;
 using CppPad.CompilerAdapter.Msvc.UnitTest.Mocks;
 using CppPad.MockFileSystem;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
+#endregion
+
 namespace CppPad.CompilerAdapter.Msvc.UnitTest;
 
 public class CompilerTest
 {
-    private readonly InMemoryFileSystem _fileSystem;
-    private readonly CompilerProcessExecutorMock _compilerProcessExecutor;
     private readonly Compiler _compiler;
+    private readonly CompilerProcessExecutorMock _compilerProcessExecutor;
+    private readonly InMemoryFileSystem _fileSystem;
 
     public CompilerTest()
     {
@@ -19,7 +23,8 @@ public class CompilerTest
         var commandLineBuilder = new CommandLineBuilderMock();
         _compilerProcessExecutor = new CompilerProcessExecutorMock(_fileSystem);
         ILoggerFactory loggerFactory = new NullLoggerFactory();
-        _compiler = new Compiler(_fileSystem, commandLineBuilder, _compilerProcessExecutor, loggerFactory);
+        _compiler = new Compiler(_fileSystem, commandLineBuilder, _compilerProcessExecutor,
+            loggerFactory);
     }
 
     [Fact]

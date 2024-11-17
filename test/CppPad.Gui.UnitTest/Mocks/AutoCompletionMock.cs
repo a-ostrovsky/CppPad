@@ -39,7 +39,8 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
         return Task.CompletedTask;
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, Position position)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document,
+        Position position)
     {
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }

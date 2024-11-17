@@ -1,8 +1,8 @@
 ﻿#region
 
+using System.Diagnostics;
 using CppPad.CompilerAdapter.Msvc.Interface;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 #endregion
 

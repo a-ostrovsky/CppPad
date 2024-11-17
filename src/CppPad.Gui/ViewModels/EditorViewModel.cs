@@ -1,5 +1,13 @@
 #region
 
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reactive;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaEdit.Utils;
 using CppPad.AutoCompletion.Interface;
@@ -10,14 +18,6 @@ using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
 using CppPad.ScriptFile.Interface;
 using ReactiveUI;
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reactive;
-using System.Threading;
-using System.Threading.Tasks;
 using ITimer = CppPad.Common.ITimer;
 
 #endregion
@@ -33,14 +33,14 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     }
 
     private const int MaxTitleLength = 13;
+    private readonly ThrottledAutoCompletionUpdater _autoCompletionUpdater;
 
     private readonly ICompiler _compiler;
     private readonly IConfigurationStore _configurationStore;
+    private readonly IDefinitionsWindowViewModelFactory _definitionsWindowViewModelFactory;
     private readonly IRouter _router;
     private readonly IScriptLoader _scriptLoader;
-    private readonly IDefinitionsWindowViewModelFactory _definitionsWindowViewModelFactory;
     private readonly TemplatesViewModel _templatesViewModel;
-    private readonly ThrottledAutoCompletionUpdater _autoCompletionUpdater;
 
     private string? _applicationOutput;
     private int _applicationOutputCaretIndex;
@@ -165,7 +165,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     }
 
     public ReactiveCommand<Unit, Unit> RunCommand { get; }
-    
+
     public ReactiveCommand<Unit, Unit> GoToDefinitionsCommand { get; }
 
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
@@ -220,6 +220,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         {
             _autoCompletionUpdater.ResumeUpdate();
         }
+
         // Don't set the property directly to avoid setting IsModified flag.
         OnPropertyChanged(nameof(SourceCode));
 
@@ -229,7 +230,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
 
-    public event EventHandler<EventArgs>? GoToDefinitionsRequested; 
+    public event EventHandler<EventArgs>? GoToDefinitionsRequested;
 
     private static string TruncateTitle(string title)
     {
@@ -500,13 +501,42 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         return buildArgs;
     }
 
+    private void GoToDefinitions()
+    {
+        GoToDefinitionsRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task GoToDefinitionsAsync(PositionInFile[] definitions)
+    {
+        if (definitions.Length == 0)
+        {
+            return;
+        }
+
+        if (definitions.Length == 1)
+        {
+            var currentDocumentPath = _scriptLoader.GetCppFilePath(GetCurrentScriptDocument());
+            if (currentDocumentPath == definitions[0].FileName)
+            {
+                var line = definitions[0].Position.Line + 1;
+                var character = definitions[0].Position.Character;
+                GoToLineRequested?.Invoke(this, new GoToLineRequestedEventArgs(line, character));
+                return;
+            }
+        }
+
+        var definitionsViewModel = _definitionsWindowViewModelFactory.Create();
+        await definitionsViewModel.DefinitionsViewModel.SetDefinitionsAsync(definitions);
+        await _router.ShowDialogAsync(definitionsViewModel);
+    }
+
     private class ThrottledAutoCompletionUpdater : IAsyncDisposable
     {
         private static readonly TimeSpan ThrottleTime = TimeSpan.FromMilliseconds(1000);
-        private readonly ITimer _timer;
         private readonly IAutoCompletionService _autoCompletionService;
-        private ScriptDocument? _document;
         private readonly Lock _documentLock = new();
+        private readonly ITimer _timer;
+        private ScriptDocument? _document;
         private bool _pauseUpdates;
 
         public ThrottledAutoCompletionUpdater(ITimer timer,
@@ -516,6 +546,14 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             _autoCompletionService = autoCompletionService;
             _timer.Elapsed += TimerOnElapsed;
             _timer.Change(ThrottleTime, Timeout.InfiniteTimeSpan);
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            _timer.Elapsed -= TimerOnElapsed;
+            return _timer is IAsyncDisposable asyncDisposable
+                ? asyncDisposable.DisposeAsync()
+                : ValueTask.CompletedTask;
         }
 
 
@@ -533,6 +571,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 _timer.Change(ThrottleTime, Timeout.InfiniteTimeSpan);
                 return;
             }
+
             await ErrorHandler.Instance.RunWithErrorHandlingAsync(() =>
             {
                 try
@@ -564,46 +603,10 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 {
                     return;
                 }
+
                 _document = document;
             }
         }
-
-        public ValueTask DisposeAsync()
-        {
-            _timer.Elapsed -= TimerOnElapsed;
-            return _timer is IAsyncDisposable asyncDisposable
-                ? asyncDisposable.DisposeAsync()
-                : ValueTask.CompletedTask;
-        }
-    }
-
-    private void GoToDefinitions()
-    {
-        GoToDefinitionsRequested?.Invoke(this, EventArgs.Empty);
-    }
-
-    public async Task GoToDefinitionsAsync(PositionInFile[] definitions)
-    {
-        if (definitions.Length == 0)
-        {
-            return;
-        }
-
-        if (definitions.Length == 1)
-        {
-            var currentDocumentPath = _scriptLoader.GetCppFilePath(GetCurrentScriptDocument());
-            if (currentDocumentPath == definitions[0].FileName)
-            {
-                var line = definitions[0].Position.Line + 1;
-                var character = definitions[0].Position.Character;
-                GoToLineRequested?.Invoke(this, new GoToLineRequestedEventArgs(line, character));
-                return;
-            }
-        }
-        
-        var definitionsViewModel = _definitionsWindowViewModelFactory.Create();
-        await definitionsViewModel.DefinitionsViewModel.SetDefinitionsAsync(definitions);
-        await _router.ShowDialogAsync(definitionsViewModel);
     }
 }
 

@@ -1,12 +1,17 @@
-﻿using CppPad.ScriptFile.Interface;
+﻿#region
+
 using System.Collections.Concurrent;
 using System.Text.Json;
+using CppPad.ScriptFile.Interface;
+
+#endregion
 
 namespace CppPad.Gui.UnitTest.Mocks;
 
 public class InMemoryTemplateStore : ITemplateLoader
 {
-    private readonly ConcurrentDictionary<string, string> _serializedTemplates = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, string> _serializedTemplates =
+        new(StringComparer.OrdinalIgnoreCase);
 
     public event EventHandler<EventArgs>? TemplatesChanged;
 

@@ -1,6 +1,10 @@
-﻿using CppPad.AutoCompletion.Clangd.Interface;
+﻿#region
+
+using CppPad.AutoCompletion.Clangd.Interface;
 using CppPad.AutoCompletion.Interface;
 using static CppPad.AutoCompletion.Clangd.Impl.Utils;
+
+#endregion
 
 namespace CppPad.AutoCompletion.Clangd.Impl;
 

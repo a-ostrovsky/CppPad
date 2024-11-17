@@ -1,9 +1,9 @@
 #region
 
+using System.Diagnostics;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.FileSystem;
 using Microsoft.Extensions.Logging;
-using System.Diagnostics;
 
 #endregion
 
@@ -40,7 +40,8 @@ public class Executable(
             {
                 var pathVariable = process.StartInfo.EnvironmentVariables["PATH"];
                 var additionalPaths = string.Join(Path.PathSeparator, _paths);
-                process.StartInfo.EnvironmentVariables["PATH"] = $"{pathVariable}{Path.PathSeparator}{additionalPaths}";
+                process.StartInfo.EnvironmentVariables["PATH"] =
+                    $"{pathVariable}{Path.PathSeparator}{additionalPaths}";
             }
 
             process.OutputDataReceived += (_, e) =>

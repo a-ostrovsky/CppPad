@@ -1,15 +1,15 @@
 ﻿#region
 
-using Avalonia;
-using Avalonia.Controls.ApplicationLifetimes;
-using CppPad.CompilerAdapter.Interface;
-using CppPad.Gui.Views;
-using ReactiveUI;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
+using CppPad.CompilerAdapter.Interface;
+using CppPad.Gui.Views;
+using ReactiveUI;
 
 #endregion
 

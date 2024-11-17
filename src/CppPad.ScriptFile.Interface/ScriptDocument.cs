@@ -1,4 +1,8 @@
-﻿using CppPad.Common;
+﻿#region
+
+using CppPad.Common;
+
+#endregion
 
 namespace CppPad.ScriptFile.Interface;
 

@@ -1,12 +1,12 @@
 ﻿#region
 
-using Microsoft.Extensions.DependencyInjection;
-using ReactiveUI;
 using System;
 using System.ComponentModel;
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
+using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
 
 #endregion
 
@@ -16,11 +16,9 @@ public class InstallationProgressWindowViewModel : ViewModelBase, IReactiveObjec
 {
     private readonly ObservableAsPropertyHelper<bool> _canCancel;
     private readonly Subject<Action?> _onCancelActionSubject = new();
+    private int _caretIndex;
     private Action? _onCancelAction;
     private string _statusMessage = string.Empty;
-    private int _caretIndex;
-
-    public event EventHandler? OnFinished;
 
     public InstallationProgressWindowViewModel()
     {
@@ -59,11 +57,6 @@ public class InstallationProgressWindowViewModel : ViewModelBase, IReactiveObjec
         }
     };
 
-    public void Finish()
-    {
-        OnFinished?.Invoke(this, EventArgs.Empty);
-    }
-
     public void RaisePropertyChanging(PropertyChangingEventArgs args)
     {
         this.RaisePropertyChanging(args.PropertyName);
@@ -72,6 +65,13 @@ public class InstallationProgressWindowViewModel : ViewModelBase, IReactiveObjec
     public void RaisePropertyChanged(PropertyChangedEventArgs args)
     {
         this.RaisePropertyChanged(args.PropertyName);
+    }
+
+    public event EventHandler? OnFinished;
+
+    public void Finish()
+    {
+        OnFinished?.Invoke(this, EventArgs.Empty);
     }
 
     public void SetOnCancelAction(Action action)

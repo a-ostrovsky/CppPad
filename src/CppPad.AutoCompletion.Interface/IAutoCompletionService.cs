@@ -15,7 +15,7 @@ public interface IAutoCompletionService
     Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, Position position);
 
     Task<PositionInFile[]> GetDefinitionsAsync(ScriptDocument document, Position position);
-    
+
     Task UpdateContentAsync(ScriptDocument document);
 
     Task UpdateSettingsAsync(ScriptDocument document);
@@ -33,7 +33,8 @@ public class DummyAutoCompletionService : IAutoCompletionService
         return Task.CompletedTask;
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, Position position)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document,
+        Position position)
     {
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }

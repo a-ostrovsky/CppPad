@@ -1,8 +1,8 @@
 #region
 
+using System;
 using Avalonia.Controls;
 using CppPad.Gui.ViewModels;
-using System;
 
 #endregion
 

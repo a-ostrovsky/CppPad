@@ -1,8 +1,8 @@
 ﻿#region
 
+using System.Text.Json;
 using CppPad.AutoCompletion.Clangd.Interface;
 using CppPad.AutoCompletion.Interface;
-using System.Text.Json;
 
 #endregion
 
@@ -18,10 +18,30 @@ public class ResponseReceiver : IResponseReceiver, IDisposable
         _client.OnServerNotification += HandleServerNotification;
     }
 
+    public void Dispose()
+    {
+        _client.OnServerNotification -= HandleServerNotification;
+        GC.SuppressFinalize(this);
+    }
+
     public async Task<PositionInFile[]> ReadDefinitionsAsync(int requestId)
     {
         var response = await _client.ReadResponseAsync(requestId);
         return ParseDefinitions(response);
+    }
+
+    public event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
+
+    public async Task<ServerCapabilities> ReadCapabilitiesAsync(int requestId)
+    {
+        var response = await _client.ReadResponseAsync(requestId);
+        return ParseCapabilities(response);
+    }
+
+    public async Task<AutoCompletionItem[]> ReadCompletionsAsync(int requestId)
+    {
+        var response = await _client.ReadResponseAsync(requestId);
+        return ParseCompletions(response);
     }
 
     private static PositionInFile[] ParseDefinitions(JsonDocument? response)
@@ -39,27 +59,15 @@ public class ResponseReceiver : IResponseReceiver, IDisposable
                 FileName = new Uri(item.GetProperty("uri").GetString() ?? string.Empty).LocalPath,
                 Position = new Position
                 {
-                    Line = item.GetProperty("range").GetProperty("start").GetProperty("line").GetInt32(),
-                    Character = item.GetProperty("range").GetProperty("start").GetProperty("character").GetInt32()
+                    Line = item.GetProperty("range").GetProperty("start").GetProperty("line")
+                        .GetInt32(),
+                    Character = item.GetProperty("range").GetProperty("start")
+                        .GetProperty("character").GetInt32()
                 }
             })
             .ToArray();
 
         return positions;
-    }
-
-    public event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
-
-    public async Task<ServerCapabilities> ReadCapabilitiesAsync(int requestId)
-    {
-        var response = await _client.ReadResponseAsync(requestId);
-        return ParseCapabilities(response);
-    }
-
-    public async Task<AutoCompletionItem[]> ReadCompletionsAsync(int requestId)
-    {
-        var response = await _client.ReadResponseAsync(requestId);
-        return ParseCompletions(response);
     }
 
     private static ServerCapabilities ParseCapabilities(JsonDocument? response)
@@ -238,11 +246,5 @@ public class ResponseReceiver : IResponseReceiver, IDisposable
                 new DiagnosticsReceivedEventArgs(new Uri(uri), diagnostics.ToArray()));
         }
         // Handle other notification types if needed
-    }
-
-    public void Dispose()
-    {
-        _client.OnServerNotification -= HandleServerNotification;
-        GC.SuppressFinalize(this);
     }
 }

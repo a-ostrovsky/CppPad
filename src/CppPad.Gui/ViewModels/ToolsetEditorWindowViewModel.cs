@@ -1,27 +1,23 @@
+#region
+
+using System.Collections.ObjectModel;
+using System.Reactive;
+using System.Threading.Tasks;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Configuration.Interface;
 using CppPad.Gui.ErrorHandling;
 using ReactiveUI;
-using System.Collections.ObjectModel;
-using System.Reactive;
-using System.Threading.Tasks;
+
+#endregion
 
 namespace CppPad.Gui.ViewModels;
 
 public class ToolsetEditorWindowViewModel : ViewModelBase
 {
-    public static ToolsetEditorWindowViewModel DesignInstance { get; } =
-        new(new DummyToolsetDetector(), new DummyConfigurationStore());
+    private readonly IConfigurationStore _configurationStore;
 
     private readonly IToolsetDetector _toolsetDetector;
-    private readonly IConfigurationStore _configurationStore;
     private ToolsetViewModel? _defaultToolset;
-
-    public ObservableCollection<ToolsetViewModel> Toolsets { get; } = [];
-
-    public ReactiveCommand<Unit, Unit> AutodetectToolsetsCommand { get; }
-
-    public ReactiveCommand<ToolsetViewModel, Unit> SetDefaultToolsetCommand { get; }
 
     public ToolsetEditorWindowViewModel(
         IToolsetDetector toolsetDetector,
@@ -38,13 +34,24 @@ public class ToolsetEditorWindowViewModel : ViewModelBase
                 vm.IsDefault = true;
                 _defaultToolset = vm;
             }
+
             Toolsets.Add(vm);
         }
+
         AutodetectToolsetsCommand =
             ReactiveCommand.CreateFromTask(AutodetectToolsetsAsync);
         SetDefaultToolsetCommand =
             ReactiveCommand.CreateFromTask<ToolsetViewModel>(SetDefaultToolsetAsync);
     }
+
+    public static ToolsetEditorWindowViewModel DesignInstance { get; } =
+        new(new DummyToolsetDetector(), new DummyConfigurationStore());
+
+    public ObservableCollection<ToolsetViewModel> Toolsets { get; } = [];
+
+    public ReactiveCommand<Unit, Unit> AutodetectToolsetsCommand { get; }
+
+    public ReactiveCommand<ToolsetViewModel, Unit> SetDefaultToolsetCommand { get; }
 
     private Task AutodetectToolsetsAsync()
     {

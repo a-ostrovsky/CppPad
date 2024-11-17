@@ -3,7 +3,7 @@
 public interface ITimer
 {
     void Change(TimeSpan dueTime, TimeSpan period);
-    
+
     event EventHandler? Elapsed;
 }
 
@@ -11,7 +11,6 @@ public class DummyTimer : ITimer
 {
     public void Change(TimeSpan dueTime, TimeSpan period)
     {
-
     }
 
     public event EventHandler? Elapsed;

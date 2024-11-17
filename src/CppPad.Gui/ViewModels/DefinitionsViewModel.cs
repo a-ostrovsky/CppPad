@@ -21,12 +21,12 @@ public class DefinitionDataViewModel
     public required string SourceCode { get; set; }
 
     /// <summary>
-    /// Gets or sets the one-based line number.
+    ///     Gets or sets the one-based line number.
     /// </summary>
     public required int Line { get; set; }
 
     /// <summary>
-    /// Gets or sets the zero-based (!) character index in the line.
+    ///     Gets or sets the zero-based (!) character index in the line.
     /// </summary>
     public required int Character { get; set; }
 

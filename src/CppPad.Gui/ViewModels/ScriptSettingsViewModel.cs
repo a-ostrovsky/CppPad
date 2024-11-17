@@ -1,8 +1,8 @@
 ﻿#region
 
-using CppPad.CompilerAdapter.Interface;
 using System;
 using System.Linq;
+using CppPad.CompilerAdapter.Interface;
 
 #endregion
 
@@ -11,13 +11,13 @@ namespace CppPad.Gui.ViewModels;
 public class ScriptSettingsViewModel : ViewModelBase
 {
     private string _additionalBuildArgs = string.Empty;
+    private string _additionalEnvironmentPaths = string.Empty;
     private string _additionalIncludeDirs = string.Empty;
     private CppStandard _cppStandard = CppStandard.CppLatest;
+    private string _librarySearchPaths = string.Empty;
     private OptimizationLevel _optimizationLevel = OptimizationLevel.Unspecified;
     private string _preBuildCommand = string.Empty;
-    private string _librarySearchPaths = string.Empty;
     private string _staticallyLinkedLibraries = string.Empty;
-    private string _additionalEnvironmentPaths = string.Empty;
 
     public string PreBuildCommand
     {

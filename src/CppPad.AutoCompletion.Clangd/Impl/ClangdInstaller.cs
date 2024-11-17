@@ -32,7 +32,7 @@ public class ClangdInstaller(
 
         await CopyClangdFilesAsync(callbacks, clangdDir, token);
     }
-    
+
     public bool IsInstalled()
     {
         var clangdPath = Path.Combine(AppConstants.ClangdFolder, "bin", "clangd.exe");

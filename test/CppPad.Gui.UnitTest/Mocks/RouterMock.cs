@@ -1,9 +1,9 @@
 ﻿#region
 
+using System.Collections.Concurrent;
 using Avalonia.Controls;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
-using System.Collections.Concurrent;
 
 #endregion
 
@@ -11,17 +11,11 @@ namespace CppPad.Gui.UnitTest.Mocks;
 
 public class RouterMock : IRouter
 {
+    private readonly List<ViewModelBase> _shownViewModelsOfDialogs = [];
     private readonly ConcurrentDictionary<Type, object> _viewModelsByType = new();
     private bool _askUserResult = true;
     private object? _inputBoxResult;
     private Uri? _selectedFile = new("file:///c:/script.cpad");
-
-    private readonly List<ViewModelBase> _shownViewModelsOfDialogs = [];
-
-    public bool WasDialogShownForViewModel<T>()
-    {
-        return _shownViewModelsOfDialogs.Any(x => x.GetType() == typeof(T));
-    }
 
     public Task<T?> ShowDialogAsync<T>() where T : ViewModelBase
     {
@@ -29,6 +23,7 @@ public class RouterMock : IRouter
         {
             throw new InvalidOperationException($"ViewModel of type {typeof(T)} not found.");
         }
+
         _shownViewModelsOfDialogs.Add((ViewModelBase)ret);
 
         return Task.FromResult((T)ret)!;
@@ -63,6 +58,11 @@ public class RouterMock : IRouter
     public void SetMainWindow(Window window)
     {
         // No action
+    }
+
+    public bool WasDialogShownForViewModel<T>()
+    {
+        return _shownViewModelsOfDialogs.Any(x => x.GetType() == typeof(T));
     }
 
     public void SetAskUserResult(bool result)

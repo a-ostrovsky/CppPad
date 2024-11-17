@@ -2,7 +2,7 @@
 
 public record Identifier(string Value)
 {
-    public static Identifier Empty { get; } = new Identifier(string.Empty);
+    public static Identifier Empty { get; } = new(string.Empty);
 
     public override string ToString()
     {

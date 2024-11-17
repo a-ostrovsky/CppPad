@@ -1,18 +1,22 @@
+#region
+
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
+
+#endregion
 
 namespace CppPad.Gui.Views;
 
 public partial class InputBoxWindow : Window
 {
-    public string? Result { get; private set; }
-
     public InputBoxWindow()
     {
         InitializeComponent();
         Opened += (_, _) => InputTextBox.Focus();
     }
+
+    public string? Result { get; private set; }
 
     public void SetPrompt(string prompt)
     {

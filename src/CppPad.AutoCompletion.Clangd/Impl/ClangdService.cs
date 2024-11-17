@@ -72,13 +72,14 @@ public class ClangdService : IAutoCompletionService, IDisposable
             FileName = path,
             Position = position
         };
-        
+
         var requestId =
             await _requestSender.SendCompletionRequestAsync(positionInFile);
         return await _responseReceiver.ReadCompletionsAsync(requestId);
     }
 
-    public async Task<PositionInFile[]> GetDefinitionsAsync(ScriptDocument document, Position position)
+    public async Task<PositionInFile[]> GetDefinitionsAsync(ScriptDocument document,
+        Position position)
     {
         var path = _scriptLoader.GetCppFilePath(document);
         await EnsureInitializedAsync();
@@ -88,7 +89,7 @@ public class ClangdService : IAutoCompletionService, IDisposable
             FileName = path,
             Position = position
         };
-        
+
         var requestId =
             await _requestSender.SendFindDefinitionAsync(positionInFile);
         return await _responseReceiver.ReadDefinitionsAsync(requestId);

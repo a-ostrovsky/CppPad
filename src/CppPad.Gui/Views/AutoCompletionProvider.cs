@@ -1,16 +1,15 @@
 ﻿#region
 
-using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.Linq;
+using System.Threading.Tasks;
 using Avalonia.Input;
 using AvaloniaEdit;
 using AvaloniaEdit.CodeCompletion;
 using CppPad.AutoCompletion.Interface;
 using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.ViewModels;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 
 #endregion
 
@@ -91,11 +90,11 @@ public class AutoCompletionProvider
                 e.Handled = true;
                 return ShowCompletionWindowAsync();
             }
-            
+
             return Task.CompletedTask;
         });
     }
-    
+
     public async Task ShowDefinitionsAsync()
     {
         var scriptDocument = _editorViewModel.GetCurrentScriptDocument();
@@ -123,17 +122,14 @@ public class AutoCompletionProvider
         await UpdateCompletionWindowAsync(_completionWindow);
 
         _completionWindow.Show();
-        _completionWindow.Closed += (_, _) =>
-        {
-            _completionWindow = null;
-        };
+        _completionWindow.Closed += (_, _) => { _completionWindow = null; };
     }
 
     private async Task UpdateCompletionWindowAsync(CompletionWindow completionWindow)
     {
         var scriptDocument = _editorViewModel.GetCurrentScriptDocument();
         await _editorViewModel.AutoCompletionService.UpdateContentAsync(scriptDocument);
-        
+
         var caretOffset = completionWindow.TextArea.Caret.Offset;
         var line = completionWindow.TextArea.Document.GetLineByOffset(caretOffset);
         var lineNumber = line.LineNumber - 1;
@@ -151,7 +147,7 @@ public class AutoCompletionProvider
         {
             data.Add(new CompletionData(completion));
         }
-        
+
         // Preserve the selected item if it still exists
         var selectedItem = completionWindow.CompletionList.SelectedItem;
         if (selectedItem != null && data.Contains(selectedItem))

@@ -1,5 +1,8 @@
 ﻿#region
 
+using System;
+using System.IO;
+using System.Threading.Tasks;
 using Avalonia.Data.Core.Plugins;
 using CppPad.AutoCompletion.Clangd.Impl;
 using CppPad.AutoCompletion.Clangd.Interface;
@@ -23,9 +26,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MsBox.Avalonia;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
 #endregion
 
@@ -98,7 +98,7 @@ public static class Bootstrapper
         collection.AddSingleton<IDefinitionsWindowViewModelFactory, DefinitionsViewModelFactory>();
         collection.AddTransient<DefinitionsWindowViewModel>();
         collection.AddTransient<DefinitionsViewModel>();
-        collection.AddTransient<Views.DefinitionsWindow>();
+        collection.AddTransient<DefinitionsWindow>();
 
         collection.AddSingleton<MainWindow>();
         collection.AddTransient<EditorView>();

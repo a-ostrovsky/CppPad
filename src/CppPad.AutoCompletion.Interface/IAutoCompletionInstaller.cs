@@ -3,7 +3,7 @@
 public interface IAutoCompletionInstaller
 {
     Task InstallAsync(IInitCallbacks initCallbacks, CancellationToken token);
-    
+
     bool IsClangdInstalled();
 }
 

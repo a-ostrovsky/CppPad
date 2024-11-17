@@ -67,7 +67,8 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
         return _autoCompletionService.CloseFileAsync(document);
     }
 
-    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document, Position position)
+    public Task<AutoCompletionItem[]> GetCompletionsAsync(ScriptDocument document,
+        Position position)
     {
         if (!Volatile.Read(ref _isInstalled))
         {
@@ -118,6 +119,7 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
             _logger.LogWarning("Clangd is not installed. No auto completion is possible.");
             return Task.FromResult(new ServerCapabilities());
         }
+
         return _autoCompletionService.RetrieveServerCapabilitiesAsync();
     }
 }

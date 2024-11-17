@@ -28,7 +28,7 @@ public class InMemoryScriptStore : IScriptLoader
     {
         return Task.CompletedTask;
     }
-    
+
     public string GetCppFilePath(ScriptDocument scriptDocument)
     {
         return "file.cpp";

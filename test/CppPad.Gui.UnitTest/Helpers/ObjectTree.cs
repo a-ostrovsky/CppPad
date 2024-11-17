@@ -59,8 +59,7 @@ public class ObjectTree
     public EditorViewModelFactoryForTest EditorViewModelFactory { get; }
 
     public InstallationProgressWindowViewModelFactoryForTest
-        InstallationProgressWindowViewModelFactory
-    { get; }
+        InstallationProgressWindowViewModelFactory { get; }
 
     public ToolsetDetectorMock ToolsetDetector { get; }
 
