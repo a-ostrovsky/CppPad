@@ -1,10 +1,10 @@
-﻿using System;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Media;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
 using CppPad.AutoCompletion.Interface;
+using System;
 
 namespace CppPad.Gui.Views;
 
@@ -36,4 +36,19 @@ public class CompletionData(AutoCompletionItem autoCompletionData) : ICompletion
     }
 
     public IImage? Image => null;
+
+    public override bool Equals(object? obj)
+    {
+        if (obj is CompletionData other)
+        {
+            return Priority.Equals(other.Priority) && string.Equals(Text, other.Text);
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Priority, Text);
+    }
+
 }

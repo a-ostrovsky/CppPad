@@ -12,12 +12,12 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace CppPad.AutoCompletion.Clangd.UnitTest;
 
-public class InitializationTest : IDisposable
+public class ClangdInteractionTest : IDisposable
 {
     private readonly ClangdProcessProxyMock _clangdProcessProxyMock;
     private readonly ClangdService _clangdService;
 
-    public InitializationTest()
+    public ClangdInteractionTest()
     {
         _clangdProcessProxyMock = new ClangdProcessProxyMock();
         var lspClient = new LspClient(_clangdProcessProxyMock, new NullLoggerFactory());
@@ -27,14 +27,14 @@ public class InitializationTest : IDisposable
 
         _clangdService = new ClangdService(scriptLoader, responseReceiver, requestSender);
     }
-    
+
     public void Dispose()
     {
         _clangdService.Dispose();
         _clangdProcessProxyMock.Kill();
         GC.SuppressFinalize(this);
     }
-    
+
     [Fact]
     public async Task OpenFileAsync_ShouldSendDidOpenNotification()
     {
@@ -68,7 +68,7 @@ public class InitializationTest : IDisposable
         // Assert
         Assert.NotEmpty(capabilities.TriggerCharacters);
     }
-    
+
     [Fact]
     public async Task AutoCompletion_ShouldReturnCompletionItems()
     {
@@ -84,7 +84,7 @@ public class InitializationTest : IDisposable
             }
         };
         _clangdProcessProxyMock.CompletionItems = ["std::cout"];
-        
+
         // Act
         var completionList = await _clangdService.GetCompletionsAsync(scriptDocument, position);
 
@@ -92,7 +92,7 @@ public class InitializationTest : IDisposable
         Assert.NotEmpty(completionList);
         Assert.Contains(completionList, item => item.Label == "std::cout");
     }
-    
+
     [Fact]
     public async Task CloseFileAsync_ShouldSendDidCloseNotification()
     {
@@ -117,6 +117,37 @@ public class InitializationTest : IDisposable
         var sentMessages = _clangdProcessProxyMock.GetJsonObjects();
         Assert.Contains(sentMessages, message =>
             message["method"]?.GetValue<string>() == "textDocument/didClose");
+    }
+
+    [Fact]
+    public async Task GetDefinitions_ShouldReturnDefinitionPositions()
+    {
+        // Arrange
+        var position = new Position { Line = 0, Character = 5 };
+        var scriptDocument = new ScriptDocument
+        {
+            FileName = "test.cpp",
+            Identifier = new Identifier("test.cpp"),
+            Script = new Script
+            {
+                Content = "int main() { return 0; }"
+            }
+        };
+        var expectedDefinition = new PositionInFile
+        {
+            FileName = "file:///test.cpp",
+            Position = new Position { Line = 0, Character = 0 }
+        };
+        _clangdProcessProxyMock.DefinitionPositions = [expectedDefinition];
+
+        // Act
+        var definitions = await _clangdService.GetDefinitionsAsync(scriptDocument, position);
+
+        // Assert
+        Assert.NotEmpty(definitions);
+        Assert.Contains(definitions, def => def.FileName == new Uri(expectedDefinition.FileName).LocalPath &&
+                                            def.Position.Line == expectedDefinition.Position.Line &&
+                                            def.Position.Character == expectedDefinition.Position.Character);
     }
 
 }

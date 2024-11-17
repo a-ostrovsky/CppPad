@@ -16,18 +16,27 @@ public class RouterMock : IRouter
     private object? _inputBoxResult;
     private Uri? _selectedFile = new("file:///c:/script.cpad");
 
+    private readonly List<ViewModelBase> _shownViewModelsOfDialogs = [];
+
+    public bool WasDialogShownForViewModel<T>()
+    {
+        return _shownViewModelsOfDialogs.Any(x => x.GetType() == typeof(T));
+    }
+
     public Task<T?> ShowDialogAsync<T>() where T : ViewModelBase
     {
         if (!_viewModelsByType.TryGetValue(typeof(T), out var ret))
         {
             throw new InvalidOperationException($"ViewModel of type {typeof(T)} not found.");
         }
+        _shownViewModelsOfDialogs.Add((ViewModelBase)ret);
 
         return Task.FromResult((T)ret)!;
     }
 
     public Task<T> ShowDialogAsync<T>(T viewModel) where T : ViewModelBase
     {
+        _shownViewModelsOfDialogs.Add(viewModel);
         return Task.FromResult(viewModel);
     }
 

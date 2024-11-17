@@ -8,5 +8,7 @@ public interface IResponseReceiver
     
     Task<AutoCompletionItem[]> ReadCompletionsAsync(int requestId);
     
+    Task<PositionInFile[]> ReadDefinitionsAsync(int requestId);
+    
     event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
 }

@@ -13,6 +13,7 @@ using CppPad.ScriptFile.Interface;
 namespace CppPad.Gui.UnitTest.Mocks;
 
 public class EditorViewModelFactoryForTest(
+    IDefinitionsWindowViewModelFactory definitionsWindowViewModelFactory,
     TemplatesViewModel templatesViewModel,
     IRouter router,
     ICompiler compiler,
@@ -22,6 +23,7 @@ public class EditorViewModelFactoryForTest(
     public EditorViewModel Create()
     {
         return new EditorViewModel(
+            definitionsWindowViewModelFactory,
             templatesViewModel,
             router,
             compiler,

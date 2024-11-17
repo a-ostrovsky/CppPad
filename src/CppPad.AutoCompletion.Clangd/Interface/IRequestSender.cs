@@ -1,4 +1,6 @@
-﻿namespace CppPad.AutoCompletion.Clangd.Interface;
+﻿using CppPad.AutoCompletion.Interface;
+
+namespace CppPad.AutoCompletion.Clangd.Interface;
 
 public interface IRequestSender
 {
@@ -9,5 +11,6 @@ public interface IRequestSender
     Task SendDidChangeConfigurationAsync(IDictionary<string, object> settings);
     Task SendDidChangeAsync(string fileName, int version, string text);
     Task SendDidCloseAsync(string fileName);
-    Task<int> SendCompletionRequestAsync(string fileName, int line, int character);
+    Task<int> SendCompletionRequestAsync(PositionInFile positionInFile);
+    Task<int> SendFindDefinitionAsync(PositionInFile positionInFile);
 }

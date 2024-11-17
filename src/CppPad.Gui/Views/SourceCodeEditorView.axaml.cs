@@ -1,7 +1,7 @@
 ﻿#region
 
 using System;
-using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
@@ -14,6 +14,7 @@ namespace CppPad.Gui.Views;
 
 public partial class SourceCodeEditorView : UserControl
 {
+    private AutoCompletionProvider? _autoCompletionProvider;
     private bool _isInternalChange;
 
     public SourceCodeEditorView()
@@ -22,55 +23,39 @@ public partial class SourceCodeEditorView : UserControl
         Init();
     }
 
-    public void ScrollToLine(int line)
+    public void ScrollTo(int line, int character)
     {
-        var textEditor = this.FindControl<TextEditor>("Editor");
-        Debug.Assert(textEditor != null);
-        textEditor.ScrollToLine(line);
-        textEditor.CaretOffset = GetCaretOffsetForLine(textEditor, line);
+        Editor.ScrollToLine(line);
+        Editor.CaretOffset = GetCaretOffsetForLine(Editor, line) + character;
     }
 
     private void Init()
     {
-        var textEditor = this.FindControl<TextEditor>("Editor");
-        Debug.Assert(textEditor != null);
         var registryOptions = new RegistryOptions(ThemeName.Light);
-        var textMateInstallation = textEditor.InstallTextMate(registryOptions);
+        var textMateInstallation = Editor.InstallTextMate(registryOptions);
         textMateInstallation.SetGrammar(
             registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp")
                 .Id));
-        
-        textEditor.TextChanged += TextEditor_TextChanged;
-        DataContextChanged += SourceCodeEditorView_DataContextChanged;
+
+        Editor.TextChanged += TextEditor_TextChanged;
     }
 
-    private void SourceCodeEditorView_DataContextChanged(object? sender, EventArgs e)
+    // Event when setting data context seems not to work with avalonia 11.2??
+    public void SetViewModel(EditorViewModel vm)
     {
-        if (DataContext is null)
-        {
-            return;
-        }
+        DataContext = vm;
+        Editor.Text = vm.SourceCode;
 
-        if (DataContext is not EditorViewModel vm)
-        {
-            throw new InvalidOperationException("DataContext is not EditorViewModel");
-        }
-        
-        var textEditor = this.FindControl<TextEditor>("Editor");
-        Debug.Assert(textEditor != null);
-    
-        textEditor.Text = vm.SourceCode;
-        
         vm.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(EditorViewModel.SourceCode) && !_isInternalChange)
             {
-                textEditor.Text = vm.SourceCode;
+                Editor.Text = vm.SourceCode;
             }
         };
-        
-        var autoCompletionProvider = new AutoCompletionProvider(vm);
-        autoCompletionProvider.Attach(textEditor);
+
+        _autoCompletionProvider = new AutoCompletionProvider(vm);
+        _autoCompletionProvider.Attach(Editor);
     }
 
     private void TextEditor_TextChanged(object? sender, EventArgs e)
@@ -91,5 +76,12 @@ public partial class SourceCodeEditorView : UserControl
         var document = textEditor.Document;
         var lineInfo = document.GetLineByNumber(line);
         return lineInfo.Offset;
+    }
+
+    public Task ShowDefinitionsAsync()
+    {
+        return _autoCompletionProvider != null
+            ? _autoCompletionProvider.ShowDefinitionsAsync()
+            : Task.CompletedTask;
     }
 }

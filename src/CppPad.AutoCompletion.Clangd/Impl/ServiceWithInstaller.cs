@@ -78,6 +78,17 @@ public class ServiceWithInstaller : IAutoCompletionService, IAutoCompletionInsta
         return _autoCompletionService.GetCompletionsAsync(document, position);
     }
 
+    public Task<PositionInFile[]> GetDefinitionsAsync(ScriptDocument document, Position position)
+    {
+        if (!Volatile.Read(ref _isInstalled))
+        {
+            _logger.LogWarning("Clangd is not installed. No auto completion is possible.");
+            return Task.FromResult(Array.Empty<PositionInFile>());
+        }
+
+        return _autoCompletionService.GetDefinitionsAsync(document, position);
+    }
+
     public Task UpdateSettingsAsync(ScriptDocument document)
     {
         if (!Volatile.Read(ref _isInstalled))

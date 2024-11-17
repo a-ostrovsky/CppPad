@@ -1,8 +1,5 @@
 ﻿#region
 
-using System;
-using System.IO;
-using System.Threading.Tasks;
 using Avalonia.Data.Core.Plugins;
 using CppPad.AutoCompletion.Clangd.Impl;
 using CppPad.AutoCompletion.Clangd.Interface;
@@ -20,12 +17,15 @@ using CppPad.FileSystem;
 using CppPad.Gui.Routing;
 using CppPad.Gui.ViewModels;
 using CppPad.Gui.Views;
-using CppPad.ScriptFile.Interface;
 using CppPad.ScriptFile.Implementation;
+using CppPad.ScriptFile.Interface;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MsBox.Avalonia;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 #endregion
 
@@ -95,6 +95,11 @@ public static class Bootstrapper
         collection.AddSingleton<ComponentInstallationViewModel>();
         collection.AddTransient<InstallationProgressWindowViewModel>();
 
+        collection.AddSingleton<IDefinitionsWindowViewModelFactory, DefinitionsViewModelFactory>();
+        collection.AddTransient<DefinitionsWindowViewModel>();
+        collection.AddTransient<DefinitionsViewModel>();
+        collection.AddTransient<Views.DefinitionsWindow>();
+
         collection.AddSingleton<MainWindow>();
         collection.AddTransient<EditorView>();
         collection.AddTransient<ToolsetEditorWindow>();
@@ -140,13 +145,14 @@ public static class Bootstrapper
 
     private static void AddAutoCompletion(IServiceCollection collection)
     {
+        collection.AddTransient<DefinitionsViewModel>();
         collection.AddSingleton<IClangdProcessProxy, ClangdProcessProxy>();
         collection.AddSingleton<IRequestSender, RequestSender>();
         collection.AddSingleton<IResponseReceiver, ResponseReceiver>();
         collection.AddSingleton<ILspClient, LspClient>();
         collection.AddSingleton<ClangdService>();
         collection.AddSingleton<ClangdInstaller>();
-        collection.AddSingleton<ServiceWithInstaller>(provider =>
+        collection.AddSingleton(provider =>
         {
             var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
             var clangdService = provider.GetRequiredService<ClangdService>();

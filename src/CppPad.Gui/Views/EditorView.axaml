@@ -11,8 +11,7 @@
     <Grid RowDefinitions="3* 1 2*">
         <views:SourceCodeEditorView Grid.Row="0"
                                     x:Name="SourceCodeEditor"
-                                    Margin="2 2 2 2"
-                                    DataContext="{CompiledBinding}"/>
+                                    Margin="2 2 2 2" />
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" Background="Gray" />
         <TabControl Grid.Row="2" SelectedIndex="{Binding SelectedOutputIndex}" Margin="2 2 2 5">
             <TabItem Header="Compiler">

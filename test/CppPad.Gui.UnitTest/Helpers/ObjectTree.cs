@@ -2,6 +2,7 @@
 
 using CppPad.Gui.UnitTest.Mocks;
 using CppPad.Gui.ViewModels;
+using CppPad.MockFileSystem;
 
 #endregion
 
@@ -11,6 +12,7 @@ public class ObjectTree
 {
     public ObjectTree()
     {
+        FileSystem = new InMemoryFileSystem();
         ErrorHandler = new ErrorHandlerMock();
         AutoCompletion = new AutoCompletionMock();
         Benchmark = new BenchmarkMock();
@@ -28,7 +30,10 @@ public class ObjectTree
         ComponentInstallationViewModel =
             new ComponentInstallationViewModel(AutoCompletion, Benchmark, Router,
                 InstallationProgressWindowViewModelFactory);
-        EditorViewModelFactory = new EditorViewModelFactoryForTest(TemplatesViewModel, Router,
+        DefinitionsWindowViewModelFactory =
+            new DefinitionsWindowViewModelFactoryForTest(FileSystem);
+        EditorViewModelFactory = new EditorViewModelFactoryForTest(
+            DefinitionsWindowViewModelFactory, TemplatesViewModel, Router,
             Compiler, ScriptLoader, ConfigurationStore);
         MainWindowViewModel = new MainWindowViewModel(
             ComponentInstallationViewModel,
@@ -36,6 +41,10 @@ public class ObjectTree
             EditorViewModelFactory,
             Router, ConfigurationStore);
     }
+
+    public InMemoryFileSystem FileSystem { get; }
+
+    public DefinitionsWindowViewModelFactoryForTest DefinitionsWindowViewModelFactory { get; }
 
     public AutoCompletionMock AutoCompletion { get; }
 
@@ -50,7 +59,8 @@ public class ObjectTree
     public EditorViewModelFactoryForTest EditorViewModelFactory { get; }
 
     public InstallationProgressWindowViewModelFactoryForTest
-        InstallationProgressWindowViewModelFactory { get; }
+        InstallationProgressWindowViewModelFactory
+    { get; }
 
     public ToolsetDetectorMock ToolsetDetector { get; }
 

@@ -1,13 +1,5 @@
 #region
 
-using System;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reactive;
-using System.Threading;
-using System.Threading.Tasks;
 using Avalonia.Threading;
 using AvaloniaEdit.Utils;
 using CppPad.AutoCompletion.Interface;
@@ -18,6 +10,14 @@ using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.Routing;
 using CppPad.ScriptFile.Interface;
 using ReactiveUI;
+using System;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Reactive;
+using System.Threading;
+using System.Threading.Tasks;
 using ITimer = CppPad.Common.ITimer;
 
 #endregion
@@ -38,6 +38,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private readonly IConfigurationStore _configurationStore;
     private readonly IRouter _router;
     private readonly IScriptLoader _scriptLoader;
+    private readonly IDefinitionsWindowViewModelFactory _definitionsWindowViewModelFactory;
     private readonly TemplatesViewModel _templatesViewModel;
     private readonly ThrottledAutoCompletionUpdater _autoCompletionUpdater;
 
@@ -58,7 +59,9 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     private string _title = string.Empty;
     private ToolsetViewModel? _toolset;
 
+    // TODO: there are too many arguments here, consider refactoring
     public EditorViewModel(
+        IDefinitionsWindowViewModelFactory definitionsWindowViewModelFactory,
         TemplatesViewModel templatesViewModel,
         IRouter router,
         ICompiler compiler,
@@ -67,6 +70,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         IAutoCompletionService autoCompletionService,
         ITimer timer)
     {
+        _definitionsWindowViewModelFactory = definitionsWindowViewModelFactory;
         _templatesViewModel = templatesViewModel;
         _router = router;
         _compiler = compiler;
@@ -75,6 +79,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         _autoCompletionUpdater = new ThrottledAutoCompletionUpdater(timer, autoCompletionService);
         AutoCompletionService = autoCompletionService;
         RunCommand = ReactiveCommand.CreateFromTask(RunAsync);
+        GoToDefinitionsCommand = ReactiveCommand.Create(GoToDefinitions);
         SaveAsCommand = ReactiveCommand.CreateFromTask(SaveAsAsync);
         SaveCommand = ReactiveCommand.CreateFromTask(SaveAsync);
         EditScriptSettingsCommand = ReactiveCommand.CreateFromTask(EditScriptSettingsAsync);
@@ -83,6 +88,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     }
 
     public static EditorViewModel DesignInstance { get; } = new(
+        new DummyDefinitionsWindowViewModelFactory(),
         new TemplatesViewModel(new DummyTemplateLoader()),
         new DummyRouter(),
         new DummyCompiler(),
@@ -159,6 +165,8 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
     }
 
     public ReactiveCommand<Unit, Unit> RunCommand { get; }
+    
+    public ReactiveCommand<Unit, Unit> GoToDefinitionsCommand { get; }
 
     public ReactiveCommand<Unit, Unit> SaveCommand { get; }
 
@@ -182,6 +190,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         set => SetProperty(ref _scriptSettings, value);
     }
 
+
     public void RaisePropertyChanging(PropertyChangingEventArgs args)
     {
         this.RaisePropertyChanging(args.PropertyName);
@@ -194,21 +203,33 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
 
     public async Task InitAsNewFileAsync()
     {
-        _sourceCode = // Just update the source code. Do not raise any events.
-            """
-            #include <iostream>
+        try
+        {
+            _autoCompletionUpdater.PauseUpdate();
+            _sourceCode =
+                """
+                #include <iostream>
 
-            int main() {
-                std::cout << "Hello, World!" << '\n';
-                return 0;
-            }
-            """;
+                int main() {
+                    std::cout << "Hello, World!" << '\n';
+                    return 0;
+                }
+                """;
+        }
+        finally
+        {
+            _autoCompletionUpdater.ResumeUpdate();
+        }
+        // Don't set the property directly to avoid setting IsModified flag.
+        OnPropertyChanged(nameof(SourceCode));
 
         Title = "Untitled";
         await AutoCompletionService.OpenFileAsync(GetScriptDocument(null));
     }
 
     public event EventHandler<GoToLineRequestedEventArgs>? GoToLineRequested;
+
+    public event EventHandler<EventArgs>? GoToDefinitionsRequested; 
 
     private static string TruncateTitle(string title)
     {
@@ -272,7 +293,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         var line = await _router.ShowInputBoxAsync<int>($"Line Number: (1-{lineCount})");
         if (line != 0 && line <= lineCount)
         {
-            GoToLineRequested?.Invoke(this, new GoToLineRequestedEventArgs(line));
+            GoToLineRequested?.Invoke(this, new GoToLineRequestedEventArgs(line, 0));
         }
     }
 
@@ -485,7 +506,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         private readonly ITimer _timer;
         private readonly IAutoCompletionService _autoCompletionService;
         private ScriptDocument? _document;
-        private readonly object _documentLock = new();
+        private readonly Lock _documentLock = new();
         private bool _pauseUpdates;
 
         public ThrottledAutoCompletionUpdater(ITimer timer,
@@ -497,7 +518,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
             _timer.Change(ThrottleTime, Timeout.InfiniteTimeSpan);
         }
 
-        
+
         private async void TimerOnElapsed(object? sender, EventArgs e)
         {
             ScriptDocument? document;
@@ -529,12 +550,12 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
         {
             _pauseUpdates = true;
         }
-        
+
         public void ResumeUpdate()
         {
             _pauseUpdates = false;
         }
-        
+
         public void SetDocument(ScriptDocument document)
         {
             lock (_documentLock)
@@ -546,7 +567,7 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 _document = document;
             }
         }
-        
+
         public ValueTask DisposeAsync()
         {
             _timer.Elapsed -= TimerOnElapsed;
@@ -554,6 +575,35 @@ public class EditorViewModel : ViewModelBase, IReactiveObject
                 ? asyncDisposable.DisposeAsync()
                 : ValueTask.CompletedTask;
         }
+    }
+
+    private void GoToDefinitions()
+    {
+        GoToDefinitionsRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    public async Task GoToDefinitionsAsync(PositionInFile[] definitions)
+    {
+        if (definitions.Length == 0)
+        {
+            return;
+        }
+
+        if (definitions.Length == 1)
+        {
+            var currentDocumentPath = _scriptLoader.GetCppFilePath(GetCurrentScriptDocument());
+            if (currentDocumentPath == definitions[0].FileName)
+            {
+                var line = definitions[0].Position.Line + 1;
+                var character = definitions[0].Position.Character;
+                GoToLineRequested?.Invoke(this, new GoToLineRequestedEventArgs(line, character));
+                return;
+            }
+        }
+        
+        var definitionsViewModel = _definitionsWindowViewModelFactory.Create();
+        await definitionsViewModel.DefinitionsViewModel.SetDefinitionsAsync(definitions);
+        await _router.ShowDialogAsync(definitionsViewModel);
     }
 }
 

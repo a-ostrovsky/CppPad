@@ -44,6 +44,11 @@ public class AutoCompletionMock : IAutoCompletionService, IAutoCompletionInstall
         return Task.FromResult(Array.Empty<AutoCompletionItem>());
     }
 
+    public Task<PositionInFile[]> GetDefinitionsAsync(ScriptDocument document, Position position)
+    {
+        return Task.FromResult(Array.Empty<PositionInFile>());
+    }
+
     public Task UpdateContentAsync(ScriptDocument document)
     {
         return Task.CompletedTask;

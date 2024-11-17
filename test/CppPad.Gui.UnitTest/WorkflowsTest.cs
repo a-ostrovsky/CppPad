@@ -1,7 +1,9 @@
 #region
 
+using CppPad.AutoCompletion.Interface;
 using CppPad.CompilerAdapter.Interface;
 using CppPad.Gui.UnitTest.Helpers;
+using CppPad.Gui.ViewModels;
 using CppPad.ScriptFile.Interface;
 using System.Reactive.Linq;
 
@@ -116,5 +118,47 @@ public class WorkflowsTest : TestBase
         await ObjectTree.ToolsetEditorWindowViewModel.SetDefaultToolsetCommand.Execute(toolsets[0]);
         Assert.False(toolsets[1].IsDefault);
         Assert.True(toolsets[0].IsDefault);
+    }
+
+    [Fact]
+    public async Task GoToDefinition_ExternalFile_ShouldNavigateToCorrectPositionInANewDialog()
+    {
+        var editor = new EditorHelper(ObjectTree).CreateValidScript();
+        ObjectTree.FileSystem.AlwaysCreateDirectoriesIfNotExist();
+        await ObjectTree.FileSystem.WriteAllTextAsync("c:\\tmp.cpp", "void main(){}");
+        await editor.GoToDefinitionsAsync([
+            new PositionInFile
+            {
+                FileName = "c:\\tmp.cpp",
+                Position = new Position{ Line = 1, Character = 1 }
+            }
+        ]);
+        Assert.True(ObjectTree.Router.WasDialogShownForViewModel<DefinitionsWindowViewModel>());
+    }
+
+    [Fact]
+    public async Task GoToDefinition_SameFile_ShouldGoToLine()
+    {
+        var editor = new EditorHelper(ObjectTree).CreateValidScript();
+        ObjectTree.FileSystem.AlwaysCreateDirectoriesIfNotExist();
+        var currentFileName =
+            ObjectTree.ScriptLoader.GetCppFilePath(editor.GetCurrentScriptDocument());
+        await ObjectTree.FileSystem.WriteAllTextAsync(currentFileName, "void main(){}");
+        bool goToLineRequested = false;
+        editor.GoToLineRequested += (_, args) =>
+        {
+            Assert.Equal(1, args.Line); // Line is 1-based
+            Assert.Equal(1, args.Character);
+            goToLineRequested = true;
+        };
+        await editor.GoToDefinitionsAsync([
+            new PositionInFile
+            {
+                FileName = currentFileName,
+                Position = new Position{ Line = 0, Character = 1 }
+            }
+        ]);
+        Assert.False(ObjectTree.Router.WasDialogShownForViewModel<DefinitionsWindowViewModel>());
+        Assert.True(goToLineRequested);
     }
 }

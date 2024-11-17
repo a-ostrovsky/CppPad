@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using CppPad.AutoCompletion.Clangd.Interface;
+using CppPad.AutoCompletion.Interface;
 
 #endregion
 
@@ -17,13 +18,15 @@ namespace CppPad.AutoCompletion.Clangd.UnitTest.Mocks
         private readonly ProducerConsumerStream _outputStream = new();
         private StreamWriter? _inputWriter;
         private Thread? _processingThread;
-        
-        public IList<string> CompletionItems { get; set; } = ["CompletionItem"];
 
         public ClangdProcessProxyMock()
         {
             OutputReader = new StreamReader(_outputStream, Encoding.UTF8);
         }
+
+        public IList<string> CompletionItems { get; set; } = ["CompletionItem"];
+
+        public IList<PositionInFile> DefinitionPositions { get; set; } = new List<PositionInFile>();
 
         public TextReader OutputReader { get; }
 
@@ -45,6 +48,51 @@ namespace CppPad.AutoCompletion.Clangd.UnitTest.Mocks
             _outputStream.Complete();
             _processingThread?.Join();
             HasExited = true;
+        }
+
+        private void ProcessInputMessage(JsonObject json)
+        {
+            if (json.TryGetPropertyValue("method", out var method))
+            {
+                if (method?.ToString() == "initialize" &&
+                    json.TryGetPropertyValue("id", out var id))
+                {
+                    var response = CreateInitializeResponse(id!.GetValue<int>());
+                    WriteToOutput(response);
+                }
+                else if (method?.ToString() == "textDocument/completion" &&
+                         json.TryGetPropertyValue("id", out var completionId))
+                {
+                    var response = CreateCompletionResponse(completionId!.GetValue<int>());
+                    WriteToOutput(response);
+                }
+                else if (method?.ToString() == "textDocument/definition" &&
+                         json.TryGetPropertyValue("id", out var definitionId))
+                {
+                    var response = CreateDefinitionResponse(definitionId!.GetValue<int>());
+                    WriteToOutput(response);
+                }
+            }
+        }
+
+        private object CreateDefinitionResponse(int definitionId)
+        {
+            var definitions = DefinitionPositions.Select(pos => new
+            {
+                uri = pos.FileName,
+                range = new
+                {
+                    start = new { line = pos.Position.Line, character = pos.Position.Character },
+                    end = new { line = pos.Position.Line, character = pos.Position.Character }
+                }
+            }).ToArray();
+
+            return new
+            {
+                jsonrpc = "2.0",
+                id = definitionId,
+                result = definitions
+            };
         }
 
         public List<JsonObject> GetJsonObjects()
@@ -131,25 +179,6 @@ namespace CppPad.AutoCompletion.Clangd.UnitTest.Mocks
             {
                 _jsonObjects.Add(jsonObject);
                 ProcessInputMessage(jsonObject);
-            }
-        }
-
-        private void ProcessInputMessage(JsonObject json)
-        {
-            if (json.TryGetPropertyValue("method", out var method))
-            {
-                if (method?.ToString() == "initialize" &&
-                    json.TryGetPropertyValue("id", out var id))
-                {
-                    var response = CreateInitializeResponse(id!.GetValue<int>());
-                    WriteToOutput(response);
-                }
-                else if (method?.ToString() == "textDocument/completion" &&
-                         json.TryGetPropertyValue("id", out var completionId))
-                {
-                    var response = CreateCompletionResponse(completionId!.GetValue<int>());
-                    WriteToOutput(response);
-                }
             }
         }
 

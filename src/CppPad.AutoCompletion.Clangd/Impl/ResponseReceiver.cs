@@ -1,8 +1,8 @@
 ﻿#region
 
-using System.Text.Json;
 using CppPad.AutoCompletion.Clangd.Interface;
 using CppPad.AutoCompletion.Interface;
+using System.Text.Json;
 
 #endregion
 
@@ -16,6 +16,36 @@ public class ResponseReceiver : IResponseReceiver, IDisposable
     {
         _client = client;
         _client.OnServerNotification += HandleServerNotification;
+    }
+
+    public async Task<PositionInFile[]> ReadDefinitionsAsync(int requestId)
+    {
+        var response = await _client.ReadResponseAsync(requestId);
+        return ParseDefinitions(response);
+    }
+
+    private static PositionInFile[] ParseDefinitions(JsonDocument? response)
+    {
+        if (response == null)
+        {
+            return [];
+        }
+
+        var resultElement = response.RootElement.GetProperty("result");
+
+        var positions = resultElement.EnumerateArray()
+            .Select(item => new PositionInFile
+            {
+                FileName = new Uri(item.GetProperty("uri").GetString() ?? string.Empty).LocalPath,
+                Position = new Position
+                {
+                    Line = item.GetProperty("range").GetProperty("start").GetProperty("line").GetInt32(),
+                    Character = item.GetProperty("range").GetProperty("start").GetProperty("character").GetInt32()
+                }
+            })
+            .ToArray();
+
+        return positions;
     }
 
     public event EventHandler<DiagnosticsReceivedEventArgs>? OnDiagnosticsReceived;
@@ -68,7 +98,7 @@ public class ResponseReceiver : IResponseReceiver, IDisposable
 
         if (response == null)
         {
-            return Array.Empty<AutoCompletionItem>();
+            return [];
         }
 
         var resultElement = response.RootElement.GetProperty("result");
@@ -76,7 +106,7 @@ public class ResponseReceiver : IResponseReceiver, IDisposable
         // Check if 'items' property exists
         if (!resultElement.TryGetProperty("items", out var itemsElement))
         {
-            return Array.Empty<AutoCompletionItem>();
+            return [];
         }
 
         var completions = itemsElement.EnumerateArray()

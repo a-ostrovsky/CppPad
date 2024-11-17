@@ -37,23 +37,23 @@ public class ClangdService : IAutoCompletionService, IDisposable
         return _initializeTask.Value;
     }
 
-    public async Task UpdateSettingsAsync(ScriptDocument scriptDocument)
+    public async Task UpdateSettingsAsync(ScriptDocument document)
     {
-        await _scriptLoader.CreateCppFileAsync(scriptDocument);
-        var settings = CreateScriptDocumentSettings(scriptDocument);
+        await _scriptLoader.CreateCppFileAsync(document);
+        var settings = CreateScriptDocumentSettings(document);
 
         //TODO: Don't use dict of anonymous types.
         await _requestSender.SendDidChangeConfigurationAsync(settings);
     }
 
-    public async Task OpenFileAsync(ScriptDocument scriptDocument)
+    public async Task OpenFileAsync(ScriptDocument document)
     {
         await EnsureInitializedAsync();
 
-        await _scriptLoader.CreateCppFileAsync(scriptDocument);
-        var path = _scriptLoader.GetCppFilePath(scriptDocument);
-        var content = scriptDocument.Script.Content;
-        var settings = CreateScriptDocumentSettings(scriptDocument);
+        await _scriptLoader.CreateCppFileAsync(document);
+        var path = _scriptLoader.GetCppFilePath(document);
+        var content = document.Script.Content;
+        var settings = CreateScriptDocumentSettings(document);
 
         await _requestSender.SendDidOpenAsync(path, content);
         _documentVersions[path] = 1;
@@ -62,32 +62,53 @@ public class ClangdService : IAutoCompletionService, IDisposable
     }
 
     public async Task<AutoCompletionItem[]> GetCompletionsAsync(
-        ScriptDocument scriptDocument, Position position)
+        ScriptDocument document, Position position)
     {
-        var path = _scriptLoader.GetCppFilePath(scriptDocument);
+        var path = _scriptLoader.GetCppFilePath(document);
         await EnsureInitializedAsync();
 
+        var positionInFile = new PositionInFile
+        {
+            FileName = path,
+            Position = position
+        };
+        
         var requestId =
-            await _requestSender.SendCompletionRequestAsync(path, 
-                position.Line, position.Character);
+            await _requestSender.SendCompletionRequestAsync(positionInFile);
         return await _responseReceiver.ReadCompletionsAsync(requestId);
     }
 
-    public async Task CloseFileAsync(ScriptDocument scriptDocument)
+    public async Task<PositionInFile[]> GetDefinitionsAsync(ScriptDocument document, Position position)
+    {
+        var path = _scriptLoader.GetCppFilePath(document);
+        await EnsureInitializedAsync();
+
+        var positionInFile = new PositionInFile
+        {
+            FileName = path,
+            Position = position
+        };
+        
+        var requestId =
+            await _requestSender.SendFindDefinitionAsync(positionInFile);
+        return await _responseReceiver.ReadDefinitionsAsync(requestId);
+    }
+
+    public async Task CloseFileAsync(ScriptDocument document)
     {
         await EnsureInitializedAsync();
-        var path = _scriptLoader.GetCppFilePath(scriptDocument);
+        var path = _scriptLoader.GetCppFilePath(document);
         await _requestSender.SendDidCloseAsync(path);
         _documentVersions.Remove(path);
     }
 
-    public async Task UpdateContentAsync(ScriptDocument scriptDocument)
+    public async Task UpdateContentAsync(ScriptDocument document)
     {
         await EnsureInitializedAsync();
-        var path = _scriptLoader.GetCppFilePath(scriptDocument);
+        var path = _scriptLoader.GetCppFilePath(document);
 
         var version = GetNextDocumentVersion(path);
-        await _requestSender.SendDidChangeAsync(path, version, scriptDocument.Script.Content);
+        await _requestSender.SendDidChangeAsync(path, version, document.Script.Content);
     }
 
     public void Dispose()
@@ -101,11 +122,11 @@ public class ClangdService : IAutoCompletionService, IDisposable
         OnDiagnosticsReceived?.Invoke(this, e);
     }
 
-    private Dictionary<string, object> CreateScriptDocumentSettings(ScriptDocument scriptDocument)
+    private Dictionary<string, object> CreateScriptDocumentSettings(ScriptDocument document)
     {
-        var path = _scriptLoader.GetCppFilePath(scriptDocument);
+        var path = _scriptLoader.GetCppFilePath(document);
 
-        var cppStandard = scriptDocument.Script.CppStandard switch
+        var cppStandard = document.Script.CppStandard switch
         {
             CppStandard.Cpp11 => "c++11",
             CppStandard.Cpp14 => "c++14",

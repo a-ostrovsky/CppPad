@@ -1,4 +1,5 @@
 ﻿using CppPad.AutoCompletion.Clangd.Interface;
+using CppPad.AutoCompletion.Interface;
 using static CppPad.AutoCompletion.Clangd.Impl.Utils;
 
 namespace CppPad.AutoCompletion.Clangd.Impl;
@@ -123,9 +124,9 @@ public class RequestSender(ILspClient client) : IRequestSender
         return client.SendMessageAsync(didCloseNotification);
     }
 
-    public async Task<int> SendCompletionRequestAsync(string fileName, int line, int character)
+    public async Task<int> SendCompletionRequestAsync(PositionInFile positionInFile)
     {
-        var uri = PathToUriFormat(fileName);
+        var uri = PathToUriFormat(positionInFile.FileName);
         var requestId = client.GetNextRequestId();
         var completionRequest = new
         {
@@ -140,12 +141,38 @@ public class RequestSender(ILspClient client) : IRequestSender
                 },
                 position = new
                 {
-                    line,
-                    character
+                    line = positionInFile.Position.Line,
+                    character = positionInFile.Position.Character
                 }
             }
         };
         await client.SendMessageAsync(completionRequest);
+        return requestId;
+    }
+
+    public async Task<int> SendFindDefinitionAsync(PositionInFile positionInFile)
+    {
+        var uri = PathToUriFormat(positionInFile.FileName);
+        var requestId = client.GetNextRequestId();
+        var definitionRequest = new
+        {
+            jsonrpc = "2.0",
+            id = requestId,
+            method = "textDocument/definition",
+            @params = new
+            {
+                textDocument = new
+                {
+                    uri
+                },
+                position = new
+                {
+                    line = positionInFile.Position.Line,
+                    character = positionInFile.Position.Character
+                }
+            }
+        };
+        await client.SendMessageAsync(definitionRequest);
         return requestId;
     }
 }

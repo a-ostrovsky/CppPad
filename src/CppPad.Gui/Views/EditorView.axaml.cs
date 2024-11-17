@@ -1,8 +1,8 @@
 #region
 
 using System;
-using System.Diagnostics;
 using Avalonia.Controls;
+using CppPad.Gui.ErrorHandling;
 using CppPad.Gui.ViewModels;
 
 #endregion
@@ -22,6 +22,7 @@ public partial class EditorView : UserControl
         InitializeComponent();
         Init();
         DataContext = viewModel;
+        SourceCodeEditor.DataContext = viewModel;
     }
 
     private void Init()
@@ -41,9 +42,16 @@ public partial class EditorView : UserControl
             throw new InvalidOperationException("DataContext is not EditorViewModel");
         }
 
-        var sourceCodeEditor = this.FindControl<SourceCodeEditorView>("SourceCodeEditor");
-        Debug.Assert(sourceCodeEditor != null);
-
-        vm.GoToLineRequested += (_, args) => { SourceCodeEditor.ScrollToLine(args.Line); };
+        // For whatever reason the binding does not always work. :(
+        SourceCodeEditor.SetViewModel(vm);
+        vm.GoToLineRequested += (_, args) =>
+        {
+            SourceCodeEditor.ScrollTo(args.Line, args.Character);
+        };
+        vm.GoToDefinitionsRequested += async (_, _) =>
+        {
+            await ErrorHandler.Instance.RunWithErrorHandlingAsync(() =>
+                SourceCodeEditor.ShowDefinitionsAsync());
+        };
     }
 }

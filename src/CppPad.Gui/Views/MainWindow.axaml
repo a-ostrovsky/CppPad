@@ -93,6 +93,9 @@
                         <MenuItem Header="_Run (F5)"
                                   Command="{CompiledBinding CurrentEditor.RunCommand, FallbackValue={x:Null}}"
                                   HotKey="F5" />
+                        <MenuItem Header="_Go To Definition (F8)"
+                                  Command="{CompiledBinding CurrentEditor.GoToDefinitionsCommand, FallbackValue={x:Null}}"
+                                  HotKey="F8"/>
                         <Separator />
                         <MenuItem Header="_Script Settings (F4)..."
                                   Command="{CompiledBinding CurrentEditor.EditScriptSettingsCommand, FallbackValue={x:Null}}"
