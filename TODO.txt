@@ -1,6 +1,0 @@
-//TODO: 
-x64/x86 in vcvarsallPath -> DONE
-delete obj files, set target folder -> DONE
-add lib dependencies with path, -> DONE
-show message boxes from app,  -> DONE
-set path for app (or other pre build things...) -> DONE
