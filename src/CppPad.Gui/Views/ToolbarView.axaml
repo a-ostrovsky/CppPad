@@ -1,0 +1,24 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="CppPad.Gui.Views.ToolbarView"
+             Background="#FFDDDDDD">
+    <StackPanel Orientation="Horizontal">
+        <Button Content="📄" />
+        <SplitButton Content="💾">
+            <SplitButton.Flyout>
+                <MenuFlyout>
+                    <MenuItem Header="Save" />
+                    <MenuItem Header="Save As" />
+                </MenuFlyout>
+            </SplitButton.Flyout>
+        </SplitButton>
+        <StackPanel Orientation="Horizontal"
+                    Margin="10 0 0 0">
+            <Button Content="▶️" />
+            <Button Content="⏹️" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

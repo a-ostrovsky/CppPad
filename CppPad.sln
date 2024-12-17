@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B508AB1A-171F-4854-ADA5-B06E68CA39FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Gui", "src\CppPad.Gui\CppPad.Gui.csproj", "{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{5C64E108-8093-42DF-A97C-170F6971BC67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Gui.Tests", "test\CppPad.Gui.Tests\CppPad.Gui.Tests.csproj", "{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}"
+EndProject
+Global
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Debug|x64.Build.0 = Debug|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Debug|x86.Build.0 = Debug|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Release|x64.ActiveCfg = Release|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Release|x64.Build.0 = Release|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Release|x86.ActiveCfg = Release|Any CPU
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA}.Release|x86.Build.0 = Release|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Debug|x64.Build.0 = Debug|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Debug|x86.Build.0 = Debug|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Release|x64.ActiveCfg = Release|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Release|x64.Build.0 = Release|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Release|x86.ActiveCfg = Release|Any CPU
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA} = {B508AB1A-171F-4854-ADA5-B06E68CA39FB}
+		{AE2EB910-927E-4022-BE81-9DBB8FFE92AF} = {5C64E108-8093-42DF-A97C-170F6971BC67}
+	EndGlobalSection
+	GlobalSection(RiderSharedRunConfigurations) = postSolution
+		File = Deploy.run\Publish CppPad.Gui.run.xml
+	EndGlobalSection
+EndGlobal
