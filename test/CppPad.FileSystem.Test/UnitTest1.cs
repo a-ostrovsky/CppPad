@@ -1,4 +1,4 @@
-﻿namespace CppPad.Gui.Tests;
+﻿namespace CppPad.FileSystem.Test;
 
 public class UnitTest1
 {

@@ -2,11 +2,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:CppPad.Gui.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="CppPad.Gui.Views.ToolbarView"
+             x:DataType="viewModels:ToolbarViewModel"
+             d:DataContext="{x:Static viewModels:ToolbarViewModel.DesignInstance}"
              Background="#FFDDDDDD">
     <StackPanel Orientation="Horizontal">
-        <Button Content="📄" />
+        <Button Content="📄" 
+                Command="{Binding CreateNewFileCommand}"
+                HotKey="Ctrl+N">
+            <ToolTip.Tip>
+                Creates a new file (Ctrl+N).
+            </ToolTip.Tip>
+        </Button>
         <SplitButton Content="💾">
             <SplitButton.Flyout>
                 <MenuFlyout>
@@ -15,6 +24,7 @@
                 </MenuFlyout>
             </SplitButton.Flyout>
         </SplitButton>
+        <Button Content="📂" />
         <StackPanel Orientation="Horizontal"
                     Margin="10 0 0 0">
             <Button Content="▶️" />

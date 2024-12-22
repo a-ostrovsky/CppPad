@@ -6,6 +6,7 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
         <LangVersion>default</LangVersion>
+        <RootNamespace>CppPad.Gui.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
