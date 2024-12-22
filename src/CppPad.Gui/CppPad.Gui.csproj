@@ -26,4 +26,8 @@
             <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CppPad.Scripting\CppPad.Scripting.csproj" />
+    </ItemGroup>
 </Project>

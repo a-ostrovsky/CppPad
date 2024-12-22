@@ -9,15 +9,16 @@
              d:DataContext="{x:Static viewModels:OpenEditorsViewModel.DesignInstance}"
              x:Class="CppPad.Gui.Views.OpenEditors">
     <TabControl ItemsSource="{Binding Editors}"
-                SelectedItem="{Binding CurrentEditor}">
+                SelectedItem="{Binding CurrentEditor}"
+                DragDrop.AllowDrop="True">
         <TabControl.ItemTemplate>
             <DataTemplate>
                 <Grid ColumnDefinitions="* Auto">
-                    <TextBlock Grid.Column="0" 
-                               VerticalAlignment="Center" 
+                    <TextBlock Grid.Column="0"
+                               VerticalAlignment="Center"
                                Text="{Binding Title}" />
-                    <Button Grid.Column="1" 
-                            Content="x" 
+                    <Button Grid.Column="1"
+                            Content="x"
                             Command="{Binding CloseCommand}"
                             VerticalAlignment="Center"
                             Foreground="DimGray"

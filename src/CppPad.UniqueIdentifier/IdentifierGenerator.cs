@@ -1,6 +1,6 @@
 ﻿namespace CppPad.UniqueIdentifier;
 
-public class IdGenerator
+public class IdentifierGenerator
 {
     private static readonly List<string> Adjectives =
     [
