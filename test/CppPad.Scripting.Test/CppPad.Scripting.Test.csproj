@@ -21,6 +21,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\CppPad.Scripting\CppPad.Scripting.csproj" />
+      <ProjectReference Include="..\CppPad.MockFileSystem\CppPad.MockFileSystem.csproj" />
       <ProjectReference Include="..\CppPad.UniqueIdentifier.Test\CppPad.UniqueIdentifier.Test.csproj" />
     </ItemGroup>
 

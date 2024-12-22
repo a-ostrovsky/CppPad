@@ -4,7 +4,7 @@ using DeepEqual.Syntax;
 
 namespace CppPad.Scripting.Test;
 
-public class SerializationTest
+public class SerializerTest
 {
     private readonly ScriptSerializer _serializer = new();
 
