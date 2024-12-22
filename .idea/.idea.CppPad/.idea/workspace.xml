@@ -11,13 +11,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6963a183-237b-42df-8cc6-75cb8208043d" name="Changes" comment="Can create new tab">
+    <list default="true" id="6963a183-237b-42df-8cc6-75cb8208043d" name="Changes" comment="Can close the editors">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/EditorViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/EditorViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/OpenEditorsViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/OpenEditorsViewModel.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/Views/OpenEditors.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/OpenEditors.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/CppPad.Gui.Test/MainWindowViewModelTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/test/CppPad.Gui.Test/CrudTest.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/App.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/Views/SourceCodeView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/SourceCodeView.axaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +42,7 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4296f45f75a74ea3a676ec19bb54a03d14928/29/4b41023e/ICommand.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/906dc7459b29a3c66ebc05a3ab7a19f7e1a67a5d7e4d71f989e1efb37fadb1/CollectionAsserts.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/bef7505371df9ada22512fcb04dade088adcf54a76c6199f0e5e3531094ddae/UndoStack.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="mock://E:/source/CppPad/src/CppPad.Gui/App.axaml.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/test/CppPad.FileSystem.Test/UnitTest1.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
@@ -148,7 +146,7 @@
       <workItem from="1734468060028" duration="463000" />
       <workItem from="1734468594714" duration="739000" />
       <workItem from="1734469354392" duration="2343000" />
-      <workItem from="1734589487466" duration="12127000" />
+      <workItem from="1734589487466" duration="12266000" />
     </task>
     <task id="LOCAL-00001" summary="Initial version.">
       <option name="closed" value="true" />
@@ -174,7 +172,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734865124193</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Can close the editors">
+      <option name="closed" value="true" />
+      <created>1734886279854</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1734886279854</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -186,24 +192,12 @@
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Initial version." />
     <MESSAGE value="Can create new tab" />
-    <option name="LAST_COMMIT_MESSAGE" value="Can create new tab" />
+    <MESSAGE value="Can close the editors" />
+    <option name="LAST_COMMIT_MESSAGE" value="Can close the editors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs</url>
-          <line>29</line>
-          <properties documentPath="E:\source\CppPad\src\CppPad.Gui\ViewModels\MainWindowViewModel.cs" containingFunctionPresentation="Method 'OnCloseRequested'">
-            <startOffsets>
-              <option value="887" />
-            </startOffsets>
-            <endOffsets>
-              <option value="925" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="DotNet Breakpoints">
           <url>file://$PROJECT_DIR$/test/CppPad.Gui.Test/CrudTest.cs</url>
           <line>29</line>
@@ -216,19 +210,6 @@
             </endOffsets>
           </properties>
           <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs</url>
-          <line>23</line>
-          <properties documentPath="E:\source\CppPad\src\CppPad.Gui\ViewModels\MainWindowViewModel.cs" containingFunctionPresentation="Method 'OnCreateNewFileRequested'">
-            <startOffsets>
-              <option value="711" />
-            </startOffsets>
-            <endOffsets>
-              <option value="751" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

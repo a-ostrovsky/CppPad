@@ -102,8 +102,6 @@ public partial class SourceCodeView : UserControl
             Editor.ScrollToLine(_viewModel!.CurrentLine);
             Editor.CaretOffset = GetCaretOffsetForLine(Editor, _viewModel.CurrentLine) + _viewModel.CurrentColumn;
         }
-
-        Editor.Text = _viewModel.SourceCode;
     }
 
     private static int GetCaretOffsetForLine(TextEditor textEditor, int line)
