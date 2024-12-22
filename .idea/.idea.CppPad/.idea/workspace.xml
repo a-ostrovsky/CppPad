@@ -11,9 +11,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6963a183-237b-42df-8cc6-75cb8208043d" name="Changes" comment="Can close the editors">
+    <list default="true" id="6963a183-237b-42df-8cc6-75cb8208043d" name="Changes" comment="Added missing style for the editor control">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/App.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/App.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/SourceCodeViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/SourceCodeViewModel.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/Views/SourceCodeView.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/SourceCodeView.axaml.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -146,7 +146,7 @@
       <workItem from="1734468060028" duration="463000" />
       <workItem from="1734468594714" duration="739000" />
       <workItem from="1734469354392" duration="2343000" />
-      <workItem from="1734589487466" duration="12266000" />
+      <workItem from="1734589487466" duration="12390000" />
     </task>
     <task id="LOCAL-00001" summary="Initial version.">
       <option name="closed" value="true" />
@@ -180,7 +180,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734886279854</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Added missing style for the editor control">
+      <option name="closed" value="true" />
+      <created>1734886427560</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1734886427560</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -193,7 +201,8 @@
     <MESSAGE value="Initial version." />
     <MESSAGE value="Can create new tab" />
     <MESSAGE value="Can close the editors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Can close the editors" />
+    <MESSAGE value="Added missing style for the editor control" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added missing style for the editor control" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

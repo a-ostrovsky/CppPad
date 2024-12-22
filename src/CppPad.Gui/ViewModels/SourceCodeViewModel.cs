@@ -1,11 +1,13 @@
-﻿namespace CppPad.Gui.ViewModels;
+﻿using System;
+
+namespace CppPad.Gui.ViewModels;
 
 public class SourceCodeViewModel : ViewModelBase
 {
     private int _currentColumn;
     private int _currentLine;
 
-    private string _sourceCode = "// Type code here";
+    private string _sourceCode = $"// Type code here{Environment.NewLine}";
 
     public static SourceCodeViewModel DesignInstance { get; } = new()
     {

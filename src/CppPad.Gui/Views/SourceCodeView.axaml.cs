@@ -86,6 +86,7 @@ public partial class SourceCodeView : UserControl
         if (_viewModel != null)
         {
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+            Editor.Text = _viewModel.SourceCode;
         }
     }
 
