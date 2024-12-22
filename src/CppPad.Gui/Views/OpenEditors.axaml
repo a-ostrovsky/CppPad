@@ -12,7 +12,17 @@
                 SelectedItem="{Binding CurrentEditor}">
         <TabControl.ItemTemplate>
             <DataTemplate>
-                <TextBlock Text="{Binding Title}" />
+                <Grid ColumnDefinitions="* Auto">
+                    <TextBlock Grid.Column="0" 
+                               VerticalAlignment="Center" 
+                               Text="{Binding Title}" />
+                    <Button Grid.Column="1" 
+                            Content="x" 
+                            Command="{Binding CloseCommand}"
+                            VerticalAlignment="Center"
+                            Foreground="DimGray"
+                            Background="{x:Null}" />
+                </Grid>
             </DataTemplate>
         </TabControl.ItemTemplate>
         <TabControl.ContentTemplate>

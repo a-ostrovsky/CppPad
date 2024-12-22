@@ -25,10 +25,11 @@ public class OpenEditorsViewModel(Func<EditorViewModel> editorViewModelFactory) 
         set => SetProperty(ref _currentEditor, value);
     }
 
-    public void AddNewEditor()
+    public EditorViewModel AddNewEditor()
     {
         var editor = editorViewModelFactory();
         Editors.Add(editor);
         CurrentEditor = editor;
+        return editor;
     }
 }

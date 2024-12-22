@@ -11,42 +11,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6963a183-237b-42df-8cc6-75cb8208043d" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/riderPublish.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.FileSystem/InternalStorage.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Bootstrapping/Bootstrapper.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Bootstrapping/GuiBootstrapper.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/RelayCommand.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/ApplicationOutputViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/CompilerOutputViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/EditorViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/OpenEditorsViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/SourceCodeViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/ToolbarViewModel.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/ViewModelBase.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/ApplicationOutputWindow.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/ApplicationOutputWindow.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/CompilerOutputView.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/CompilerOutputView.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/EditorView.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/EditorView.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/OpenEditors.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/OpenEditors.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/SourceCodeView.axaml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/SourceCodeView.axaml.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/CppPad.UniqueIdentifier/Id.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/CppPad.Common.Test/CppPad.Common.Test.csproj" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/test/CppPad.FileSystem.Test/CppPad.FileSystem.Test.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/avalonia.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/avalonia.xml" afterDir="false" />
+    <list default="true" id="6963a183-237b-42df-8cc6-75cb8208043d" name="Changes" comment="Can create new tab">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.CppPad/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CppPad.sln" beforeDir="false" afterPath="$PROJECT_DIR$/CppPad.sln" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/App.axaml.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/App.axaml.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/CppPad.Gui.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/CppPad.Gui.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/Views/MainWindow.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/MainWindow.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/Views/ToolbarView.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/ToolbarView.axaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/CppPad.Gui.Tests/CppPad.Gui.Tests.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/test/CppPad.Gui.Test/CppPad.Gui.Test.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/CppPad.Gui.Tests/UnitTest1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/test/CppPad.Gui.Test/UnitTest1.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/EditorViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/EditorViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/OpenEditorsViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/ViewModels/OpenEditorsViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CppPad.Gui/Views/OpenEditors.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/src/CppPad.Gui/Views/OpenEditors.axaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/CppPad.Gui.Test/MainWindowViewModelTests.cs" beforeDir="false" afterPath="$PROJECT_DIR$/test/CppPad.Gui.Test/CrudTest.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +43,9 @@
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="mock://E:/source/CppPad/src/CppPad.Gui/Views/ToolbarView.axaml" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/4296f45f75a74ea3a676ec19bb54a03d14928/29/4b41023e/ICommand.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/906dc7459b29a3c66ebc05a3ab7a19f7e1a67a5d7e4d71f989e1efb37fadb1/CollectionAsserts.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="mock://E:/source/CppPad/src/CppPad.Gui/App.axaml.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/test/CppPad.FileSystem.Test/UnitTest1.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
@@ -96,6 +69,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "db0ce926-d468-4a64-a9c3-dba1c033944c.executor": "Debug",
     "git-widget-placeholder": "Rewrite",
     "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
@@ -174,7 +148,7 @@
       <workItem from="1734468060028" duration="463000" />
       <workItem from="1734468594714" duration="739000" />
       <workItem from="1734469354392" duration="2343000" />
-      <workItem from="1734589487466" duration="7685000" />
+      <workItem from="1734589487466" duration="12127000" />
     </task>
     <task id="LOCAL-00001" summary="Initial version.">
       <option name="closed" value="true" />
@@ -192,7 +166,15 @@
       <option name="project" value="LOCAL" />
       <updated>1734470269618</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Can create new tab">
+      <option name="closed" value="true" />
+      <created>1734865124193</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1734865124193</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -203,7 +185,53 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Initial version." />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial version." />
+    <MESSAGE value="Can create new tab" />
+    <option name="LAST_COMMIT_MESSAGE" value="Can create new tab" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs</url>
+          <line>29</line>
+          <properties documentPath="E:\source\CppPad\src\CppPad.Gui\ViewModels\MainWindowViewModel.cs" containingFunctionPresentation="Method 'OnCloseRequested'">
+            <startOffsets>
+              <option value="887" />
+            </startOffsets>
+            <endOffsets>
+              <option value="925" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/test/CppPad.Gui.Test/CrudTest.cs</url>
+          <line>29</line>
+          <properties documentPath="E:\source\CppPad\test\CppPad.Gui.Test\CrudTest.cs" containingFunctionPresentation="Method 'CloseEditor_closes_current_editor_and_selects_next'">
+            <startOffsets>
+              <option value="1023" />
+            </startOffsets>
+            <endOffsets>
+              <option value="1058" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="DotNet Breakpoints">
+          <url>file://$PROJECT_DIR$/src/CppPad.Gui/ViewModels/MainWindowViewModel.cs</url>
+          <line>23</line>
+          <properties documentPath="E:\source\CppPad\src\CppPad.Gui\ViewModels\MainWindowViewModel.cs" containingFunctionPresentation="Method 'OnCreateNewFileRequested'">
+            <startOffsets>
+              <option value="711" />
+            </startOffsets>
+            <endOffsets>
+              <option value="751" />
+            </endOffsets>
+          </properties>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
