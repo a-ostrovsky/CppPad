@@ -10,6 +10,7 @@ public class MainWindowViewModel : ViewModelBase
         OpenEditors = openEditorsViewModel;
         Toolbar = toolbar;
         Toolbar.CreateNewFileRequested += OnCreateNewFileRequested;
+        CreateNewFile();
     }
 
     public static MainWindowViewModel DesignInstance { get; } =
@@ -20,6 +21,11 @@ public class MainWindowViewModel : ViewModelBase
     public OpenEditorsViewModel OpenEditors { get; }
 
     private void OnCreateNewFileRequested(object? sender, EventArgs e)
+    {
+        CreateNewFile();
+    }
+
+    private void CreateNewFile()
     {
         var editor = OpenEditors.AddNewEditor();
         editor.CloseRequested += OnCloseRequested;

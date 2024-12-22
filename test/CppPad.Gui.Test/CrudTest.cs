@@ -4,10 +4,24 @@ public class CrudTest
 {
     private readonly Bootstrapper _bootstrapper = new();
 
+    private void CloseAllEditors()
+    {
+        _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor?.CloseCommand.Execute(null);
+    }
+
+    [Fact]
+    public void Create_new_file_upon_startup()
+    {
+        // Assert
+        Assert.Single(_bootstrapper.OpenEditorsViewModel.Editors);
+        Assert.Equal(_bootstrapper.OpenEditorsViewModel.Editors[0], _bootstrapper.OpenEditorsViewModel.CurrentEditor);
+    }
+    
     [Fact]
     public void CreateNewFile_creates_new_tab()
     {
         // Arrange & Act
+        CloseAllEditors();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         
         // Assert
@@ -20,6 +34,7 @@ public class CrudTest
     public void CloseEditor_closes_current_editor_and_selects_next()
     {
         // Arrange
+        CloseAllEditors();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         var editor1 = _bootstrapper.OpenEditorsViewModel.Editors[0];
@@ -38,6 +53,7 @@ public class CrudTest
     public void CloseEditor_closes_current_editor_and_selects_previous()
     {
         // Arrange
+        CloseAllEditors();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         var editor1 = _bootstrapper.OpenEditorsViewModel.Editors[0];
@@ -56,6 +72,7 @@ public class CrudTest
     public void CloseEditor_closes_last_editor()
     {
         // Arrange
+        CloseAllEditors();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         var editor = _bootstrapper.OpenEditorsViewModel.Editors[0];
 
