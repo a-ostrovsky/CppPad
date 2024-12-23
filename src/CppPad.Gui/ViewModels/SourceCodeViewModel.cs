@@ -7,11 +7,11 @@ public class SourceCodeViewModel : ViewModelBase
     private int _currentColumn;
     private int _currentLine;
 
-    private string _sourceCode = $"// Type code here{Environment.NewLine}";
+    private string _content = $"// Type code here{Environment.NewLine}";
 
     public static SourceCodeViewModel DesignInstance { get; } = new()
     {
-        SourceCode = """
+        Content = """
                      #include <iostream>
                      void main() {
                          std::cout << "Hello, World!";
@@ -19,10 +19,10 @@ public class SourceCodeViewModel : ViewModelBase
                      """
     };
 
-    public string SourceCode
+    public string Content
     {
-        get => _sourceCode;
-        set => SetProperty(ref _sourceCode, value);
+        get => _content;
+        set => SetProperty(ref _content, value);
     }
 
     public int CurrentLine

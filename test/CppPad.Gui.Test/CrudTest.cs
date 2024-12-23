@@ -1,8 +1,12 @@
-﻿namespace CppPad.Gui.Tests;
+﻿using CppPad.Scripting;
+using CppPad.UniqueIdentifier;
+
+namespace CppPad.Gui.Tests;
 
 public class CrudTest
 {
     private readonly Bootstrapper _bootstrapper = new();
+    private readonly FakeDialogs _dialogs = FakeDialogs.Use();
 
     private void CloseAllEditors()
     {
@@ -82,5 +86,36 @@ public class CrudTest
         // Assert
         Assert.Empty(_bootstrapper.OpenEditorsViewModel.Editors);
         Assert.Null(_bootstrapper.OpenEditorsViewModel.CurrentEditor);
+    }
+
+    [Fact]
+    public async Task Load_form_file_and_close_afterwards()
+    {
+        var scriptDocument = new ScriptDocument
+        {
+            Script = new ScriptData
+            {
+                Content = "int main() { return 0; }",
+                BuildSettings = new CppBuildSettings
+                {
+                    OptimizationLevel = OptimizationLevel.O2,
+                    CppStandard = CppStandard.Cpp17
+                }
+            },
+            Identifier = new Identifier("12345"),
+            FileName = "s.cpppad"
+        };
+        await _bootstrapper.ScriptLoader.SaveAsync(scriptDocument, @"C:\s.cpppad");
+        
+        _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
+        _bootstrapper.ToolbarViewModel.OpenFileCommand.Execute(null);
+
+        Assert.Equal(_bootstrapper.OpenEditorsViewModel.CurrentEditor, _bootstrapper.OpenEditorsViewModel.Editors[^1]);
+        Assert.Equal(_bootstrapper.OpenEditorsViewModel.CurrentEditor?.SourceCode.Content, scriptDocument.Script.Content);
+        Assert.Contains("s.cpppad", _bootstrapper.OpenEditorsViewModel.CurrentEditor?.Title);
+
+        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor;
+        _bootstrapper.OpenEditorsViewModel.CurrentEditor?.CloseCommand.Execute(null);
+        Assert.DoesNotContain(editor, _bootstrapper.OpenEditorsViewModel.Editors);
     }
 }

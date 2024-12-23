@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using Avalonia.Threading;
+using CppPad.FileSystem;
 
 namespace CppPad.Gui.ViewModels;
 
@@ -10,7 +12,30 @@ public class MainWindowViewModel : ViewModelBase
         OpenEditors = openEditorsViewModel;
         Toolbar = toolbar;
         Toolbar.CreateNewFileRequested += OnCreateNewFileRequested;
-        CreateNewFile();
+        Toolbar.OpenFileRequested += OnOpenFileRequested;
+        CreateNewEditor();
+    }
+
+    private async void OnOpenFileRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            var fileName = await Dialogs.Instance.ShowFileOpenDialogAsync(Extensions.CppPadFileFilter);
+            if (fileName == null)
+            {
+                return;
+            }
+
+            await Dispatcher.UIThread.Invoke(async () =>
+            {
+                var editor = CreateNewEditor();
+                await editor.OpenFileAsync(fileName);
+            });
+        }
+        catch (Exception ex)
+        {
+            Dialogs.Instance.NotifyError("Failed to open file.", ex);
+        }
     }
 
     public static MainWindowViewModel DesignInstance { get; } =
@@ -22,13 +47,14 @@ public class MainWindowViewModel : ViewModelBase
 
     private void OnCreateNewFileRequested(object? sender, EventArgs e)
     {
-        CreateNewFile();
+        CreateNewEditor();
     }
 
-    private void CreateNewFile()
+    private EditorViewModel CreateNewEditor()
     {
         var editor = OpenEditors.AddNewEditor();
         editor.CloseRequested += OnCloseRequested;
+        return editor;
     }
 
     private void OnCloseRequested(object? sender, EventArgs e)

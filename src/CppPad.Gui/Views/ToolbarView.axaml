@@ -24,7 +24,12 @@
                 </MenuFlyout>
             </SplitButton.Flyout>
         </SplitButton>
-        <Button Content="📂" />
+        <Button Content="📂" Command="{Binding OpenFileCommand}"
+                HotKey="Ctrl+O">
+            <ToolTip.Tip>
+                Opens a file from disk (Ctrl+O).
+            </ToolTip.Tip>
+        </Button>
         <StackPanel Orientation="Horizontal"
                     Margin="10 0 0 0">
             <Button Content="▶️" />

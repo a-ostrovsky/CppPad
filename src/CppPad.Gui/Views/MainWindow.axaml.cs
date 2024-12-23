@@ -1,6 +1,7 @@
 #region
 
 using Avalonia.Controls;
+using Avalonia.Interactivity;
 
 #endregion
 
@@ -11,5 +12,10 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+    }
+
+    private void OnLoaded(object? sender, RoutedEventArgs e)
+    {
+        Dialogs.SetMainWindow(this);
     }
 }

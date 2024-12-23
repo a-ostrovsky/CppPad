@@ -8,6 +8,7 @@
         x:Class="CppPad.Gui.Views.MainWindow"
         x:DataType="viewModels:MainWindowViewModel"
         d:DataContext="{x:Static viewModels:MainWindowViewModel.DesignInstance}"
+        Loaded="OnLoaded"
         Title="CppPad">
     <Grid RowDefinitions="Auto *">
         <views:ToolbarView Grid.Row="0" DataContext="{Binding Toolbar}" />

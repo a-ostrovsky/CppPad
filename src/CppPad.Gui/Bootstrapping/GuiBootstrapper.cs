@@ -4,8 +4,11 @@ namespace CppPad.Gui.Bootstrapping;
 
 public class GuiBootstrapper
 {
-    public GuiBootstrapper()
+    private readonly Bootstrapper _parent;
+
+    public GuiBootstrapper(Bootstrapper parent)
     {
+        _parent = parent;
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel();
         MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel);
@@ -17,8 +20,8 @@ public class GuiBootstrapper
 
     public ToolbarViewModel ToolbarViewModel { get; }
 
-    private static EditorViewModel CreateEditorViewModel()
+    private EditorViewModel CreateEditorViewModel()
     {
-        return new EditorViewModel(new SourceCodeViewModel());
+        return new EditorViewModel(_parent.ScriptingBootstrapper.ScriptLoader, new SourceCodeViewModel());
     }
 }

@@ -30,8 +30,18 @@ public class LoaderTest
             Identifier = new Identifier("12345"),
             FileName = "test.cpp"
         };
-        await loader.SaveAsync(originalDocument, @"c:\test.json");
-        var loadedDocument = await loader.LoadAsync(@"c:\test.json");
-        loadedDocument.ShouldDeepEqual(originalDocument);
+        { // Async test
+            await loader.SaveAsync(originalDocument, @"c:\test.json");
+            var loadedDocument = await loader.LoadAsync(@"c:\test.json");
+            loadedDocument.ShouldDeepEqual(originalDocument);
+        }
+        {
+            // Sync test
+            // ReSharper disable MethodHasAsyncOverload
+            loader.Save(originalDocument, @"c:\test.json");
+            var loadedDocument = loader.Load(@"c:\test.json");
+            // ReSharper restore MethodHasAsyncOverload
+            loadedDocument.ShouldDeepEqual(originalDocument);
+        }
     }
 }

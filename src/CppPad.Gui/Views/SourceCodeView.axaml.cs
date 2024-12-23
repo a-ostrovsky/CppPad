@@ -67,7 +67,7 @@ public partial class SourceCodeView : UserControl
         try
         {
             _isInternalChange = true;
-            _viewModel.SourceCode = ((TextEditor)sender!).Text;
+            _viewModel.Content = ((TextEditor)sender!).Text;
         }
         finally
         {
@@ -86,16 +86,16 @@ public partial class SourceCodeView : UserControl
         if (_viewModel != null)
         {
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
-            Editor.Text = _viewModel.SourceCode;
+            Editor.Text = _viewModel.Content;
         }
     }
 
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         Debug.Assert(_viewModel != null);
-        if (!_isInternalChange && e.PropertyName == nameof(SourceCodeViewModel.SourceCode))
+        if (!_isInternalChange && e.PropertyName == nameof(SourceCodeViewModel.Content))
         {
-            Editor.Text = _viewModel!.SourceCode;
+            Editor.Text = _viewModel!.Content;
         }
 
         if (e.PropertyName == nameof(SourceCodeViewModel.CurrentLine))
