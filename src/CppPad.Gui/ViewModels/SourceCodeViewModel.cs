@@ -55,7 +55,7 @@ public class SourceCodeViewModel : ViewModelBase
         {
             if (SetProperty(ref _scriptDocument, value))
             {
-                OnPropertyChanged(nameof(Content));
+                Content = _scriptDocument.Script.Content;
             }
         }
     }
