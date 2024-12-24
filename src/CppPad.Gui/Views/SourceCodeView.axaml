@@ -13,5 +13,5 @@
         x:Name="Editor"
         ShowLineNumbers="True"
         FontSize="16"
-        FontFamily="Cascadia Code,Consolas,Menlo,Monospace"/>
+        FontFamily="Cascadia Code,Consolas,Menlo,Monospace" />
 </UserControl>

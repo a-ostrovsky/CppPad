@@ -12,6 +12,7 @@ public interface IDialogs
 {
     void NotifyError(string message, Exception exception);
     Task<string?> ShowFileOpenDialogAsync(string filter);
+    Task<string?> ShowFileSaveDialogAsync(string filter);
 }
 
 public class Dialogs(MainWindow mainWindow) : IDialogs
@@ -45,6 +46,16 @@ public class Dialogs(MainWindow mainWindow) : IDialogs
             FileTypeFilter = ParseFilter(filter)
         });
         return result.Count == 0 ? null : result[0].Path.AbsolutePath;
+    }
+
+    public async Task<string?> ShowFileSaveDialogAsync(string filter)
+    {
+        var storageProvider = TopLevel.GetTopLevel(mainWindow)!.StorageProvider;
+        var result = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            FileTypeChoices = ParseFilter(filter)
+        });
+        return result?.Path.AbsolutePath;
     }
 
     public static void SetMainWindow(MainWindow window)

@@ -30,7 +30,8 @@ public class LoaderTest
             Identifier = new Identifier("12345"),
             FileName = "test.cpp"
         };
-        { // Async test
+        {
+            // Async test
             await loader.SaveAsync(originalDocument, @"c:\test.json");
             var loadedDocument = await loader.LoadAsync(@"c:\test.json");
             loadedDocument.ShouldDeepEqual(originalDocument);

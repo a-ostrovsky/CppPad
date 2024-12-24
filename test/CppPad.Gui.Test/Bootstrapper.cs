@@ -14,15 +14,15 @@ public class Bootstrapper
         ToolbarViewModel = new ToolbarViewModel();
         MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel);
     }
-    
+
     public InMemoryFileSystem FileSystem { get; } = new();
-    
+
     public ScriptLoader ScriptLoader { get; }
 
     public MainWindowViewModel MainWindowViewModel { get; }
 
     public OpenEditorsViewModel OpenEditorsViewModel { get; }
-    
+
     public ToolbarViewModel ToolbarViewModel { get; }
 
     private EditorViewModel CreateEditorViewModel()

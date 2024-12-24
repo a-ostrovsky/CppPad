@@ -21,7 +21,7 @@ public class EditorViewModel : ViewModelBase
     }
 
     public static EditorViewModel DesignInstance { get; } =
-        new(new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()), 
+        new(new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()),
             SourceCodeViewModel.DesignInstance);
 
     public SourceCodeViewModel SourceCode { get; }
@@ -39,7 +39,24 @@ public class EditorViewModel : ViewModelBase
     public async Task OpenFileAsync(string fileName)
     {
         var document = await _loader.LoadAsync(fileName);
-        SourceCode.Content = document.Script.Content;
+        SourceCode.ScriptDocument = document;
         Title = Path.GetFileName(document.FileName) ?? "Untitled";
+    }
+
+    public async Task SaveFileAsAsync(string fileName)
+    {
+        await _loader.SaveAsync(SourceCode.ScriptDocument, fileName);
+        SourceCode.ScriptDocument = SourceCode.ScriptDocument with { FileName = fileName };
+        Title = Path.GetFileName(fileName);
+    }
+
+    public Task SaveFileAsync()
+    {
+        if (string.IsNullOrEmpty(SourceCode.ScriptDocument.FileName))
+        {
+            throw new InvalidOperationException("File name is not set.");
+        }
+
+        return _loader.SaveAsync(SourceCode.ScriptDocument, SourceCode.ScriptDocument.FileName);
     }
 }

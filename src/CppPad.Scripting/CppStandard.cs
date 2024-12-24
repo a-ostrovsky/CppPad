@@ -8,5 +8,5 @@ public enum CppStandard
     Cpp14,
     Cpp17,
     Cpp20,
-    Cpp23,
+    Cpp23
 }

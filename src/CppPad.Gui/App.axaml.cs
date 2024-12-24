@@ -13,7 +13,7 @@ namespace CppPad.Gui;
 public class App : Application
 {
     private readonly Bootstrapper _bootstrapper = new();
-    
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);

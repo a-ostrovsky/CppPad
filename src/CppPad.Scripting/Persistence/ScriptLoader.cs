@@ -11,20 +11,20 @@ public class ScriptLoader(ScriptSerializer serializer, DiskFileSystem fileSystem
         var result = serializer.Deserialize(content);
         return result;
     }
-    
+
     public ScriptDocument Load(string fileName)
     {
         var content = fileSystem.ReadAllText(fileName);
         var result = serializer.Deserialize(content);
         return result;
     }
-    
+
     public Task SaveAsync(ScriptDocument document, string fileName)
     {
         var content = serializer.Serialize(document);
         return fileSystem.WriteAllTextAsync(fileName, content);
     }
-    
+
     public void Save(ScriptDocument document, string fileName)
     {
         var content = serializer.Serialize(document);

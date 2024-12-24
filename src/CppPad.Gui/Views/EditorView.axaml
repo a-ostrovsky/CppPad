@@ -11,7 +11,7 @@
     <Grid RowDefinitions="3* Auto 2*">
         <views:SourceCodeView Grid.Row="0" x:Name="SourceCodeView"
                               Margin="2"
-                              DataContext="{Binding SourceCode}"/>
+                              DataContext="{Binding SourceCode}" />
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
         <TabControl Grid.Row="2">
             <TabItem Header="Compiler" />

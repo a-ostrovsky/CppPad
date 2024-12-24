@@ -5,13 +5,13 @@ namespace CppPad.Gui.Bootstrapping;
 
 public class ScriptingBootstrapper
 {
-    public ScriptSerializer ScriptSerializer { get; }
-    
-    public ScriptLoader ScriptLoader { get; }
-
     public ScriptingBootstrapper(Bootstrapper parent)
     {
         ScriptSerializer = new ScriptSerializer();
         ScriptLoader = new ScriptLoader(ScriptSerializer, parent.FileSystemBootstrapper.FileSystem);
     }
+
+    public ScriptSerializer ScriptSerializer { get; }
+
+    public ScriptLoader ScriptLoader { get; }
 }

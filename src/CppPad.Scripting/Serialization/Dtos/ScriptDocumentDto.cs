@@ -6,4 +6,3 @@ public class ScriptDocumentDto
     public string Identifier { get; set; } = string.Empty;
     public string? FileName { get; set; }
 }
-
