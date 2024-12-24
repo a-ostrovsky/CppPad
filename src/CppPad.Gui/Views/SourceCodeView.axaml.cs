@@ -4,7 +4,6 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using Avalonia.Controls;
-using Avalonia.Input;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
 using CppPad.Gui.ViewModels;
@@ -17,7 +16,7 @@ namespace CppPad.Gui.Views;
 public partial class SourceCodeView : UserControl
 {
     private bool _isInternalChange;
-
+    
     private SourceCodeViewModel? _viewModel;
 
     public SourceCodeView()
@@ -29,17 +28,11 @@ public partial class SourceCodeView : UserControl
             registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp")
                 .Id));
 
+        Editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
         Editor.TextChanged += TextEditor_TextChanged;
-        Editor.PointerPressed += TextEditor_PointerPressed;
-        Editor.TextInput += TextEditor_TextInput;
     }
 
-    private void TextEditor_TextInput(object? sender, TextInputEventArgs e)
-    {
-        UpdateCursorPosition();
-    }
-
-    private void TextEditor_PointerPressed(object? sender, PointerPressedEventArgs e)
+    private void Caret_PositionChanged(object? sender, EventArgs e)
     {
         UpdateCursorPosition();
     }
@@ -53,7 +46,7 @@ public partial class SourceCodeView : UserControl
             var caretOffset = Editor.CaretOffset;
             var line = Editor.Document.GetLineByOffset(caretOffset);
             _viewModel.CurrentLine = line.LineNumber;
-            _viewModel.CurrentColumn = caretOffset - line.Offset;
+            _viewModel.CurrentColumn = caretOffset - line.Offset + 1;
         }
         finally
         {
@@ -98,10 +91,17 @@ public partial class SourceCodeView : UserControl
             Editor.Text = _viewModel!.Content;
         }
 
-        if (e.PropertyName == nameof(SourceCodeViewModel.CurrentLine))
+        if (!_isInternalChange && e.PropertyName == nameof(SourceCodeViewModel.CurrentLine))
         {
             Editor.ScrollToLine(_viewModel!.CurrentLine);
-            Editor.CaretOffset = GetCaretOffsetForLine(Editor, _viewModel.CurrentLine) + _viewModel.CurrentColumn;
+            Editor.CaretOffset = GetCaretOffsetForLine(Editor, _viewModel.CurrentLine) + _viewModel.CurrentColumn - 1;
+            Editor.TextArea.Focus();
+        }
+
+        if (!_isInternalChange && e.PropertyName == nameof(SourceCodeViewModel.CurrentColumn))
+        {
+            Editor.CaretOffset = GetCaretOffsetForLine(Editor, _viewModel.CurrentLine) + _viewModel.CurrentColumn - 1;
+            Editor.TextArea.Focus();
         }
     }
 

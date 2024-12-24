@@ -13,8 +13,9 @@ public class MainWindowViewModel : ViewModelBase
         Toolbar = toolbar;
         Toolbar.CreateNewFileRequested += OnCreateNewFileRequested;
         Toolbar.OpenFileRequested += OnOpenFileRequested;
-        Toolbar.SaveAsRequested += OnSaveAsRequested;
-        Toolbar.SaveRequested += OnSaveRequested;
+        Toolbar.SaveFileAsRequested += OnSaveFileAsRequested;
+        Toolbar.SaveFileRequested += OnSaveFileRequested;
+        Toolbar.GoToLineRequested += OnGoToLineRequested;
         CreateNewEditor();
     }
 
@@ -25,7 +26,52 @@ public class MainWindowViewModel : ViewModelBase
 
     public OpenEditorsViewModel OpenEditors { get; }
 
-    private void OnSaveRequested(object? sender, EventArgs e)
+    private async void OnGoToLineRequested(object? sender, EventArgs e)
+    {
+        try
+        {
+            var editor = OpenEditors.CurrentEditor;
+            if (editor == null)
+            {
+                return;
+            }
+
+            var lineCount = editor.SourceCode.Content.Split('\n').Length;
+            var currentLineAndColumn = $"{editor.SourceCode.CurrentLine}:{editor.SourceCode.CurrentColumn}";
+            var result = await Dialogs.Instance.InputBoxAsync(
+                $"Line[:Column]. Lines: 1 - {lineCount}",
+                "Go to Line:Column",
+                currentLineAndColumn);
+            if (result == null)
+            {
+                return;
+            }
+
+            var parts = result.Split(':');
+            if (parts.Length == 0 || !int.TryParse(parts[0], out var line) || line < 0 || line > lineCount)
+            {
+                return; // Invalid input
+            }
+
+            var column = 1;
+
+            if (parts.Length > 1 && int.TryParse(parts[1], out var parsedColumn) && parsedColumn > 0)
+            {
+                var lineContent = editor.SourceCode.Content.Split('\n')[line - 1];
+                column = Math.Min(parsedColumn, lineContent.Length);
+            }
+
+            editor.SourceCode.CurrentColumn = 1; // Set to 1 first to avoid caret position issues. The line can be too short.
+            editor.SourceCode.CurrentLine = line;
+            editor.SourceCode.CurrentColumn = column;
+        }
+        catch (Exception ex)
+        {
+            await Dialogs.Instance.NotifyErrorAsync("Failed to go to line.", ex);
+        }
+    }
+
+    private void OnSaveFileRequested(object? sender, EventArgs e)
     {
         try
         {
@@ -37,7 +83,7 @@ public class MainWindowViewModel : ViewModelBase
 
             if (editor.SourceCode.ScriptDocument.FileName == null)
             {
-                OnSaveAsRequested(sender, e);
+                OnSaveFileAsRequested(sender, e);
                 return;
             }
 
@@ -49,7 +95,7 @@ public class MainWindowViewModel : ViewModelBase
         }
     }
 
-    private async void OnSaveAsRequested(object? sender, EventArgs e)
+    private async void OnSaveFileAsRequested(object? sender, EventArgs e)
     {
         try
         {

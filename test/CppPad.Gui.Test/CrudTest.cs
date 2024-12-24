@@ -114,7 +114,7 @@ public class CrudTest
         _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
 
         // Act
-        _bootstrapper.ToolbarViewModel.SaveAsCommand.Execute(null);
+        _bootstrapper.ToolbarViewModel.SaveFileAsCommand.Execute(null);
 
         // Assert
         Assert.True(_bootstrapper.FileSystem.FileExists(@"C:\s.cpppad"));
@@ -126,7 +126,7 @@ public class CrudTest
     {
         // Arrange & Act
         _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
-        _bootstrapper.ToolbarViewModel.SaveCommand.Execute(null);
+        _bootstrapper.ToolbarViewModel.SaveFileCommand.Execute(null);
 
         // Assert
         Assert.True(_bootstrapper.FileSystem.FileExists(@"C:\s.cpppad"));
@@ -142,9 +142,9 @@ public class CrudTest
 
         // Act
         _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
-        _bootstrapper.ToolbarViewModel.SaveAsCommand.Execute(null);
+        _bootstrapper.ToolbarViewModel.SaveFileAsCommand.Execute(null);
         _dialogs.WillSelectFileWithName(@"C:\x.cpppad");
-        _bootstrapper.ToolbarViewModel.SaveCommand.Execute(null);
+        _bootstrapper.ToolbarViewModel.SaveFileCommand.Execute(null);
 
         // Assert
         // Must not save to the new file.

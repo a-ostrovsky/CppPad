@@ -4,12 +4,14 @@ public class FakeDialogs : IDialogs
 {
     private string? _fileName;
 
-    public Task NotifyErrorAsync(string message, Exception exception)
+    private string? _inputBoxResponse;
+
+    public Task NotifyErrorAsync(string message, Exception? exception)
     {
         return Task.CompletedTask;
     }
 
-    public void NotifyError(string message, Exception exception)
+    public void NotifyError(string message, Exception? exception)
     {
     }
 
@@ -23,6 +25,11 @@ public class FakeDialogs : IDialogs
         return Task.FromResult(_fileName);
     }
 
+    public Task<string?> InputBoxAsync(string prompt, string title, string defaultResponse = "")
+    {
+        return Task.FromResult(_inputBoxResponse);
+    }
+
     public static FakeDialogs Use()
     {
         var dialogs = new FakeDialogs();
@@ -33,5 +40,10 @@ public class FakeDialogs : IDialogs
     public void WillSelectFileWithName(string fileName)
     {
         _fileName = fileName;
+    }
+
+    public void WillReturnInputBoxResponse(string? response)
+    {
+        _inputBoxResponse = response;
     }
 }

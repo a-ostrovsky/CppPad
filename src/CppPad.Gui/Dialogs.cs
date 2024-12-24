@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
@@ -13,10 +14,11 @@ namespace CppPad.Gui;
 
 public interface IDialogs
 {
-    Task NotifyErrorAsync(string message, Exception exception);
-    void NotifyError(string message, Exception exception);
+    Task NotifyErrorAsync(string message, Exception? exception = null);
+    void NotifyError(string message, Exception? exception = null);
     Task<string?> ShowFileOpenDialogAsync(string filter);
     Task<string?> ShowFileSaveDialogAsync(string filter);
+    Task<string?> InputBoxAsync(string prompt, string title, string defaultResponse = "");
 }
 
 public class Dialogs : IDialogs
@@ -53,7 +55,7 @@ public class Dialogs : IDialogs
     }
 
     /// <summary>
-    /// Displays an error notification in a simple dialog window.
+    ///     Displays an error notification in a simple dialog window.
     /// </summary>
     /// <param name="message">A user-friendly error message.</param>
     /// <param name="exception">The exception that caused the error (optional).</param>
@@ -94,7 +96,7 @@ public class Dialogs : IDialogs
                 Children = { textBox, button }
             }
         };
-        
+
         Grid.SetRow(textBox, 0);
         Grid.SetRow(button, 1);
         button.Command = new RelayCommand(_ => errorWindow.Close());
@@ -102,8 +104,8 @@ public class Dialogs : IDialogs
         // Show as a modal dialog.
         return errorWindow.ShowDialog(MainWindow);
     }
-    
-    public void NotifyError(string message, Exception exception)
+
+    public void NotifyError(string message, Exception? exception)
     {
         Task.Run(() => NotifyErrorAsync(message, exception));
     }
@@ -127,6 +129,99 @@ public class Dialogs : IDialogs
             FileTypeChoices = ParseFilter(filter)
         });
         return result?.Path.AbsolutePath;
+    }
+
+    /// <summary>
+    ///     Displays a simple input dialog that collects one string from the user.
+    ///     Returns the user’s input, or null if the dialog is canceled.
+    /// </summary>
+    /// <param name="prompt">Label/prompt displayed above the input box.</param>
+    /// <param name="title">Text displayed in the dialog’s title bar.</param>
+    /// <param name="defaultResponse">Default text initially placed in the input box.</param>
+    /// <returns>User’s input or null if canceled.</returns>
+    public virtual async Task<string?> InputBoxAsync(string prompt, string title, string defaultResponse = "")
+    {
+        // Create the controls:
+        var promptTextBlock = new TextBlock { Text = prompt };
+        var textBox = new TextBox { Text = defaultResponse };
+
+        var okButton = new Button
+            { Content = "OK", MinWidth = 80, HorizontalContentAlignment = HorizontalAlignment.Center };
+        var cancelButton = new Button
+            { Content = "Cancel", MinWidth = 80, HorizontalContentAlignment = HorizontalAlignment.Center };
+
+        // Create window:
+        var inputWindow = new Window
+        {
+            Title = title,
+            Width = 400,
+            Height = 125,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner
+        };
+
+        // Wire up commands to close the dialog with the appropriate return value:
+        okButton.Command = new RelayCommand(_ =>
+        {
+            // Close passing back the input text.
+            inputWindow.Close(textBox.Text);
+        });
+        cancelButton.Command = new RelayCommand(_ =>
+        {
+            // Close passing back null (canceled).
+            inputWindow.Close(null);
+        });
+
+        // Layout with a StackPanel containing: Prompt, TextBox, and a button row:
+        var contentPanel = new StackPanel
+        {
+            Orientation = Orientation.Vertical,
+            Spacing = 10,
+            Margin = new Thickness(10)
+        };
+        contentPanel.Children.Add(promptTextBlock);
+        contentPanel.Children.Add(textBox);
+
+        // Button row:
+        var buttonPanel = new StackPanel
+        {
+            Orientation = Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Right,
+            Spacing = 10
+        };
+        buttonPanel.Children.Add(okButton);
+        buttonPanel.Children.Add(cancelButton);
+
+        contentPanel.Children.Add(buttonPanel);
+
+        // Set the window’s content:
+        inputWindow.Content = contentPanel;
+
+        inputWindow.KeyDown += (_, e) =>
+        {
+            switch (e.Key)
+            {
+                // Pressing Enter => close with the current text
+                case Key.Enter:
+                    e.Handled = true;
+                    inputWindow.Close(textBox.Text);
+                    break;
+                // Pressing Esc => close with null (canceled)
+                case Key.Escape:
+                    e.Handled = true;
+                    inputWindow.Close(null);
+                    break;
+            }
+        };
+
+        inputWindow.Loaded += (_, _) =>
+        {
+            textBox.SelectAll();
+            textBox.Focus();
+        };
+        
+        // Show as a modal dialog returning a string (or null).
+        return await inputWindow.ShowDialog<string?>(MainWindow);
     }
 
     private static List<FilePickerFileType> ParseFilter(string filter)
