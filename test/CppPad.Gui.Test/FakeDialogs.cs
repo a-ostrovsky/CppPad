@@ -4,6 +4,11 @@ public class FakeDialogs : IDialogs
 {
     private string? _fileName;
 
+    public Task NotifyErrorAsync(string message, Exception exception)
+    {
+        return Task.CompletedTask;
+    }
+
     public void NotifyError(string message, Exception exception)
     {
     }

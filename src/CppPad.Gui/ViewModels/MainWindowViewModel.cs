@@ -45,7 +45,7 @@ public class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            Dialogs.Instance.NotifyError("Failed to save file.", ex);
+            Dialogs.Instance.NotifyErrorAsync("Failed to save file.", ex);
         }
     }
 
@@ -73,13 +73,13 @@ public class MainWindowViewModel : ViewModelBase
                 }
                 catch (Exception ex)
                 {
-                    Dialogs.Instance.NotifyError("Failed to save file.", ex);
+                    await Dialogs.Instance.NotifyErrorAsync("Failed to save file.", ex);
                 }
             });
         }
         catch (Exception ex)
         {
-            Dialogs.Instance.NotifyError("Failed to open file.", ex);
+            await Dialogs.Instance.NotifyErrorAsync("Failed to open file.", ex);
         }
     }
 
@@ -102,13 +102,13 @@ public class MainWindowViewModel : ViewModelBase
                 }
                 catch (Exception ex)
                 {
-                    Dialogs.Instance.NotifyError("Failed to open file.", ex);
+                    await Dialogs.Instance.NotifyErrorAsync("Failed to open file.", ex);
                 }
             });
         }
         catch (Exception ex)
         {
-            Dialogs.Instance.NotifyError("Failed to open file.", ex);
+            await Dialogs.Instance.NotifyErrorAsync("Failed to open file.", ex);
         }
     }
 
