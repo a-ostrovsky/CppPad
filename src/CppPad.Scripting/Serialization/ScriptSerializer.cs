@@ -6,7 +6,7 @@ using CppPad.UniqueIdentifier;
 namespace CppPad.Scripting.Serialization;
 
 [JsonSerializable(typeof(ScriptDocumentDto))]
-[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSourceGenerationOptions(WriteIndented = true, UseStringEnumConverter = true)]
 internal partial class ScriptJsonContext : JsonSerializerContext
 {
 }

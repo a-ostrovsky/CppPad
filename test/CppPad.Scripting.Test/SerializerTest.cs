@@ -34,6 +34,29 @@ public class SerializerTest
         // Assert
         originalDocument.ShouldDeepEqual(deserializedDocument);
     }
+    
+    [Fact]
+    public void Serialize_enum_as_strings()
+    {
+        // Arrange
+        var originalDocument = new ScriptDocument
+        {
+            Script = new ScriptData
+            {
+                BuildSettings = new CppBuildSettings
+                {
+                    CppStandard = CppStandard.Cpp17
+                }
+            },
+            Identifier = new Identifier("12345"),
+        };
+
+        // Act
+        var json = _serializer.Serialize(originalDocument);
+
+        // Assert
+        Assert.Contains("Cpp17", json, StringComparison.OrdinalIgnoreCase);
+    }
 
     [Fact]
     public void Deserialize_InvalidJson_ShouldThrowException()
