@@ -3,8 +3,7 @@
 public class CrudTest
 {
     private readonly Bootstrapper _bootstrapper = new();
-    private readonly FakeDialogs _dialogs = FakeDialogs.Use();
-
+    
     private void CloseAllEditors()
     {
         _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor?.CloseCommand.Execute(null);
@@ -91,8 +90,8 @@ public class CrudTest
         var scriptDocument = Fixture.CreateScriptDocument();
         await _bootstrapper.ScriptLoader.SaveAsync(scriptDocument, @"C:\s.cpppad");
 
-        _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
-        _bootstrapper.ToolbarViewModel.OpenFileCommand.Execute(null);
+        _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
+        await _bootstrapper.ToolbarViewModel.OpenFileCommand.ExecuteAsync(null);
 
         Assert.Equal(_bootstrapper.OpenEditorsViewModel.CurrentEditor, _bootstrapper.OpenEditorsViewModel.Editors[^1]);
         Assert.Equal(_bootstrapper.OpenEditorsViewModel.CurrentEditor?.SourceCode.Content,
@@ -105,16 +104,16 @@ public class CrudTest
     }
 
     [Fact]
-    public void SaveFile_saves_file_correctly()
+    public async Task SaveFile_saves_file_correctly()
     {
         // Arrange
         var scriptDocument = Fixture.CreateScriptDocument();
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
         editor.SourceCode.ScriptDocument = scriptDocument;
-        _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
+        _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
 
         // Act
-        _bootstrapper.ToolbarViewModel.SaveFileAsCommand.Execute(null);
+        await _bootstrapper.ToolbarViewModel.SaveFileAsCommand.ExecuteAsync(null);
 
         // Assert
         Assert.True(_bootstrapper.FileSystem.FileExists(@"C:\s.cpppad"));
@@ -122,18 +121,18 @@ public class CrudTest
     }
 
     [Fact]
-    public void SaveFile_acts_as_save_as_when_save_as_is_called_first_time()
+    public async Task SaveFile_acts_as_save_as_when_save_as_is_called_first_time()
     {
         // Arrange & Act
-        _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
-        _bootstrapper.ToolbarViewModel.SaveFileCommand.Execute(null);
+        _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
+        await _bootstrapper.ToolbarViewModel.SaveFileCommand.ExecuteAsync(null);
 
         // Assert
         Assert.True(_bootstrapper.FileSystem.FileExists(@"C:\s.cpppad"));
     }
 
     [Fact]
-    public void SaveFile_saves_to_same_file_after_calling_SaveAs()
+    public async Task SaveFile_saves_to_same_file_after_calling_SaveAs()
     {
         // Arrange
         var scriptDocument = Fixture.CreateScriptDocument();
@@ -141,10 +140,10 @@ public class CrudTest
         editor.SourceCode.ScriptDocument = scriptDocument;
 
         // Act
-        _dialogs.WillSelectFileWithName(@"C:\s.cpppad");
-        _bootstrapper.ToolbarViewModel.SaveFileAsCommand.Execute(null);
-        _dialogs.WillSelectFileWithName(@"C:\x.cpppad");
-        _bootstrapper.ToolbarViewModel.SaveFileCommand.Execute(null);
+        _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
+        await _bootstrapper.ToolbarViewModel.SaveFileAsCommand.ExecuteAsync(null);
+        _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\x.cpppad");
+        await _bootstrapper.ToolbarViewModel.SaveFileCommand.ExecuteAsync(null);
 
         // Assert
         // Must not save to the new file.

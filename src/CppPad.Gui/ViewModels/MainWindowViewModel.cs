@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia.Threading;
 using CppPad.FileSystem;
 
@@ -7,26 +8,32 @@ namespace CppPad.Gui.ViewModels;
 
 public class MainWindowViewModel : ViewModelBase
 {
-    public MainWindowViewModel(OpenEditorsViewModel openEditorsViewModel, ToolbarViewModel toolbar)
+    private readonly IDialogs _dialogs;
+
+    public MainWindowViewModel(
+        OpenEditorsViewModel openEditorsViewModel, 
+        ToolbarViewModel toolbar,
+        IDialogs dialogs)
     {
+        _dialogs = dialogs;
         OpenEditors = openEditorsViewModel;
         Toolbar = toolbar;
         Toolbar.CreateNewFileRequested += OnCreateNewFileRequested;
-        Toolbar.OpenFileRequested += OnOpenFileRequested;
-        Toolbar.SaveFileAsRequested += OnSaveFileAsRequested;
-        Toolbar.SaveFileRequested += OnSaveFileRequested;
-        Toolbar.GoToLineRequested += OnGoToLineRequested;
+        Toolbar.OpenFileRequested += OnOpenFileRequestedAsync;
+        Toolbar.SaveFileAsRequested += OnSaveFileAsRequestedAsync;
+        Toolbar.SaveFileRequested += OnSaveFileRequestedAsync;
+        Toolbar.GoToLineRequested += OnGoToLineRequestedAsync;
         CreateNewEditor();
     }
 
     public static MainWindowViewModel DesignInstance { get; } =
-        new(OpenEditorsViewModel.DesignInstance, ToolbarViewModel.DesignInstance);
+        new(OpenEditorsViewModel.DesignInstance, ToolbarViewModel.DesignInstance, new Dialogs());
 
     public ToolbarViewModel Toolbar { get; }
 
     public OpenEditorsViewModel OpenEditors { get; }
 
-    private async void OnGoToLineRequested(object? sender, EventArgs e)
+    private async Task OnGoToLineRequestedAsync(object? sender, EventArgs e)
     {
         try
         {
@@ -38,7 +45,7 @@ public class MainWindowViewModel : ViewModelBase
 
             var lineCount = editor.SourceCode.Content.Split('\n').Length;
             var currentLineAndColumn = $"{editor.SourceCode.CurrentLine}:{editor.SourceCode.CurrentColumn}";
-            var result = await Dialogs.Instance.InputBoxAsync(
+            var result = await _dialogs.InputBoxAsync(
                 $"Line[:Column]. Lines: 1 - {lineCount}",
                 "Go to Line:Column",
                 currentLineAndColumn);
@@ -67,35 +74,34 @@ public class MainWindowViewModel : ViewModelBase
         }
         catch (Exception ex)
         {
-            await Dialogs.Instance.NotifyErrorAsync("Failed to go to line.", ex);
+            await _dialogs.NotifyErrorAsync("Failed to go to line.", ex);
         }
     }
 
-    private void OnSaveFileRequested(object? sender, EventArgs e)
+    private Task OnSaveFileRequestedAsync(object? sender, EventArgs e)
     {
         try
         {
             var editor = OpenEditors.CurrentEditor;
             if (editor == null)
             {
-                return;
+                return Task.CompletedTask;
             }
 
             if (editor.SourceCode.ScriptDocument.FileName == null)
             {
-                OnSaveFileAsRequested(sender, e);
-                return;
+                return OnSaveFileAsRequestedAsync(sender, e);
             }
 
-            editor.SaveFileAsync();
+            return editor.SaveFileAsync();
         }
         catch (Exception ex)
         {
-            Dialogs.Instance.NotifyErrorAsync("Failed to save file.", ex);
+            return _dialogs.NotifyErrorAsync("Failed to save file.", ex);
         }
     }
 
-    private async void OnSaveFileAsRequested(object? sender, EventArgs e)
+    private async Task OnSaveFileAsRequestedAsync(object? sender, EventArgs e)
     {
         try
         {
@@ -109,7 +115,7 @@ public class MainWindowViewModel : ViewModelBase
             {
                 try
                 {
-                    var fileName = await Dialogs.Instance.ShowFileSaveDialogAsync(Extensions.CppPadFileFilter);
+                    var fileName = await _dialogs.ShowFileSaveDialogAsync(Extensions.CppPadFileFilter);
                     if (fileName == null)
                     {
                         return;
@@ -119,21 +125,21 @@ public class MainWindowViewModel : ViewModelBase
                 }
                 catch (Exception ex)
                 {
-                    await Dialogs.Instance.NotifyErrorAsync("Failed to save file.", ex);
+                    await _dialogs.NotifyErrorAsync("Failed to save file.", ex);
                 }
             });
         }
         catch (Exception ex)
         {
-            await Dialogs.Instance.NotifyErrorAsync("Failed to open file.", ex);
+            await _dialogs.NotifyErrorAsync("Failed to open file.", ex);
         }
     }
 
-    private async void OnOpenFileRequested(object? sender, EventArgs e)
+    private async Task OnOpenFileRequestedAsync(object? sender, EventArgs e)
     {
         try
         {
-            var fileName = await Dialogs.Instance.ShowFileOpenDialogAsync(Extensions.CppPadFileFilter);
+            var fileName = await _dialogs.ShowFileOpenDialogAsync(Extensions.CppPadFileFilter);
             if (fileName == null)
             {
                 return;
@@ -148,13 +154,13 @@ public class MainWindowViewModel : ViewModelBase
                 }
                 catch (Exception ex)
                 {
-                    await Dialogs.Instance.NotifyErrorAsync("Failed to open file.", ex);
+                    await _dialogs.NotifyErrorAsync("Failed to open file.", ex);
                 }
             });
         }
         catch (Exception ex)
         {
-            await Dialogs.Instance.NotifyErrorAsync("Failed to open file.", ex);
+            await _dialogs.NotifyErrorAsync("Failed to open file.", ex);
         }
     }
 

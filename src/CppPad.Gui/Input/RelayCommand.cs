@@ -5,7 +5,7 @@ using System.Windows.Input;
 
 #endregion
 
-namespace CppPad.Gui;
+namespace CppPad.Gui.Input;
 
 public class RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null)
     : ICommand

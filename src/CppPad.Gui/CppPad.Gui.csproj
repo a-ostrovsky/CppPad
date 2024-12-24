@@ -28,6 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\CppPad.Common\CppPad.Common.csproj" />
         <ProjectReference Include="..\CppPad.Scripting\CppPad.Scripting.csproj"/>
     </ItemGroup>
 </Project>

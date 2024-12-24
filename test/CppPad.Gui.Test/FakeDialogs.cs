@@ -30,13 +30,6 @@ public class FakeDialogs : IDialogs
         return Task.FromResult(_inputBoxResponse);
     }
 
-    public static FakeDialogs Use()
-    {
-        var dialogs = new FakeDialogs();
-        Dialogs.Instance = dialogs;
-        return dialogs;
-    }
-
     public void WillSelectFileWithName(string fileName)
     {
         _fileName = fileName;

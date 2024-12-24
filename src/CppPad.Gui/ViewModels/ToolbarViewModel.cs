@@ -2,6 +2,8 @@
 
 using System;
 using System.Windows.Input;
+using CppPad.Common;
+using CppPad.Gui.Input;
 
 #endregion
 
@@ -11,32 +13,32 @@ public class ToolbarViewModel : ViewModelBase
 {
     public ToolbarViewModel()
     {
-        GoToLineCommand = new RelayCommand(_ => GoToLineRequested?.Invoke(this, EventArgs.Empty));
+        GoToLineCommand = new AsyncRelayCommand(_ => GoToLineRequested?.InvokeAsync(this, EventArgs.Empty));
         CreateNewFileCommand = new RelayCommand(_ => CreateNewFileRequested?.Invoke(this, EventArgs.Empty));
-        OpenFileCommand = new RelayCommand(_ => OpenFileRequested?.Invoke(this, EventArgs.Empty));
-        SaveFileCommand = new RelayCommand(_ => SaveFileRequested?.Invoke(this, EventArgs.Empty));
-        SaveFileAsCommand = new RelayCommand(_ => SaveFileAsRequested?.Invoke(this, EventArgs.Empty));
+        OpenFileCommand = new AsyncRelayCommand(_ => OpenFileRequested?.InvokeAsync(this, EventArgs.Empty));
+        SaveFileCommand = new AsyncRelayCommand(_ => SaveFileRequested?.InvokeAsync(this, EventArgs.Empty));
+        SaveFileAsCommand = new AsyncRelayCommand(_ => SaveFileAsRequested?.InvokeAsync(this, EventArgs.Empty));
     }
 
-    public ICommand GoToLineCommand { get; }
+    public IAsyncCommand GoToLineCommand { get; }
 
-    public ICommand OpenFileCommand { get; }
+    public IAsyncCommand OpenFileCommand { get; }
 
-    public ICommand SaveFileCommand { get; }
+    public IAsyncCommand SaveFileCommand { get; }
 
-    public ICommand SaveFileAsCommand { get; }
+    public IAsyncCommand SaveFileAsCommand { get; }
 
     public static ToolbarViewModel DesignInstance { get; } = new();
 
     public ICommand CreateNewFileCommand { get; }
 
-    public event EventHandler? GoToLineRequested;
+    public event AsyncEventHandler? GoToLineRequested;
 
-    public event EventHandler? SaveFileRequested;
+    public event AsyncEventHandler? SaveFileRequested;
 
-    public event EventHandler? SaveFileAsRequested;
+    public event AsyncEventHandler? SaveFileAsRequested;
 
     public event EventHandler? CreateNewFileRequested;
 
-    public event EventHandler? OpenFileRequested;
+    public event AsyncEventHandler? OpenFileRequested;
 }

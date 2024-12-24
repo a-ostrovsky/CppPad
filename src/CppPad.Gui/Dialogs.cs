@@ -9,6 +9,7 @@ using Avalonia.Input;
 using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
+using CppPad.Gui.Input;
 
 namespace CppPad.Gui;
 
@@ -23,8 +24,6 @@ public interface IDialogs
 
 public class Dialogs : IDialogs
 {
-    private static IDialogs? _instance = new Dialogs();
-
     private static Window MainWindow
     {
         get
@@ -38,20 +37,6 @@ public class Dialogs : IDialogs
 
             return mainWindow;
         }
-    }
-
-    public static IDialogs Instance
-    {
-        get
-        {
-            if (_instance == null)
-            {
-                throw new InvalidOperationException("Dialogs is not initialized. Call SetMainWindow first.");
-            }
-
-            return _instance;
-        }
-        set => _instance = value;
     }
 
     /// <summary>

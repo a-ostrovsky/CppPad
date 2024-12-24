@@ -9,10 +9,13 @@ public class GuiBootstrapper
     public GuiBootstrapper(Bootstrapper parent)
     {
         _parent = parent;
+        Dialogs = new Dialogs();
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel();
-        MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel);
+        MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel, Dialogs);
     }
+    
+    public IDialogs Dialogs { get; }
 
     public MainWindowViewModel MainWindowViewModel { get; }
 

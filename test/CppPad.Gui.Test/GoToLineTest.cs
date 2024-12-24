@@ -3,18 +3,17 @@
 public class GoToLineTest
 {
     private readonly Bootstrapper _bootstrapper = new();
-    private readonly FakeDialogs _dialogs = FakeDialogs.Use();
 
     [Fact]
-    public void GoToLine_ValidInput_ChangesCaretPosition()
+    public async Task GoToLine_ValidInput_ChangesCaretPosition()
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
-        _dialogs.WillReturnInputBoxResponse("2:3");
+        _bootstrapper.Dialogs.WillReturnInputBoxResponse("2:3");
 
         // Act
-        _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.Execute(null);
+        await _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.ExecuteAsync(null);
 
         // Assert
         Assert.Equal(2, editor.SourceCode.CurrentLine);
@@ -22,17 +21,17 @@ public class GoToLineTest
     }
 
     [Fact]
-    public void GoToLine_InvalidLineNumber_DoesNotChangeCaretPosition()
+    public async Task GoToLine_InvalidLineNumber_DoesNotChangeCaretPosition()
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
-        _dialogs.WillReturnInputBoxResponse("5:3");
+        _bootstrapper.Dialogs.WillReturnInputBoxResponse("5:3");
 
         // Act
-        _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.Execute(null);
+        await _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.ExecuteAsync(null);
 
         // Assert
         Assert.Equal(1, editor.SourceCode.CurrentLine);
@@ -40,15 +39,15 @@ public class GoToLineTest
     }
 
     [Fact]
-    public void GoToLine_InvalidColumnNumber_SetsColumnToEndOfLine()
+    public async Task GoToLine_InvalidColumnNumber_SetsColumnToEndOfLine()
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
-        _dialogs.WillReturnInputBoxResponse("2:10");
+        _bootstrapper.Dialogs.WillReturnInputBoxResponse("2:10");
 
         // Act
-        _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.Execute(null);
+        await _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.ExecuteAsync(null);
 
         // Assert
         Assert.Equal(2, editor.SourceCode.CurrentLine);
@@ -56,17 +55,17 @@ public class GoToLineTest
     }
 
     [Fact]
-    public void GoToLine_EmptyInput_DoesNotChangeCaretPosition()
+    public async Task GoToLine_EmptyInput_DoesNotChangeCaretPosition()
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
-        _dialogs.WillReturnInputBoxResponse("");
+        _bootstrapper.Dialogs.WillReturnInputBoxResponse("");
 
         // Act
-        _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.Execute(null);
+        await _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.ExecuteAsync(null);
 
         // Assert
         Assert.Equal(1, editor.SourceCode.CurrentLine);
@@ -74,17 +73,17 @@ public class GoToLineTest
     }
 
     [Fact]
-    public void GoToLine_CancelledInput_DoesNotChangeCaretPosition()
+    public async Task GoToLine_CancelledInput_DoesNotChangeCaretPosition()
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
-        _dialogs.WillReturnInputBoxResponse(null);
+        _bootstrapper.Dialogs.WillReturnInputBoxResponse(null);
 
         // Act
-        _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.Execute(null);
+        await _bootstrapper.MainWindowViewModel.Toolbar.GoToLineCommand.ExecuteAsync(null);
 
         // Assert
         Assert.Equal(1, editor.SourceCode.CurrentLine);

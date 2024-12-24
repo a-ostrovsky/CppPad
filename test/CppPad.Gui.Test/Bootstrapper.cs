@@ -12,8 +12,10 @@ public class Bootstrapper
         ScriptLoader = new ScriptLoader(new ScriptSerializer(), FileSystem);
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel();
-        MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel);
+        MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel, Dialogs);
     }
+    
+    public FakeDialogs Dialogs { get; } = new();
 
     public InMemoryFileSystem FileSystem { get; } = new();
 

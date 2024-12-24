@@ -3,6 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CppPad.FileSystem;
+using CppPad.Gui.Input;
 using CppPad.Scripting.Persistence;
 using CppPad.Scripting.Serialization;
 
