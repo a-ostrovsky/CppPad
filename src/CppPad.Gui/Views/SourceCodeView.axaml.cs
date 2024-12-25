@@ -3,9 +3,11 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Windows.Input;
 using Avalonia.Controls;
 using AvaloniaEdit;
 using AvaloniaEdit.TextMate;
+using CppPad.Gui.Input;
 using CppPad.Gui.ViewModels;
 using TextMateSharp.Grammars;
 
@@ -19,6 +21,10 @@ public partial class SourceCodeView : UserControl
     
     private SourceCodeViewModel? _viewModel;
 
+    public ICommand CutCommand { get; }
+    public ICommand CopyCommand { get; }
+    public ICommand PasteCommand { get; }
+    
     public SourceCodeView()
     {
         InitializeComponent();
@@ -30,6 +36,9 @@ public partial class SourceCodeView : UserControl
 
         Editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
         Editor.TextChanged += TextEditor_TextChanged;
+        CutCommand = new RelayCommand(_ => Editor.Cut(), _ => Editor.CanCut);
+        CopyCommand = new RelayCommand(_ => Editor.Copy(), _ => Editor.CanCopy);
+        PasteCommand = new RelayCommand(_ => Editor.Paste(), _ => Editor.CanPaste);
     }
 
     private void Caret_PositionChanged(object? sender, EventArgs e)

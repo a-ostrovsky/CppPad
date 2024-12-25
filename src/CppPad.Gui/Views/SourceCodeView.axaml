@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:avaloniaEdit="https://github.com/avaloniaui/avaloniaedit"
              xmlns:viewModels="clr-namespace:CppPad.Gui.ViewModels"
+             xmlns:views="clr-namespace:CppPad.Gui.Views"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="viewModels:SourceCodeViewModel"
              x:Class="CppPad.Gui.Views.SourceCodeView"
@@ -13,5 +14,16 @@
         x:Name="Editor"
         ShowLineNumbers="True"
         FontSize="16"
-        FontFamily="Cascadia Code,Consolas,Menlo,Monospace" />
+        FontFamily="Cascadia Code,Consolas,Menlo,Monospace">
+        <avaloniaEdit:TextEditor.ContextMenu>
+            <ContextMenu>
+                <MenuItem Header="Cut"
+                          Command="{Binding $parent[views:SourceCodeView].CutCommand}" />
+                <MenuItem Header="Copy"
+                          Command="{Binding $parent[views:SourceCodeView].CopyCommand}" />
+                <MenuItem Header="Paste"
+                          Command="{Binding $parent[views:SourceCodeView].PasteCommand}" />
+            </ContextMenu>
+        </avaloniaEdit:TextEditor.ContextMenu>
+    </avaloniaEdit:TextEditor>
 </UserControl>
