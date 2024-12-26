@@ -1,5 +1,6 @@
-﻿using CppPad.FileSystem;
+﻿using CppPad.SystemAdapter;
 using CppPad.Scripting.Serialization;
+using CppPad.SystemAdapter.IO;
 
 namespace CppPad.Scripting.Persistence;
 

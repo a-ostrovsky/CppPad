@@ -5,8 +5,6 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
-        <LangVersion>default</LangVersion>
-        <RootNamespace>CppPad.Gui.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -21,8 +19,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\CppPad.Gui\CppPad.Gui.csproj"/>
-        <ProjectReference Include="..\CppPad.MockSystemAdapter\CppPad.MockSystemAdapter.csproj" />
+      <ProjectReference Include="..\..\..\src\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj" />
+      <ProjectReference Include="..\..\CppPad.MockSystemAdapter\CppPad.MockSystemAdapter.csproj" />
     </ItemGroup>
 
 </Project>

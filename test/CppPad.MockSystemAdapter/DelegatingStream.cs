@@ -1,4 +1,4 @@
-﻿namespace CppPad.MockFileSystem;
+﻿namespace CppPad.MockSystemAdapter;
 
 public class DelegatingStream(Stream baseStream) : Stream
 {

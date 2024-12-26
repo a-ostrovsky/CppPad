@@ -4,11 +4,12 @@ using System.Collections.Concurrent;
 using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
-using CppPad.FileSystem;
+using CppPad.SystemAdapter;
+using CppPad.SystemAdapter.IO;
 
 #endregion
 
-namespace CppPad.MockFileSystem;
+namespace CppPad.MockSystemAdapter;
 
 public sealed class InMemoryFileSystem : DiskFileSystem
 {

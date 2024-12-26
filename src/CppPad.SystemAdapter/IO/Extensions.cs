@@ -1,4 +1,4 @@
-﻿namespace CppPad.FileSystem;
+﻿namespace CppPad.SystemAdapter.IO;
 
 public static class Extensions
 {

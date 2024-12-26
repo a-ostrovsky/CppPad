@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Common.Test", "test\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.UniqueIdentifier", "src\CppPad.UniqueIdentifier\CppPad.UniqueIdentifier.csproj", "{23F0196B-AF95-4C5C-839C-6C040F962268}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.FileSystem", "src\CppPad.FileSystem\CppPad.FileSystem.csproj", "{EA654645-9E23-406B-A91D-B7F9477029AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.SystemAdapter", "src\CppPad.SystemAdapter\CppPad.SystemAdapter.csproj", "{EA654645-9E23-406B-A91D-B7F9477029AA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.FileSystem.Test", "test\CppPad.FileSystem.Test\CppPad.FileSystem.Test.csproj", "{614E2B8B-BD28-4863-B5C0-941152005A4B}"
 EndProject
@@ -27,7 +27,15 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Scripting", "src\Cpp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.Scripting.Test", "test\CppPad.Scripting.Test\CppPad.Scripting.Test.csproj", "{B9392B3B-1814-4235-B229-E2260C17097F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.MockFileSystem", "test\CppPad.MockFileSystem\CppPad.MockFileSystem.csproj", "{695C0C85-1751-4231-8F83-9CFD563A8742}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.MockSystemAdapter", "test\CppPad.MockSystemAdapter\CppPad.MockSystemAdapter.csproj", "{695C0C85-1751-4231-8F83-9CFD563A8742}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildSystem", "BuildSystem", "{06B19663-EA96-4E51-8739-853E29B7E3E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.BuildSystem.CMakeAdapter", "src\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj", "{FCFD5537-C7CA-4660-A37E-E0808952B2C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildSystem", "BuildSystem", "{BC89D8F6-1E24-4C24-B2EA-DBA92DF6F570}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CppPad.BuildSystem.CMakeAdapter.Test", "test\BuildSystem\CppPad.BuildSystem.CMakeAdapter.Test\CppPad.BuildSystem.CMakeAdapter.Test.csproj", "{B839A92E-209B-4174-BB9B-A35B91321ADA}"
 EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
@@ -174,6 +182,30 @@ Global
 		{695C0C85-1751-4231-8F83-9CFD563A8742}.Release|x64.Build.0 = Release|Any CPU
 		{695C0C85-1751-4231-8F83-9CFD563A8742}.Release|x86.ActiveCfg = Release|Any CPU
 		{695C0C85-1751-4231-8F83-9CFD563A8742}.Release|x86.Build.0 = Release|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Debug|x64.Build.0 = Debug|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Debug|x86.Build.0 = Debug|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Release|x64.ActiveCfg = Release|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Release|x64.Build.0 = Release|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Release|x86.ActiveCfg = Release|Any CPU
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8}.Release|x86.Build.0 = Release|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Debug|x64.Build.0 = Debug|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Debug|x86.Build.0 = Debug|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Release|x64.ActiveCfg = Release|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Release|x64.Build.0 = Release|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Release|x86.ActiveCfg = Release|Any CPU
+		{B839A92E-209B-4174-BB9B-A35B91321ADA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{7CCE780D-9551-4A97-8C93-3148C9AA7CEA} = {B508AB1A-171F-4854-ADA5-B06E68CA39FB}
@@ -187,6 +219,10 @@ Global
 		{E6B02972-811B-483E-B33A-04BA586B8169} = {B508AB1A-171F-4854-ADA5-B06E68CA39FB}
 		{B9392B3B-1814-4235-B229-E2260C17097F} = {5C64E108-8093-42DF-A97C-170F6971BC67}
 		{695C0C85-1751-4231-8F83-9CFD563A8742} = {5C64E108-8093-42DF-A97C-170F6971BC67}
+		{06B19663-EA96-4E51-8739-853E29B7E3E2} = {B508AB1A-171F-4854-ADA5-B06E68CA39FB}
+		{FCFD5537-C7CA-4660-A37E-E0808952B2C8} = {06B19663-EA96-4E51-8739-853E29B7E3E2}
+		{BC89D8F6-1E24-4C24-B2EA-DBA92DF6F570} = {5C64E108-8093-42DF-A97C-170F6971BC67}
+		{B839A92E-209B-4174-BB9B-A35B91321ADA} = {BC89D8F6-1E24-4C24-B2EA-DBA92DF6F570}
 	EndGlobalSection
 	GlobalSection(RiderSharedRunConfigurations) = postSolution
 		File = Deploy.run\Publish CppPad.Gui.run.xml

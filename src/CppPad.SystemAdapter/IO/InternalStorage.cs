@@ -1,4 +1,4 @@
-﻿namespace CppPad.FileSystem;
+﻿namespace CppPad.SystemAdapter.IO;
 
 public class InternalStorage(DiskFileSystem fileSystem, string rootFolder)
 {

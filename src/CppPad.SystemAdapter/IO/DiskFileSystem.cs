@@ -4,7 +4,7 @@ using System.IO.Compression;
 
 #endregion
 
-namespace CppPad.FileSystem;
+namespace CppPad.SystemAdapter.IO;
 
 public class DiskFileSystem
 {
