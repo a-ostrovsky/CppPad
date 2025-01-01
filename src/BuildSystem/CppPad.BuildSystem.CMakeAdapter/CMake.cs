@@ -46,7 +46,5 @@ public class CMake(
         };
 
         await executor.RunCMakeAsync(executionOptions, token);
-        
-        
     }
 }
