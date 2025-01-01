@@ -1,12 +1,37 @@
-﻿namespace CppPad.Gui.ViewModels;
+﻿using System;
+using Avalonia.Threading;
+
+namespace CppPad.Gui.ViewModels;
 
 public class CompilerOutputViewModel : ViewModelBase
 {
-    private string _compilerOutput = string.Empty;
+    private string _output = string.Empty;
 
-    public string CompilerOutput
+    public string Output
     {
-        get => _compilerOutput;
-        set => SetProperty(ref _compilerOutput, value);
+        get => _output;
+        set => SetProperty(ref _output, value);
+    }
+
+    public void Reset()
+    {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(Reset);
+            return;
+        }
+
+        Output = string.Empty;
+    }
+    
+    public void AddMessage(string message)
+    {
+        if (!Dispatcher.UIThread.CheckAccess())
+        {
+            Dispatcher.UIThread.Post(() => AddMessage(message));
+            return;
+        }
+
+        Output += message + Environment.NewLine;
     }
 }

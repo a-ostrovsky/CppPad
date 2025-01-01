@@ -1,4 +1,5 @@
-﻿using CppPad.SystemAdapter.Execution;
+﻿using CppPad.EnvironmentConfiguration;
+using CppPad.SystemAdapter.Execution;
 using CppPad.SystemAdapter.IO;
 
 namespace CppPad.BuildSystem.CMakeAdapter.Execution;
@@ -14,11 +15,14 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
             await fileSystem.CreateDirectoryAsync(options.BuildDirectory);
         }
 
-        await ConfigureAsync(options, cancellationToken);
-        await BuildAsync(options, cancellationToken);
+        var cmakeExecutablePath = GetCMakeExecutablePath(options.EnvironmentSettings);
+        
+        await ConfigureAsync(cmakeExecutablePath, options, cancellationToken);
+        await BuildAsync(cmakeExecutablePath, options, cancellationToken);
     }
 
-    private async Task ConfigureAsync(CMakeExecutionOptions options, CancellationToken cancellationToken = default)
+    private async Task ConfigureAsync(
+        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken cancellationToken = default)
     {
         if (!options.ForceConfigure)
         {
@@ -29,7 +33,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
             }
         }
 
-        var startInfo = CreateStartInfoForConfigure(options);
+        var startInfo = CreateStartInfoForConfigure(cmakeExecutablePath, options);
         var processInfo = process.Start(startInfo);
         var errorCode = await process.WaitForExitAsync(processInfo, cancellationToken);
         if (errorCode != 0)
@@ -39,9 +43,10 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         }
     }
 
-    private async Task BuildAsync(CMakeExecutionOptions options, CancellationToken cancellationToken = default)
+    private async Task BuildAsync(
+        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken cancellationToken = default)
     {
-        var startInfo = CreateStartInfoForBuild(options);
+        var startInfo = CreateStartInfoForBuild(cmakeExecutablePath, options);
         var processInfo = process.Start(startInfo);
         var errorCode = await process.WaitForExitAsync(processInfo, cancellationToken);
         if (errorCode != 0)
@@ -50,12 +55,32 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 $"CMake build failed with error code {errorCode}.");
         }
     }
+    
+    private string GetCMakeExecutablePath(EnvironmentSettings environmentSettings)
+    {
+        var paths = environmentSettings.TryGet("PATH")
+            ?.Split(Path.PathSeparator, StringSplitOptions.TrimEntries);
+        if (paths is null)
+        {
+            throw new CMakeExecutionException("Environment variables do not contain PATH");
+        }
 
-    private static StartInfo CreateStartInfoForBuild(CMakeExecutionOptions options)
+        var cmakePath = paths.Select(p => Path.Combine(p, "cmake")).FirstOrDefault(fileSystem.FileExists) ??
+                        paths.Select(p => Path.Combine(p, "cmake.exe")).FirstOrDefault(fileSystem.FileExists);
+        if (cmakePath is null)
+        {
+            throw new CMakeExecutionException("CMake not found in PATH");
+        }
+
+        return cmakePath;
+    }
+
+    private static StartInfo CreateStartInfoForBuild(
+        string cmakeExecutablePath, CMakeExecutionOptions options)
     {
         var startInfo = new StartInfo
         {
-            FileName = "cmake",
+            FileName = cmakeExecutablePath,
             Arguments = new List<string>
             {
                 "--build", options.BuildDirectory
@@ -84,11 +109,12 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         return startInfo;
     }
 
-    private static StartInfo CreateStartInfoForConfigure(CMakeExecutionOptions options)
+    private static StartInfo CreateStartInfoForConfigure(
+        string cmakeExecutablePath, CMakeExecutionOptions options)
     {
         var startInfo = new StartInfo
         {
-            FileName = "cmake",
+            FileName = cmakeExecutablePath,
             Arguments = new List<string>
             {
                 "-S", options.CMakeListsFolder,

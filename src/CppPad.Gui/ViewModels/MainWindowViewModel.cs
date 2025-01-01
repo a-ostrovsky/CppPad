@@ -11,7 +11,7 @@ public class MainWindowViewModel : ViewModelBase
     private readonly IDialogs _dialogs;
 
     public MainWindowViewModel(
-        OpenEditorsViewModel openEditorsViewModel, 
+        OpenEditorsViewModel openEditorsViewModel,
         ToolbarViewModel toolbar,
         IDialogs dialogs)
     {
@@ -23,6 +23,7 @@ public class MainWindowViewModel : ViewModelBase
         Toolbar.SaveFileAsRequested += OnSaveFileAsRequestedAsync;
         Toolbar.SaveFileRequested += OnSaveFileRequestedAsync;
         Toolbar.GoToLineRequested += OnGoToLineRequestedAsync;
+        Toolbar.BuildAndRunRequested += OnBuildAndRunRequestedAsync;
         CreateNewEditor();
     }
 
@@ -68,7 +69,8 @@ public class MainWindowViewModel : ViewModelBase
                 column = Math.Min(parsedColumn, lineContent.Length);
             }
 
-            editor.SourceCode.CurrentColumn = 1; // Set to 1 first to avoid caret position issues. The line can be too short.
+            editor.SourceCode.CurrentColumn =
+                1; // Set to 1 first to avoid caret position issues. The line can be too short.
             editor.SourceCode.CurrentLine = line;
             editor.SourceCode.CurrentColumn = column;
         }
@@ -174,6 +176,24 @@ public class MainWindowViewModel : ViewModelBase
         var editor = OpenEditors.AddNewEditor();
         editor.CloseRequested += OnCloseRequested;
         return editor;
+    }
+
+    private async Task OnBuildAndRunRequestedAsync(object sender, EventArgs e)
+    {
+        var editor = OpenEditors.CurrentEditor;
+        if (editor == null)
+        {
+            return;
+        }
+
+        try
+        {
+            await editor.BuildAndRunAsync();
+        }
+        catch (Exception ex)
+        {
+            await _dialogs.NotifyErrorAsync("Failed to build and run.", ex);
+        }
     }
 
     private void OnCloseRequested(object? sender, EventArgs e)

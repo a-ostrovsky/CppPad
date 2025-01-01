@@ -8,7 +8,9 @@ public class ScriptingBootstrapper
     public ScriptingBootstrapper(Bootstrapper parent)
     {
         ScriptSerializer = new ScriptSerializer();
-        ScriptLoader = new ScriptLoader(ScriptSerializer, parent.FileSystemBootstrapper.FileSystem);
+        ScriptLoader = new ScriptLoader(
+            ScriptSerializer,
+            parent.SystemAdapterBootstrapper.FileSystem);
     }
 
     public ScriptSerializer ScriptSerializer { get; }

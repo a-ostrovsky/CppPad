@@ -13,8 +13,17 @@
                               Margin="2"
                               DataContext="{Binding SourceCode}" />
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
-        <TabControl Grid.Row="2">
-            <TabItem Header="Compiler" />
+        <TabControl Grid.Row="2" Margin="2 2 2 5">
+            <TabItem Header="Compiler" >
+                <TextBox Text="{Binding CompilerOutput.Output}" 
+                         TextChanged="CompilerOutput_OnTextChanged"
+                         TextWrapping="Wrap"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         IsReadOnly="True"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto" />
+            </TabItem>
             <TabItem Header="Output" />
         </TabControl>
     </Grid>

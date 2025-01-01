@@ -8,7 +8,7 @@ public class GoToLineTest
     public async Task GoToLine_ValidInput_ChangesCaretPosition()
     {
         // Arrange
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var editor = _bootstrapper.OpenEditors.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         _bootstrapper.Dialogs.WillReturnInputBoxResponse("2:3");
 
@@ -24,7 +24,7 @@ public class GoToLineTest
     public async Task GoToLine_InvalidLineNumber_DoesNotChangeCaretPosition()
     {
         // Arrange
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var editor = _bootstrapper.OpenEditors.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
@@ -42,7 +42,7 @@ public class GoToLineTest
     public async Task GoToLine_InvalidColumnNumber_SetsColumnToEndOfLine()
     {
         // Arrange
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var editor = _bootstrapper.OpenEditors.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         _bootstrapper.Dialogs.WillReturnInputBoxResponse("2:10");
 
@@ -58,7 +58,7 @@ public class GoToLineTest
     public async Task GoToLine_EmptyInput_DoesNotChangeCaretPosition()
     {
         // Arrange
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var editor = _bootstrapper.OpenEditors.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
@@ -76,7 +76,7 @@ public class GoToLineTest
     public async Task GoToLine_CancelledInput_DoesNotChangeCaretPosition()
     {
         // Arrange
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var editor = _bootstrapper.OpenEditors.CurrentEditor!;
         editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;

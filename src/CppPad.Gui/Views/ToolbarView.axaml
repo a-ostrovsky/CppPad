@@ -32,7 +32,8 @@
         </Button>
         <StackPanel Orientation="Horizontal"
                     Margin="10 0 0 0">
-            <Button Content="▶️" />
+            <Button Content="▶️" Command="{Binding BuildAndRunCommand}"
+                    HotKey="F5"/>
             <Button Content="⏹️" />
         </StackPanel>
         <Button Content="🔍" Command="{Binding GoToLineCommand}"

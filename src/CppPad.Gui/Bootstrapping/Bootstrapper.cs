@@ -4,8 +4,9 @@ public class Bootstrapper
 {
     public Bootstrapper()
     {
-        FileSystemBootstrapper = new FileSystemBootstrapper(this);
+        SystemAdapterBootstrapper = new SystemAdapterBootstrapper(this);
         ScriptingBootstrapper = new ScriptingBootstrapper(this);
+        BuildAndRunBootstrapper = new BuildAndRunBootstrapper(this);
         GuiBootstrapper = new GuiBootstrapper(this);
     }
 
@@ -13,5 +14,7 @@ public class Bootstrapper
 
     public ScriptingBootstrapper ScriptingBootstrapper { get; }
 
-    public FileSystemBootstrapper FileSystemBootstrapper { get; }
+    public SystemAdapterBootstrapper SystemAdapterBootstrapper { get; }
+    
+    public BuildAndRunBootstrapper BuildAndRunBootstrapper { get; }
 }

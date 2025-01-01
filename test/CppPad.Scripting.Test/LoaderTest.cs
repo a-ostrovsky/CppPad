@@ -1,6 +1,7 @@
 ﻿using CppPad.MockSystemAdapter;
 using CppPad.Scripting.Persistence;
 using CppPad.Scripting.Serialization;
+using CppPad.SystemAdapter.IO;
 using CppPad.UniqueIdentifier;
 using DeepEqual.Syntax;
 

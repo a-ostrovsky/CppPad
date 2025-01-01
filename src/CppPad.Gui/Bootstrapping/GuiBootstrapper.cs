@@ -14,7 +14,7 @@ public class GuiBootstrapper
         ToolbarViewModel = new ToolbarViewModel();
         MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel, Dialogs);
     }
-    
+
     public IDialogs Dialogs { get; }
 
     public MainWindowViewModel MainWindowViewModel { get; }
@@ -25,6 +25,9 @@ public class GuiBootstrapper
 
     private EditorViewModel CreateEditorViewModel()
     {
-        return new EditorViewModel(_parent.ScriptingBootstrapper.ScriptLoader, new SourceCodeViewModel());
+        return new EditorViewModel(
+            _parent.ScriptingBootstrapper.ScriptLoader, 
+            _parent.BuildAndRunBootstrapper.Builder,
+            new SourceCodeViewModel());
     }
 }

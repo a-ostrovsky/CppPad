@@ -10,9 +10,16 @@ public class Process
         process.StartInfo.RedirectStandardError = true;
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.CreateNoWindow = true;
-        foreach (var argument in startInfo.Arguments)
+        if (startInfo.Arguments.Count == 1)
         {
-            process.StartInfo.ArgumentList.Add(argument);
+            process.StartInfo.Arguments = startInfo.Arguments[0];
+        }
+        else
+        {
+            foreach (var argument in startInfo.Arguments)
+            {
+                process.StartInfo.ArgumentList.Add(argument);
+            }
         }
 
         process.OutputDataReceived += (sender, args) =>
@@ -20,6 +27,14 @@ public class Process
         process.ErrorDataReceived += (sender, args) =>
             startInfo.ErrorReceived.Invoke(sender, DataReceivedEventArgs.From(args));
 
+        if (startInfo.EnvironmentVariables != null)
+        {
+            foreach (var (key, value) in startInfo.EnvironmentVariables)
+            {
+                process.StartInfo.EnvironmentVariables[key] = value;
+            }
+        }
+        
         if (startInfo.AdditionalPaths.Count > 0)
         {
             var pathVariable = process.StartInfo.EnvironmentVariables["PATH"];
@@ -32,6 +47,49 @@ public class Process
         process.BeginOutputReadLine();
         process.BeginErrorReadLine();
         return new ProcessInfo(process);
+    }
+
+    public virtual async Task<IDictionary<string, string>>
+        RunAndGetEnvironmentVariablesAsync(string executablePath, CancellationToken token = default)
+    {
+        var arguments = $"/c \"\"{executablePath}\" & set\""; 
+        var startInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", arguments)
+        {
+            UseShellExecute = false,   
+            RedirectStandardOutput = true,
+            RedirectStandardError = true,
+            CreateNoWindow = true
+        };
+        using var process = new System.Diagnostics.Process();
+        process.StartInfo = startInfo;
+        process.Start();
+        
+        var output = await process.StandardOutput.ReadToEndAsync(token);
+        var error = await process.StandardError.ReadToEndAsync(token);
+        
+        if (!string.IsNullOrEmpty(error))
+        {
+            throw new ExecutionException($"Error running command: {error}");
+        }
+        
+        // Parse the environment variables from the 'set' output
+        // Each line from `set` typically looks like KEY=VALUE
+        var envVars = new Dictionary<string, string>();
+        var lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        foreach (var line in lines)
+        {
+            var index = line.IndexOf('=');
+            if (index <= 0)
+            {
+                continue;
+            }
+
+            var key = line[..index].Trim();
+            var val = line[(index + 1)..];
+            envVars[key] = val;
+        }
+
+        return envVars;
     }
 
     public virtual async Task<int> WaitForExitAsync(IProcessInfo processInfo,

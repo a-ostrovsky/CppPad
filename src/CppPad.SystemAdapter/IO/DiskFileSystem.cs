@@ -8,6 +8,9 @@ namespace CppPad.SystemAdapter.IO;
 
 public class DiskFileSystem
 {
+    public SpecialFolders SpecialFolders { get; } = 
+        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+    
     public virtual Task<string> ReadAllTextAsync(string path)
     {
         return File.ReadAllTextAsync(path);

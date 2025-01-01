@@ -1,5 +1,4 @@
-﻿using CppPad.SystemAdapter;
-using CppPad.Scripting.Serialization;
+﻿using CppPad.Scripting.Serialization;
 using CppPad.SystemAdapter.IO;
 
 namespace CppPad.Scripting.Persistence;
@@ -20,15 +19,24 @@ public class ScriptLoader(ScriptSerializer serializer, DiskFileSystem fileSystem
         return result;
     }
 
-    public Task SaveAsync(ScriptDocument document, string fileName)
+    public Task SaveAsync(ScriptDocument script, string fileName)
     {
-        var content = serializer.Serialize(document);
+        var content = serializer.Serialize(script);
         return fileSystem.WriteAllTextAsync(fileName, content);
     }
 
-    public void Save(ScriptDocument document, string fileName)
+    public void Save(ScriptDocument script, string fileName)
     {
-        var content = serializer.Serialize(document);
+        var content = serializer.Serialize(script);
         fileSystem.WriteAllText(fileName, content);
+    }
+
+    public async Task<string> CreateCppFileAsync(ScriptDocument document)
+    {
+        var content = document.Script.Content;
+        var filePath = Path.Combine(fileSystem.SpecialFolders.TempFolder, document.Identifier.ToString(), "main.cpp");
+        await fileSystem.CreateDirectoryAsync(Path.GetDirectoryName(filePath)!);
+        await fileSystem.WriteAllTextAsync(filePath, content);
+        return filePath;
     }
 }

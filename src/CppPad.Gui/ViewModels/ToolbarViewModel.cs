@@ -18,6 +18,7 @@ public class ToolbarViewModel : ViewModelBase
         OpenFileCommand = new AsyncRelayCommand(_ => OpenFileRequested?.InvokeAsync(this, EventArgs.Empty));
         SaveFileCommand = new AsyncRelayCommand(_ => SaveFileRequested?.InvokeAsync(this, EventArgs.Empty));
         SaveFileAsCommand = new AsyncRelayCommand(_ => SaveFileAsRequested?.InvokeAsync(this, EventArgs.Empty));
+        BuildAndRunCommand = new AsyncRelayCommand(_ => BuildAndRunRequested?.InvokeAsync(this, EventArgs.Empty));
     }
 
     public IAsyncCommand GoToLineCommand { get; }
@@ -27,6 +28,8 @@ public class ToolbarViewModel : ViewModelBase
     public IAsyncCommand SaveFileCommand { get; }
 
     public IAsyncCommand SaveFileAsCommand { get; }
+    
+    public IAsyncCommand BuildAndRunCommand { get; }
 
     public static ToolbarViewModel DesignInstance { get; } = new();
 
@@ -37,6 +40,8 @@ public class ToolbarViewModel : ViewModelBase
     public event AsyncEventHandler? SaveFileRequested;
 
     public event AsyncEventHandler? SaveFileAsRequested;
+    
+    public event AsyncEventHandler? BuildAndRunRequested;
 
     public event EventHandler? CreateNewFileRequested;
 

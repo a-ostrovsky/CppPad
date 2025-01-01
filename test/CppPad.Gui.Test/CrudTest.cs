@@ -13,8 +13,8 @@ public class CrudTest
     public void Create_new_file_upon_startup()
     {
         // Assert
-        Assert.Single(_bootstrapper.OpenEditorsViewModel.Editors);
-        Assert.Equal(_bootstrapper.OpenEditorsViewModel.Editors[0], _bootstrapper.OpenEditorsViewModel.CurrentEditor);
+        Assert.Single(_bootstrapper.OpenEditors.Editors);
+        Assert.Equal(_bootstrapper.OpenEditors.Editors[0], _bootstrapper.OpenEditors.CurrentEditor);
     }
 
     [Fact]
@@ -25,8 +25,8 @@ public class CrudTest
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
 
         // Assert
-        Assert.Single(_bootstrapper.OpenEditorsViewModel.Editors);
-        Assert.Equal(_bootstrapper.OpenEditorsViewModel.Editors[0], _bootstrapper.OpenEditorsViewModel.CurrentEditor);
+        Assert.Single(_bootstrapper.OpenEditors.Editors);
+        Assert.Equal(_bootstrapper.OpenEditors.Editors[0], _bootstrapper.OpenEditors.CurrentEditor);
     }
 
 
@@ -37,16 +37,16 @@ public class CrudTest
         CloseAllEditors();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
-        var editor1 = _bootstrapper.OpenEditorsViewModel.Editors[0];
-        var editor2 = _bootstrapper.OpenEditorsViewModel.Editors[1];
-        _bootstrapper.OpenEditorsViewModel.CurrentEditor = editor1;
+        var editor1 = _bootstrapper.OpenEditors.Editors[0];
+        var editor2 = _bootstrapper.OpenEditors.Editors[1];
+        _bootstrapper.OpenEditors.CurrentEditor = editor1;
 
         // Act
         editor1.CloseCommand.Execute(null);
 
         // Assert
-        Assert.DoesNotContain(editor1, _bootstrapper.OpenEditorsViewModel.Editors);
-        Assert.Equal(editor2, _bootstrapper.OpenEditorsViewModel.CurrentEditor);
+        Assert.DoesNotContain(editor1, _bootstrapper.OpenEditors.Editors);
+        Assert.Equal(editor2, _bootstrapper.OpenEditors.CurrentEditor);
     }
 
     [Fact]
@@ -56,16 +56,16 @@ public class CrudTest
         CloseAllEditors();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
-        var editor1 = _bootstrapper.OpenEditorsViewModel.Editors[0];
-        var editor2 = _bootstrapper.OpenEditorsViewModel.Editors[1];
-        _bootstrapper.OpenEditorsViewModel.CurrentEditor = editor1;
+        var editor1 = _bootstrapper.OpenEditors.Editors[0];
+        var editor2 = _bootstrapper.OpenEditors.Editors[1];
+        _bootstrapper.OpenEditors.CurrentEditor = editor1;
 
         // Act
         editor2.CloseCommand.Execute(null);
 
         // Assert
-        Assert.DoesNotContain(editor2, _bootstrapper.OpenEditorsViewModel.Editors);
-        Assert.Equal(editor1, _bootstrapper.OpenEditorsViewModel.CurrentEditor);
+        Assert.DoesNotContain(editor2, _bootstrapper.OpenEditors.Editors);
+        Assert.Equal(editor1, _bootstrapper.OpenEditors.CurrentEditor);
     }
 
     [Fact]
@@ -74,14 +74,14 @@ public class CrudTest
         // Arrange
         CloseAllEditors();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
-        var editor = _bootstrapper.OpenEditorsViewModel.Editors[0];
+        var editor = _bootstrapper.OpenEditors.Editors[0];
 
         // Act
         editor.CloseCommand.Execute(null);
 
         // Assert
-        Assert.Empty(_bootstrapper.OpenEditorsViewModel.Editors);
-        Assert.Null(_bootstrapper.OpenEditorsViewModel.CurrentEditor);
+        Assert.Empty(_bootstrapper.OpenEditors.Editors);
+        Assert.Null(_bootstrapper.OpenEditors.CurrentEditor);
     }
 
     [Fact]
@@ -93,14 +93,14 @@ public class CrudTest
         _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
         await _bootstrapper.ToolbarViewModel.OpenFileCommand.ExecuteAsync(null);
 
-        Assert.Equal(_bootstrapper.OpenEditorsViewModel.CurrentEditor, _bootstrapper.OpenEditorsViewModel.Editors[^1]);
-        Assert.Equal(_bootstrapper.OpenEditorsViewModel.CurrentEditor?.SourceCode.Content,
+        Assert.Equal(_bootstrapper.OpenEditors.CurrentEditor, _bootstrapper.OpenEditors.Editors[^1]);
+        Assert.Equal(_bootstrapper.OpenEditors.CurrentEditor?.SourceCode.Content,
             scriptDocument.Script.Content);
-        Assert.Contains("s.cpppad", _bootstrapper.OpenEditorsViewModel.CurrentEditor?.Title);
+        Assert.Contains("s.cpppad", _bootstrapper.OpenEditors.CurrentEditor?.Title);
 
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor;
-        _bootstrapper.OpenEditorsViewModel.CurrentEditor?.CloseCommand.Execute(null);
-        Assert.DoesNotContain(editor, _bootstrapper.OpenEditorsViewModel.Editors);
+        var editor = _bootstrapper.OpenEditors.CurrentEditor;
+        _bootstrapper.OpenEditors.CurrentEditor?.CloseCommand.Execute(null);
+        Assert.DoesNotContain(editor, _bootstrapper.OpenEditors.Editors);
     }
 
     [Fact]
@@ -108,7 +108,7 @@ public class CrudTest
     {
         // Arrange
         var scriptDocument = Fixture.CreateScriptDocument();
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var editor = _bootstrapper.OpenEditors.CurrentEditor!;
         editor.SourceCode.ScriptDocument = scriptDocument;
         _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
 
@@ -136,7 +136,7 @@ public class CrudTest
     {
         // Arrange
         var scriptDocument = Fixture.CreateScriptDocument();
-        var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var editor = _bootstrapper.OpenEditors.CurrentEditor!;
         editor.SourceCode.ScriptDocument = scriptDocument;
 
         // Act
