@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj" />
+      <ProjectReference Include="..\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj" />
+    </ItemGroup>
+
+</Project>

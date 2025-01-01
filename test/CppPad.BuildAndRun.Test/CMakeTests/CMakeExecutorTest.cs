@@ -1,7 +1,7 @@
 ﻿using CppPad.BuildSystem.CMakeAdapter.Execution;
 using CppPad.MockSystemAdapter;
 
-namespace CppPad.BuildSystem.CMakeAdapter.Test;
+namespace CppPad.BuildAndRun.Test.CMakeTests;
 
 public class CMakeExecutorTests
 {
@@ -23,7 +23,7 @@ public class CMakeExecutorTests
         await fileSystem.WriteAllTextAsync(cmakeListsPath, "dummy cmake content");
 
         // Prepare the mock process
-        var mockProcess = new MockProcess
+        var mockProcess = new FakeProcess
         {
             // By default, set exit code 0 (success)
             ExitCode = 0
@@ -35,6 +35,7 @@ public class CMakeExecutorTests
         // Prepare CMake options
         var options = new CMakeExecutionOptions
         {
+            EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
             ForceConfigure = true
@@ -84,13 +85,14 @@ public class CMakeExecutorTests
         await fileSystem.WriteAllTextAsync(cmakeCachePath, "dummy cmake cache content");
 
         // Mock process
-        var mockProcess = new MockProcess { ExitCode = 0 };
+        var mockProcess = new FakeProcess { ExitCode = 0 };
 
         var executor = new CMakeExecutor(fileSystem, mockProcess);
 
         // No force re-configure
         var options = new CMakeExecutionOptions
         {
+            EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
             ForceConfigure = false
@@ -128,12 +130,13 @@ public class CMakeExecutorTests
             "dummy cmake content");
 
         // Mock process that returns error code
-        var mockProcess = new MockProcess { ExitCode = 1 };
+        var mockProcess = new FakeProcess { ExitCode = 1 };
 
         var executor = new CMakeExecutor(fileSystem, mockProcess);
 
         var options = new CMakeExecutionOptions
         {
+            EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
             ForceConfigure = true
@@ -156,13 +159,14 @@ public class CMakeExecutorTests
         
         await fileSystem.WriteAllTextAsync(Path.Combine(srcDir, "CMakeLists.txt"), "dummy cmake");
 
-        var mockProcess = new MockProcess { ExitCode = 0 };
+        var mockProcess = new FakeProcess { ExitCode = 0 };
 
         var progressMessages = new List<string>();
         var errorMessages = new List<string>();
 
         var options = new CMakeExecutionOptions
         {
+            EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
             ForceConfigure = true,

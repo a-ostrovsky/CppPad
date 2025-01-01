@@ -12,4 +12,14 @@ public partial class EditorView : UserControl
     {
         InitializeComponent();
     }
+
+    private void CompilerOutput_OnTextChanged(object? sender, TextChangedEventArgs e)
+    {
+        if (sender is not TextBox textBox)
+        {
+            return;
+        }
+
+        textBox.CaretIndex = textBox.Text?.Length ?? 0;
+    }
 }

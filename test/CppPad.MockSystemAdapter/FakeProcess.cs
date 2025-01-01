@@ -2,7 +2,7 @@
 
 namespace CppPad.MockSystemAdapter;
 
-public class MockProcess : Process
+public class FakeProcess : Process
 {
     private EventHandler<DataReceivedEventArgs>? _errorHandler;
     private EventHandler<DataReceivedEventArgs>? _outputHandler;

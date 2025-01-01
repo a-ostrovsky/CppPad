@@ -12,12 +12,17 @@ public class CMakeOptions
     /// <summary>
     /// Gets or sets the paths of the include directories.
     /// </summary>
-    public ICollection<string> IncludeDirectories { get; init; } = [];
+    public IReadOnlyList<string> IncludeDirectories { get; init; } = [];
     
     /// <summary>
     /// Gets or sets the list of library files to link against.
     /// </summary>
-    public ICollection<string> LibFiles { get; init; } = [];
+    public IReadOnlyList<string> LibFiles { get; init; } = [];
+    
+    /// <summary>
+    /// Gets or sets the paths of the library search directories.
+    /// </summary>
+    public IReadOnlyList<string> LibSearchPaths { get; init; } = [];
     
     /// <summary>
     /// Gets or sets the C++ standard to use.

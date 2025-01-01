@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="coverlet.collector" Version="6.0.2"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
+        <PackageReference Include="xunit" Version="2.9.2"/>
+        <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Xunit"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\src\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj" />
+      <ProjectReference Include="..\..\src\BuildSystem\CppPad.BuildSystem\CppPad.BuildSystem.csproj" />
+      <ProjectReference Include="..\..\src\BuildSystem\CppPad.EnvironmentConfiguration.Vs\CppPad.EnvironmentConfiguration.Vs.csproj" />
+      <ProjectReference Include="..\..\src\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj" />
+      <ProjectReference Include="..\..\src\CppAdapter.BuildAndRun\CppAdapter.BuildAndRun.csproj" />
+      <ProjectReference Include="..\CppPad.MockSystemAdapter\CppPad.MockSystemAdapter.csproj" />
+    </ItemGroup>
+
+</Project>

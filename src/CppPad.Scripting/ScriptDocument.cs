@@ -6,7 +6,7 @@ public record ScriptDocument
 {
     public ScriptData Script { get; init; } = new();
 
-    public Identifier Identifier { get; init; } = Identifier.Empty;
+    public Identifier Identifier { get; init; } = IdentifierGenerator.GenerateUniqueId();
 
     public string? FileName { get; init; }
 }

@@ -1,7 +1,11 @@
-﻿namespace CppPad.BuildSystem.CMakeAdapter.Execution;
+﻿using CppPad.EnvironmentConfiguration;
+
+namespace CppPad.BuildSystem.CMakeAdapter.Execution;
 
 public class CMakeExecutionOptions
 {
+    public required EnvironmentSettings EnvironmentSettings { get; init; }
+    
     public required string CMakeListsFolder { get; init; }
 
     public required string BuildDirectory { get; init; }

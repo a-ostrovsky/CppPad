@@ -1,4 +1,4 @@
-﻿namespace CppPad.BuildSystem.CMakeAdapter.Execution;
+﻿namespace CppPad.BuildSystem;
 
 public class ErrorReceivedEventArgs(string data) : EventArgs
 {

@@ -4,11 +4,11 @@ public class CppBuildSettings
 {
     public IReadOnlyList<string> AdditionalIncludeDirs { get; init; } = [];
 
-    public IReadOnlyList<string> LibrarySearchPaths { get; init; } = [];
+    public IReadOnlyList<string> LibSearchPaths { get; init; } = [];
 
     public IReadOnlyList<string> AdditionalEnvironmentPaths { get; init; } = [];
 
-    public IReadOnlyList<string> StaticallyLinkedLibraries { get; init; } = [];
+    public IReadOnlyList<string> LibFiles { get; init; } = [];
 
     public CppStandard CppStandard { get; init; } = CppStandard.Unspecified;
 

@@ -4,9 +4,11 @@ public class StartInfo
 {
     public required string FileName { get; init; }
 
-    public ICollection<string> Arguments { get; init; } = [];
+    public IList<string> Arguments { get; init; } = [];
 
-    public IDictionary<string, string> AdditionalPaths { get; init; } = new Dictionary<string, string>();
+    public IList<string> AdditionalPaths { get; init; } = [];
+
+    public IDictionary<string, string>? EnvironmentVariables { get; init; } = null;
     
     public required EventHandler<DataReceivedEventArgs> OutputReceived { get; init; }
     
