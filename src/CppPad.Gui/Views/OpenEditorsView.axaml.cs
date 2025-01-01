@@ -6,9 +6,9 @@ using Avalonia.Controls;
 
 namespace CppPad.Gui.Views;
 
-public partial class OpenEditors : UserControl
+public partial class OpenEditorsView : UserControl
 {
-    public OpenEditors()
+    public OpenEditorsView()
     {
         InitializeComponent();
     }

@@ -11,6 +11,6 @@
         Title="CppPad">
     <Grid RowDefinitions="Auto *">
         <views:ToolbarView Grid.Row="0" DataContext="{Binding Toolbar}" />
-        <views:OpenEditors Grid.Row="1" DataContext="{Binding OpenEditors}" />
+        <views:OpenEditorsView Grid.Row="1" DataContext="{Binding OpenEditors}" />
     </Grid>
 </Window>
