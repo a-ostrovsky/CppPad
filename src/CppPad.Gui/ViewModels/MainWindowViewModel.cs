@@ -6,7 +6,7 @@ using CppPad.SystemAdapter.IO;
 
 namespace CppPad.Gui.ViewModels;
 
-public class MainWindowViewModel : ViewModelBase
+public class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly IDialogs _dialogs;
 
@@ -253,5 +253,17 @@ public class MainWindowViewModel : ViewModelBase
         {
             editor.Dispose();
         }
+    }
+
+    public void Dispose()
+    {
+        Toolbar.CreateNewFileRequested -= OnCreateNewFileRequested;
+        Toolbar.OpenFileRequested -= OnOpenFileRequestedAsync;
+        Toolbar.SaveFileAsRequested -= OnSaveFileAsRequestedAsync;
+        Toolbar.SaveFileRequested -= OnSaveFileRequestedAsync;
+        Toolbar.GoToLineRequested -= OnGoToLineRequestedAsync;
+        Toolbar.BuildAndRunRequested -= OnBuildAndRunRequestedAsync;
+        Toolbar.OpenSettingsRequested -= OnOpenSettingsRequestedAsync;
+        GC.SuppressFinalize(this);
     }
 }

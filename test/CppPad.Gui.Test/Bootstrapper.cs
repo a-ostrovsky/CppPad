@@ -5,7 +5,7 @@ using CppPad.Scripting.Serialization;
 
 namespace CppPad.Gui.Tests;
 
-public class Bootstrapper
+public class Bootstrapper : IDisposable
 {
     public Bootstrapper()
     {
@@ -42,5 +42,11 @@ public class Bootstrapper
             ScriptLoader,
             Builder,
             new SourceCodeViewModel());
+    }
+
+    public void Dispose()
+    {
+        MainWindowViewModel.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

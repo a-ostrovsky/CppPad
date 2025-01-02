@@ -1,8 +1,14 @@
 ﻿namespace CppPad.Gui.Tests;
 
-public class CrudTest
+public class CrudTest : IDisposable
 {
     private readonly Bootstrapper _bootstrapper = new();
+    
+    public void Dispose()
+    {
+        _bootstrapper.Dispose();
+        GC.SuppressFinalize(this);
+    }
 
     private void CloseAllEditors()
     {

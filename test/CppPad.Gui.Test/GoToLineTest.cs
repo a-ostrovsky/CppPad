@@ -1,8 +1,14 @@
 ﻿namespace CppPad.Gui.Tests;
 
-public class GoToLineTest
+public class GoToLineTest : IDisposable
 {
     private readonly Bootstrapper _bootstrapper = new();
+    
+    public void Dispose()
+    {
+        _bootstrapper.Dispose();
+        GC.SuppressFinalize(this);
+    }
 
     [Fact]
     public async Task GoToLine_ValidInput_ChangesCaretPosition()

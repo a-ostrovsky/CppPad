@@ -1,8 +1,14 @@
 ﻿namespace CppPad.Gui.Tests;
 
-public class EditorTest
+public class EditorTest : IDisposable
 {
     private readonly Bootstrapper _bootstrapper = new();
+    
+    public void Dispose()
+    {
+        _bootstrapper.Dispose();
+        GC.SuppressFinalize(this);
+    }
 
     [Fact]
     public async Task BuildAsync_output_messages_are_displayed()
