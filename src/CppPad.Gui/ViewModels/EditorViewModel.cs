@@ -13,7 +13,7 @@ using CppPad.SystemAdapter.IO;
 
 namespace CppPad.Gui.ViewModels;
 
-public class EditorViewModel : ViewModelBase
+public class EditorViewModel : ViewModelBase, IDisposable
 {
     private readonly IBuilder _builder;
 
@@ -33,6 +33,19 @@ public class EditorViewModel : ViewModelBase
         SourceCode = sourceCode;
         scriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
         CloseCommand = new RelayCommand(_ => CloseRequested?.Invoke(this, EventArgs.Empty));
+        _builder.BuildStatusChanged += Builder_BuildStatusChanged;
+    }
+
+    private void Builder_BuildStatusChanged(object? sender, BuildStatusChangedEventArgs e)
+    {
+        var message = e.BuildStatus switch
+        {
+            BuildStatus.PreparingEnvironment => "Preparing environment...",
+            BuildStatus.Building => "Building...",
+            BuildStatus.Finished => "Build finished.",
+            _ => throw new ArgumentException("Unknown build status.", nameof(e))
+        };
+        CompilerOutput.AddMessage(message);
     }
 
     public ScriptSettingsViewModel ScriptSettings { get; }
@@ -115,5 +128,12 @@ public class EditorViewModel : ViewModelBase
         {
             _buildSemaphore.Release();
         }
+    }
+
+    public void Dispose()
+    {
+        _builder.BuildStatusChanged -= Builder_BuildStatusChanged;
+        _buildSemaphore.Dispose();
+        GC.SuppressFinalize(this);
     }
 }

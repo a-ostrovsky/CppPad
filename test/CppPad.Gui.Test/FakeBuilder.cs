@@ -10,18 +10,24 @@ public class FakeBuilder : IBuilder
 
     public Task BuildAsync(BuildConfiguration buildConfiguration, CancellationToken token = default)
     {
+        BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Building));
+
         if (_outputMessage != null)
         {
-            buildConfiguration.ProgressReceived?.Invoke(this, new ProgressReceivedEventArgs(_outputMessage));
+            buildConfiguration.ProgressReceived(this, new ProgressReceivedEventArgs(_outputMessage));
         }
 
         if (_errorMessage != null)
         {
-            buildConfiguration.ErrorReceived?.Invoke(this, new ErrorReceivedEventArgs(_errorMessage));
+            buildConfiguration.ErrorReceived.Invoke(this, new ErrorReceivedEventArgs(_errorMessage));
         }
+
+        BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Finished));
 
         return Task.CompletedTask;
     }
+
+    public event EventHandler<BuildStatusChangedEventArgs>? BuildStatusChanged;
 
     public void SetOutputMessage(string message)
     {

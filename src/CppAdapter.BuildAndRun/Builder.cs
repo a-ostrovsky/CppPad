@@ -10,7 +10,18 @@ public class Builder(
 {
     public async Task BuildAsync(BuildConfiguration buildConfiguration, CancellationToken token = default)
     {
-        var settings = await environmentConfigurationDetector.GetSettingsAsync(token);
-        await cmake.BuildAsync(buildConfiguration, settings, token);
+        try
+        {
+            BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.PreparingEnvironment));
+            var settings = await environmentConfigurationDetector.GetSettingsAsync(token);
+            BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Building));
+            await cmake.BuildAsync(buildConfiguration, settings, token);
+        }
+        finally
+        {
+            BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Finished));
+        }
     }
+
+    public event EventHandler<BuildStatusChangedEventArgs>? BuildStatusChanged;
 }

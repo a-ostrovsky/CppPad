@@ -227,24 +227,31 @@ public class MainWindowViewModel : ViewModelBase
     {
         var editor = (EditorViewModel?)sender;
         Debug.Assert(editor != null);
-        var index = OpenEditors.Editors.IndexOf(editor);
-        OpenEditors.Editors.Remove(editor);
+        try
+        {
+            var index = OpenEditors.Editors.IndexOf(editor);
+            OpenEditors.Editors.Remove(editor);
 
-        if (OpenEditors.CurrentEditor != editor)
-        {
-            return;
-        }
+            if (OpenEditors.CurrentEditor != editor)
+            {
+                return;
+            }
 
-        if (OpenEditors.Editors.Count > 0)
-        {
-            // Select the next editor if available, otherwise select the previous one
-            OpenEditors.CurrentEditor = index < OpenEditors.Editors.Count
-                ? OpenEditors.Editors[index]
-                : OpenEditors.Editors[index - 1];
+            if (OpenEditors.Editors.Count > 0)
+            {
+                // Select the next editor if available, otherwise select the previous one
+                OpenEditors.CurrentEditor = index < OpenEditors.Editors.Count
+                    ? OpenEditors.Editors[index]
+                    : OpenEditors.Editors[index - 1];
+            }
+            else
+            {
+                OpenEditors.CurrentEditor = null;
+            }
         }
-        else
+        finally
         {
-            OpenEditors.CurrentEditor = null;
+            editor.Dispose();
         }
     }
 }
