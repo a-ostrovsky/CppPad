@@ -19,6 +19,7 @@ public class BuildAndRunBootstrapper
         EnvironmentConfigurationDetector = new EnvironmentConfigurationDetector(
             DeveloperCommandPromptDetector,
             parent.SystemAdapterBootstrapper.Process);
+        EnvironmentConfigurationCache = new EnvironmentConfigurationCache(EnvironmentConfigurationDetector);
         FileBuilder = new FileBuilder();
         FileWriter = new FileWriter(
             parent.ScriptingBootstrapper.ScriptLoader,
@@ -29,7 +30,7 @@ public class BuildAndRunBootstrapper
             parent.SystemAdapterBootstrapper.Process);
         CMake = new CMake(FileWriter,
             Executor);
-        Builder = new Builder(EnvironmentConfigurationDetector, CMake);
+        Builder = new Builder(EnvironmentConfigurationCache, CMake);
     }
 
     public VsWhereAdapter VsWhereAdapter { get; }
@@ -38,6 +39,8 @@ public class BuildAndRunBootstrapper
 
     public IEnvironmentConfigurationDetector EnvironmentConfigurationDetector { get; }
 
+    public IEnvironmentConfigurationDetector EnvironmentConfigurationCache { get; }
+    
     public FileBuilder FileBuilder { get; }
 
     public FileWriter FileWriter { get; }
