@@ -14,7 +14,7 @@ public class DummyBuilder : IBuilder
     public Task BuildAsync(BuildConfiguration buildConfiguration, CancellationToken token = default)
     {
         BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.PreparingEnvironment));
-        return Task.CompletedTask;
+        return Task.FromResult("C:\\x.exe");
     }
 
     public event EventHandler<BuildStatusChangedEventArgs>? BuildStatusChanged;

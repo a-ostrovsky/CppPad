@@ -38,10 +38,12 @@ public class FileWriter(
         await fileSystem.WriteAllTextAsync(cmakeListsFile, cmakeFileContent);
     }
 
-    public async Task<FileWriterResult> WriteCMakeFileAsync(ScriptDocument scriptDocument)
+    public async Task<FileWriterResult> WriteCMakeFileAsync(ScriptDocument scriptDocument,
+        CancellationToken token = default)
     {
-        var cppFileName = await loader.CreateCppFileAsync(scriptDocument);
+        var cppFileName = await loader.CreateCppFileAsync(scriptDocument, token);
         var cppFolder = Path.GetDirectoryName(cppFileName)!;
+        token.ThrowIfCancellationRequested();
         var buildFolder = await CreateBuildFolderAsync(cppFolder);
 
         var options = new CMakeOptions
@@ -65,7 +67,7 @@ public class FileWriter(
         return new FileWriterResult
         {
             CppFolder = cppFolder,
-            BuildFolder = buildFolder
+            BuildFolder = buildFolder,
         };
     }
 }

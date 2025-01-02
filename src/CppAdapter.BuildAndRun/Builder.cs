@@ -15,11 +15,16 @@ public class Builder(
             BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.PreparingEnvironment));
             var settings = await environmentConfigurationDetector.GetSettingsAsync(token);
             BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Building));
+            token.ThrowIfCancellationRequested();
             await cmake.BuildAsync(buildConfiguration, settings, token);
+            token.ThrowIfCancellationRequested();
+            BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Succeeded));
         }
-        finally
+        catch (Exception e)
         {
-            BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Finished));
+            var status = e is OperationCanceledException ? BuildStatus.Cancelled : BuildStatus.Failed;
+            BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(status));
+            throw;
         }
     }
 

@@ -16,6 +16,7 @@ namespace CppPad.Gui.ViewModels;
 public class EditorViewModel : ViewModelBase, IDisposable
 {
     private readonly IBuilder _builder;
+    private CancellationTokenSource? _buildCancellationTokenSource;
 
     private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
     private readonly ScriptLoader _loader;
@@ -42,7 +43,9 @@ public class EditorViewModel : ViewModelBase, IDisposable
         {
             BuildStatus.PreparingEnvironment => "Preparing environment...",
             BuildStatus.Building => "Building...",
-            BuildStatus.Finished => "Build finished.",
+            BuildStatus.Succeeded => "Build succeeded.",
+            BuildStatus.Failed => "Build failed.",
+            BuildStatus.Cancelled => "Build cancelled.",
             _ => throw new ArgumentException("Unknown build status.", nameof(e))
         };
         CompilerOutput.AddMessage(message);
@@ -105,6 +108,17 @@ public class EditorViewModel : ViewModelBase, IDisposable
 
         return _loader.SaveAsync(SourceCode.ScriptDocument, SourceCode.ScriptDocument.FileName);
     }
+    
+    public async Task CancelBuildAndRunAsync()
+    {
+        var cancellationTokenSource = _buildCancellationTokenSource;
+        if (cancellationTokenSource is null)
+        {
+            return;
+        }
+        
+        await cancellationTokenSource.CancelAsync();
+    }
 
     public async Task BuildAndRunAsync()
     {
@@ -112,6 +126,8 @@ public class EditorViewModel : ViewModelBase, IDisposable
         {
             throw new InvalidOperationException("Another build is already in progress.");
         }
+        
+        _buildCancellationTokenSource = new CancellationTokenSource();
 
         try
         {
@@ -122,10 +138,12 @@ public class EditorViewModel : ViewModelBase, IDisposable
                 ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
                 ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
             };
-            await _builder.BuildAsync(buildConfiguration);
+            await _builder.BuildAsync(buildConfiguration, _buildCancellationTokenSource.Token);
         }
         finally
         {
+            _buildCancellationTokenSource.Dispose();
+            _buildCancellationTokenSource = null;
             _buildSemaphore.Release();
         }
     }

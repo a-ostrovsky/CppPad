@@ -12,7 +12,7 @@ public class CMake(FileWriter cmakeFileWriter, CMakeExecutor executor)
         CancellationToken token = default)
     {
         var scriptDocument = buildConfiguration.ScriptDocument;
-        var fileWriterResult = await cmakeFileWriter.WriteCMakeFileAsync(scriptDocument);
+        var fileWriterResult = await cmakeFileWriter.WriteCMakeFileAsync(scriptDocument, token);
         var executionOptions = new CMakeExecutionOptions
         {
             ErrorReceived = buildConfiguration.ErrorReceived,

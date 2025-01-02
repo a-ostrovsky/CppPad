@@ -22,8 +22,9 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
     }
 
     private async Task ConfigureAsync(
-        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken cancellationToken = default)
+        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
         if (!options.ForceConfigure)
         {
             var configureMarkerFile = Path.Combine(options.BuildDirectory, "CMakeCache.txt");
@@ -35,7 +36,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
 
         var startInfo = CreateStartInfoForConfigure(cmakeExecutablePath, options);
         var processInfo = process.Start(startInfo);
-        var errorCode = await process.WaitForExitAsync(processInfo, cancellationToken);
+        var errorCode = await process.WaitForExitAsync(processInfo, token);
         if (errorCode != 0)
         {
             throw new CMakeExecutionException(
@@ -44,11 +45,12 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
     }
 
     private async Task BuildAsync(
-        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken cancellationToken = default)
+        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken token = default)
     {
+        token.ThrowIfCancellationRequested();
         var startInfo = CreateStartInfoForBuild(cmakeExecutablePath, options);
         var processInfo = process.Start(startInfo);
-        var errorCode = await process.WaitForExitAsync(processInfo, cancellationToken);
+        var errorCode = await process.WaitForExitAsync(processInfo, token);
         if (errorCode != 0)
         {
             throw new CMakeExecutionException(

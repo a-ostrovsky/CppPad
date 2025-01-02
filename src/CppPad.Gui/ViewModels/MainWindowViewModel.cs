@@ -24,6 +24,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         Toolbar.SaveFileRequested += OnSaveFileRequestedAsync;
         Toolbar.GoToLineRequested += OnGoToLineRequestedAsync;
         Toolbar.BuildAndRunRequested += OnBuildAndRunRequestedAsync;
+        Toolbar.CancelBuildAndRunRequested += OnCancelBuildAndRunRequestedAsync;
         Toolbar.OpenSettingsRequested += OnOpenSettingsRequestedAsync;
         CreateNewEditor();
     }
@@ -205,6 +206,17 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         return editor;
     }
 
+    private async Task OnCancelBuildAndRunRequestedAsync(object sender, EventArgs e)
+    {
+        var editor = OpenEditors.CurrentEditor;
+        if (editor == null)
+        {
+            return;
+        }
+
+        await editor.CancelBuildAndRunAsync();
+    }
+
     private async Task OnBuildAndRunRequestedAsync(object sender, EventArgs e)
     {
         var editor = OpenEditors.CurrentEditor;
@@ -216,6 +228,10 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         try
         {
             await editor.BuildAndRunAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            // Ignore
         }
         catch (Exception ex)
         {
@@ -263,6 +279,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         Toolbar.SaveFileRequested -= OnSaveFileRequestedAsync;
         Toolbar.GoToLineRequested -= OnGoToLineRequestedAsync;
         Toolbar.BuildAndRunRequested -= OnBuildAndRunRequestedAsync;
+        Toolbar.CancelBuildAndRunRequested -= OnCancelBuildAndRunRequestedAsync;
         Toolbar.OpenSettingsRequested -= OnOpenSettingsRequestedAsync;
         GC.SuppressFinalize(this);
     }

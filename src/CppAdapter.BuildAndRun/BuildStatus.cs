@@ -4,5 +4,7 @@ public enum BuildStatus
 {
     PreparingEnvironment,
     Building,
-    Finished
+    Succeeded,
+    Failed,
+    Cancelled
 }

@@ -28,7 +28,7 @@ public class FakeProcess : Process
 
     public override Task<int> WaitForExitAsync(
         IProcessInfo processInfo,
-        CancellationToken cancellationToken = default
+        CancellationToken token = default
     )
     {
         return Task.FromResult(ExitCode);

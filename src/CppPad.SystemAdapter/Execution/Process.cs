@@ -95,11 +95,25 @@ public class Process
     }
 
     public virtual async Task<int> WaitForExitAsync(IProcessInfo processInfo,
-        CancellationToken cancellationToken = default)
+        CancellationToken token = default)
     {
-        var process = (System.Diagnostics.Process)processInfo.GetProcessData();
-        await process.WaitForExitAsync(cancellationToken);
-        return process.ExitCode;
+        int exitCode;
+        System.Diagnostics.Process? process = null;
+        try
+        {
+            process = (System.Diagnostics.Process)processInfo.GetProcessData();
+            await process.WaitForExitAsync(token);
+            exitCode = process.ExitCode;
+        }
+        finally
+        {
+            if (token.IsCancellationRequested)
+            {
+                process?.Kill();
+            }
+        }
+
+        return exitCode;
     }
 
     public virtual int WaitForExit(IProcessInfo processInfo)

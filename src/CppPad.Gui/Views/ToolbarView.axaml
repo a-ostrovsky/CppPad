@@ -34,7 +34,8 @@
                     Margin="10 0 0 0">
             <Button Content="▶️" Command="{Binding BuildAndRunCommand}"
                     HotKey="F5" />
-            <Button Content="⏹️" />
+            <Button Content="⏹️" Command="{Binding CancelBuildAndRunCommand}"
+                    HotKey="Shift+F5"/>
         </StackPanel>
         <Button Content="🔍" Command="{Binding GoToLineCommand}"
                 HotKey="Ctrl+G">

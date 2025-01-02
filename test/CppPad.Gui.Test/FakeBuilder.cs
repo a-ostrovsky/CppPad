@@ -22,7 +22,7 @@ public class FakeBuilder : IBuilder
             buildConfiguration.ErrorReceived.Invoke(this, new ErrorReceivedEventArgs(_errorMessage));
         }
 
-        BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Finished));
+        BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Succeeded));
 
         return Task.CompletedTask;
     }

@@ -10,6 +10,8 @@ public class DiskFileSystem
 {
     public SpecialFolders SpecialFolders { get; } =
         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+    
+    public static string ExecutableExtension => ".exe";
 
     public virtual Task<string> ReadAllTextAsync(string path)
     {

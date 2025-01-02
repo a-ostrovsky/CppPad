@@ -8,7 +8,7 @@ public class CMakeOptions
     ///     Gets or sets the path of the cpp file to compile.
     /// </summary>
     public required string CppFileName { get; init; }
-
+    
     /// <summary>
     ///     Gets or sets the paths of the include directories.
     /// </summary>
