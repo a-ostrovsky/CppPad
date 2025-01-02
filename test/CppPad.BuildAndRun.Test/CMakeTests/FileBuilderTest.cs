@@ -84,7 +84,7 @@ public class FileBuilderTest
         };
         var builder = new FileBuilder();
         var result = builder.Build(options);
-        
+
         Assert.Contains("link_directories(lib)", result);
     }
 

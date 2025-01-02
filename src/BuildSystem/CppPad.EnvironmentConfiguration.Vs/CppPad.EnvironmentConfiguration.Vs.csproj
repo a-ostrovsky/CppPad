@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\CppPad.SystemAdapter\CppPad.SystemAdapter.csproj" />
-      <ProjectReference Include="..\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj" />
+        <ProjectReference Include="..\..\CppPad.SystemAdapter\CppPad.SystemAdapter.csproj"/>
+        <ProjectReference Include="..\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
-﻿using System;
-using CppPad.SystemAdapter.Execution;
+﻿using CppPad.SystemAdapter.Execution;
 using CppPad.SystemAdapter.IO;
 
 namespace CppPad.Gui.Bootstrapping;

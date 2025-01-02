@@ -197,7 +197,7 @@ public class Dialogs : IDialogs
             textBox.SelectAll();
             textBox.Focus();
         };
-        
+
         // Show as a modal dialog returning a string (or null).
         return await inputWindow.ShowDialog<string?>(MainWindow);
     }

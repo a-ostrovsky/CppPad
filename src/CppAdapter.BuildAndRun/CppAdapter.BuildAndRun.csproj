@@ -7,8 +7,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj" />
-      <ProjectReference Include="..\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj" />
+        <ProjectReference Include="..\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj"/>
+        <ProjectReference Include="..\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj"/>
     </ItemGroup>
 
 </Project>

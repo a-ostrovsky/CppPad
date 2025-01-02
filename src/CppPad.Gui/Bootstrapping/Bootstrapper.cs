@@ -15,6 +15,6 @@ public class Bootstrapper
     public ScriptingBootstrapper ScriptingBootstrapper { get; }
 
     public SystemAdapterBootstrapper SystemAdapterBootstrapper { get; }
-    
+
     public BuildAndRunBootstrapper BuildAndRunBootstrapper { get; }
 }

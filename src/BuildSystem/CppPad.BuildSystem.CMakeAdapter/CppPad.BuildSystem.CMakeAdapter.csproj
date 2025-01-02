@@ -7,9 +7,9 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\CppPad.Scripting\CppPad.Scripting.csproj" />
-      <ProjectReference Include="..\CppPad.BuildSystem\CppPad.BuildSystem.csproj" />
-      <ProjectReference Include="..\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj" />
+        <ProjectReference Include="..\..\CppPad.Scripting\CppPad.Scripting.csproj"/>
+        <ProjectReference Include="..\CppPad.BuildSystem\CppPad.BuildSystem.csproj"/>
+        <ProjectReference Include="..\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj"/>
     </ItemGroup>
 
 </Project>

@@ -19,12 +19,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\src\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj" />
-      <ProjectReference Include="..\..\src\BuildSystem\CppPad.BuildSystem\CppPad.BuildSystem.csproj" />
-      <ProjectReference Include="..\..\src\BuildSystem\CppPad.EnvironmentConfiguration.Vs\CppPad.EnvironmentConfiguration.Vs.csproj" />
-      <ProjectReference Include="..\..\src\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj" />
-      <ProjectReference Include="..\..\src\CppAdapter.BuildAndRun\CppAdapter.BuildAndRun.csproj" />
-      <ProjectReference Include="..\CppPad.MockSystemAdapter\CppPad.MockSystemAdapter.csproj" />
+        <ProjectReference Include="..\..\src\BuildSystem\CppPad.BuildSystem.CMakeAdapter\CppPad.BuildSystem.CMakeAdapter.csproj"/>
+        <ProjectReference Include="..\..\src\BuildSystem\CppPad.BuildSystem\CppPad.BuildSystem.csproj"/>
+        <ProjectReference Include="..\..\src\BuildSystem\CppPad.EnvironmentConfiguration.Vs\CppPad.EnvironmentConfiguration.Vs.csproj"/>
+        <ProjectReference Include="..\..\src\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj"/>
+        <ProjectReference Include="..\..\src\CppAdapter.BuildAndRun\CppAdapter.BuildAndRun.csproj"/>
+        <ProjectReference Include="..\CppPad.MockSystemAdapter\CppPad.MockSystemAdapter.csproj"/>
     </ItemGroup>
 
 </Project>

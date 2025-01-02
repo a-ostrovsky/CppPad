@@ -1,11 +1,9 @@
-﻿using CppPad.BuildSystem;
-
-namespace CppPad.Gui.Tests;
+﻿namespace CppPad.Gui.Tests;
 
 public class EditorTest
 {
     private readonly Bootstrapper _bootstrapper = new();
-    
+
     [Fact]
     public async Task BuildAsync_output_messages_are_displayed()
     {

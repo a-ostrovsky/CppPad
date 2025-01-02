@@ -31,20 +31,20 @@ public class BuildAndRunBootstrapper
             Executor);
         Builder = new Builder(EnvironmentConfigurationDetector, CMake);
     }
-    
-    public VsWhereAdapter VsWhereAdapter {get;}
-    
-    public DeveloperCommandPromptDetector DeveloperCommandPromptDetector {get;}
-    
+
+    public VsWhereAdapter VsWhereAdapter { get; }
+
+    public DeveloperCommandPromptDetector DeveloperCommandPromptDetector { get; }
+
     public IEnvironmentConfigurationDetector EnvironmentConfigurationDetector { get; }
 
     public FileBuilder FileBuilder { get; }
-    
+
     public FileWriter FileWriter { get; }
 
     public CMakeExecutor Executor { get; }
 
     public CMake CMake { get; }
-    
+
     public IBuilder Builder { get; }
 }

@@ -22,7 +22,7 @@ public class FileWriterTest
                 Content = "int main() { return 0; }"
             }
         };
-        
+
         // Act
         await cmakeFileWriter.WriteCMakeFileAsync(scriptDocument);
         var cmakeListsFile = await GetCMakeListsFile(fileSystem);

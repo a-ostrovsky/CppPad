@@ -18,13 +18,9 @@ namespace CppPad.Gui.Views;
 public partial class SourceCodeView : UserControl
 {
     private bool _isInternalChange;
-    
+
     private SourceCodeViewModel? _viewModel;
 
-    public ICommand CutCommand { get; }
-    public ICommand CopyCommand { get; }
-    public ICommand PasteCommand { get; }
-    
     public SourceCodeView()
     {
         InitializeComponent();
@@ -40,6 +36,10 @@ public partial class SourceCodeView : UserControl
         CopyCommand = new RelayCommand(_ => Editor.Copy(), _ => Editor.CanCopy);
         PasteCommand = new RelayCommand(_ => Editor.Paste(), _ => Editor.CanPaste);
     }
+
+    public ICommand CutCommand { get; }
+    public ICommand CopyCommand { get; }
+    public ICommand PasteCommand { get; }
 
     private void Caret_PositionChanged(object? sender, EventArgs e)
     {

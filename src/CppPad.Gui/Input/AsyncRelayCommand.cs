@@ -11,7 +11,7 @@ public class AsyncRelayCommand(Func<object?, Task?> execute, Predicate<object?>?
     : IAsyncCommand
 {
     public event EventHandler? CanExecuteChanged;
-    
+
     public Task ExecuteAsync(object? parameter)
     {
         return execute(parameter) ?? Task.CompletedTask;

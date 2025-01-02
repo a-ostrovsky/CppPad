@@ -34,7 +34,7 @@ public class SerializerTest
         // Assert
         originalDocument.ShouldDeepEqual(deserializedDocument);
     }
-    
+
     [Fact]
     public void Serialize_enum_as_strings()
     {
@@ -48,7 +48,7 @@ public class SerializerTest
                     CppStandard = CppStandard.Cpp17
                 }
             },
-            Identifier = new Identifier("12345"),
+            Identifier = new Identifier("12345")
         };
 
         // Act

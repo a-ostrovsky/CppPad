@@ -3,7 +3,7 @@
 public class CrudTest
 {
     private readonly Bootstrapper _bootstrapper = new();
-    
+
     private void CloseAllEditors()
     {
         _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor?.CloseCommand.Execute(null);

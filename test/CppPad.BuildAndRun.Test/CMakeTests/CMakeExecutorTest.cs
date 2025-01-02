@@ -51,7 +51,7 @@ public class CMakeExecutorTests
 
         // 1st is configure, 2nd is build.
         Assert.Equal(2, mockProcess.CapturedStartInfo.Count);
-        
+
         // 2. Verify the first call (configure) used "cmake -S <srcDir> -B <buildDir>"
         Assert.NotNull(mockProcess.CapturedStartInfo);
         Assert.Contains("-S", mockProcess.CapturedStartInfo[0].Arguments);
@@ -69,12 +69,12 @@ public class CMakeExecutorTests
     {
         // Arrange
         var fileSystem = new InMemoryFileSystem();
-      
+
         const string buildDir = @"C:\MyBuild";
         const string srcDir = @"C:\MyProject";
         await fileSystem.CreateDirectoryAsync(buildDir);
         await fileSystem.CreateDirectoryAsync(srcDir);
-        
+
         var cmakeListsPath = Path.Combine(srcDir, "CMakeLists.txt");
         var cmakeCachePath = Path.Combine(buildDir, "CMakeCache.txt");
 
@@ -156,7 +156,7 @@ public class CMakeExecutorTests
         const string srcDir = @"C:\SourceDir";
         await fileSystem.CreateDirectoryAsync(buildDir);
         await fileSystem.CreateDirectoryAsync(srcDir);
-        
+
         await fileSystem.WriteAllTextAsync(Path.Combine(srcDir, "CMakeLists.txt"), "dummy cmake");
 
         var mockProcess = new FakeProcess { ExitCode = 0 };

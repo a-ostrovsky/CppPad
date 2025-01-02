@@ -4,9 +4,9 @@ namespace CppPad.MockSystemAdapter;
 
 public class FakeProcess : Process
 {
+    private readonly List<StartInfo> _capturedStartInfo = [];
     private EventHandler<DataReceivedEventArgs>? _errorHandler;
     private EventHandler<DataReceivedEventArgs>? _outputHandler;
-    private readonly List<StartInfo> _capturedStartInfo = [];
 
     public bool StartCalled { get; private set; }
 

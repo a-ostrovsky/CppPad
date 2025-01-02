@@ -23,7 +23,7 @@ public class CompilerOutputViewModel : ViewModelBase
 
         Output = string.Empty;
     }
-    
+
     public void AddMessage(string message)
     {
         if (!Dispatcher.UIThread.CheckAccess())

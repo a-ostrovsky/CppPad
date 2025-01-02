@@ -9,8 +9,8 @@ public class StartInfo
     public IList<string> AdditionalPaths { get; init; } = [];
 
     public IDictionary<string, string>? EnvironmentVariables { get; init; } = null;
-    
+
     public required EventHandler<DataReceivedEventArgs> OutputReceived { get; init; }
-    
+
     public required EventHandler<DataReceivedEventArgs> ErrorReceived { get; init; }
 }

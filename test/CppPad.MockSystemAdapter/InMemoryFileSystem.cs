@@ -4,7 +4,6 @@ using System.Collections.Concurrent;
 using System.IO.Compression;
 using System.Text;
 using System.Text.RegularExpressions;
-using CppPad.SystemAdapter;
 using CppPad.SystemAdapter.IO;
 
 #endregion
@@ -17,7 +16,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
 
     private readonly ConcurrentDictionary<string, string> _files =
         new(StringComparer.OrdinalIgnoreCase);
-    
+
     private readonly ConcurrentDictionary<string, DateTimeOffset> _lastWriteTimes =
         new(StringComparer.OrdinalIgnoreCase);
 
@@ -59,7 +58,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
             // Update the file content when the stream is disposed
             _files[path] = Encoding.UTF8.GetString(memoryStream.ToArray());
         };
-        
+
         _lastWriteTimes[path] = DateTimeOffset.UtcNow;
 
         return delegatingStream;
@@ -274,7 +273,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
             }
         }
     }
-    
+
     public override DateTimeOffset GetLastWriteTime(string path)
     {
         EnsureFileExists(path);

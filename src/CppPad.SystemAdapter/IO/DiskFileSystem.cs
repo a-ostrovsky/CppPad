@@ -8,9 +8,9 @@ namespace CppPad.SystemAdapter.IO;
 
 public class DiskFileSystem
 {
-    public SpecialFolders SpecialFolders { get; } = 
+    public SpecialFolders SpecialFolders { get; } =
         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-    
+
     public virtual Task<string> ReadAllTextAsync(string path)
     {
         return File.ReadAllTextAsync(path);
@@ -136,7 +136,7 @@ public class DiskFileSystem
     {
         return Task.Run(() => File.Copy(sourceFileName, destFileName, true));
     }
-    
+
     public virtual DateTimeOffset GetLastWriteTime(string path)
     {
         return File.GetLastWriteTime(path);

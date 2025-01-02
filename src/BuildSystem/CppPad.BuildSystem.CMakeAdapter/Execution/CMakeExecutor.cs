@@ -16,7 +16,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         }
 
         var cmakeExecutablePath = GetCMakeExecutablePath(options.EnvironmentSettings);
-        
+
         await ConfigureAsync(cmakeExecutablePath, options, cancellationToken);
         await BuildAsync(cmakeExecutablePath, options, cancellationToken);
     }
@@ -55,7 +55,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 $"CMake build failed with error code {errorCode}.");
         }
     }
-    
+
     private string GetCMakeExecutablePath(EnvironmentSettings environmentSettings)
     {
         var paths = environmentSettings.TryGet("PATH")

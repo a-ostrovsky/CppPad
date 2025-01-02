@@ -1,4 +1,6 @@
-﻿namespace CppPad.SystemAdapter.Execution;
+﻿using System.Diagnostics;
+
+namespace CppPad.SystemAdapter.Execution;
 
 public class Process
 {
@@ -34,7 +36,7 @@ public class Process
                 process.StartInfo.EnvironmentVariables[key] = value;
             }
         }
-        
+
         if (startInfo.AdditionalPaths.Count > 0)
         {
             var pathVariable = process.StartInfo.EnvironmentVariables["PATH"];
@@ -52,10 +54,10 @@ public class Process
     public virtual async Task<IDictionary<string, string>>
         RunAndGetEnvironmentVariablesAsync(string executablePath, CancellationToken token = default)
     {
-        var arguments = $"/c \"\"{executablePath}\" & set\""; 
-        var startInfo = new System.Diagnostics.ProcessStartInfo("cmd.exe", arguments)
+        var arguments = $"/c \"\"{executablePath}\" & set\"";
+        var startInfo = new ProcessStartInfo("cmd.exe", arguments)
         {
-            UseShellExecute = false,   
+            UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             CreateNoWindow = true
@@ -63,15 +65,15 @@ public class Process
         using var process = new System.Diagnostics.Process();
         process.StartInfo = startInfo;
         process.Start();
-        
+
         var output = await process.StandardOutput.ReadToEndAsync(token);
         var error = await process.StandardError.ReadToEndAsync(token);
-        
+
         if (!string.IsNullOrEmpty(error))
         {
             throw new ExecutionException($"Error running command: {error}");
         }
-        
+
         // Parse the environment variables from the 'set' output
         // Each line from `set` typically looks like KEY=VALUE
         var envVars = new Dictionary<string, string>();

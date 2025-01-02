@@ -1,5 +1,4 @@
 ﻿using CppPad.BuildSystem;
-using CppPad.Scripting;
 
 namespace CppAdapter.BuildAndRun;
 

@@ -43,7 +43,7 @@ public class BuilderTest
             ErrorReceived = (_, _) => { Assert.Fail("No error expected."); },
             ProgressReceived = (_, _) => { }
         });
-        
+
         // Assert
         Assert.True(process.StartCalled);
         var createdFiles = await fileSystem.ListFilesAsync(

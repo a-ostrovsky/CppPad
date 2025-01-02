@@ -35,7 +35,7 @@ public class ToolbarViewModel : ViewModelBase
     public static ToolbarViewModel DesignInstance { get; } = new();
 
     public ICommand CreateNewFileCommand { get; }
-    
+
     public IAsyncCommand OpenSettingsCommand { get; }
 
     public event AsyncEventHandler? GoToLineRequested;
@@ -45,7 +45,7 @@ public class ToolbarViewModel : ViewModelBase
     public event AsyncEventHandler? SaveFileAsRequested;
 
     public event AsyncEventHandler? BuildAndRunRequested;
-    
+
     public event AsyncEventHandler? OpenSettingsRequested;
 
     public event EventHandler? CreateNewFileRequested;

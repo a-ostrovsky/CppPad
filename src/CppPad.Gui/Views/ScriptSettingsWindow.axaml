@@ -29,14 +29,14 @@
                                 <TextBlock Text="C++ Standard:" />
                                 <ComboBox ItemsSource="{CompiledBinding CppStandards}"
                                           SelectedItem="{CompiledBinding CppStandard}"
-                                          Width="300"/>
+                                          Width="300" />
                             </StackPanel>
 
                             <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0,0,0">
                                 <TextBlock Text="Optimization Level:" />
                                 <ComboBox ItemsSource="{CompiledBinding OptimizationLevels}"
                                           SelectedItem="{CompiledBinding OptimizationLevel}"
-                                          Width="300"/>
+                                          Width="300" />
                             </StackPanel>
                         </Grid>
 
