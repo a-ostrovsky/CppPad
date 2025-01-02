@@ -4,7 +4,6 @@ using CppPad.BuildSystem;
 using CppPad.BuildSystem.CMakeAdapter;
 using CppPad.BuildSystem.CMakeAdapter.Creation;
 using CppPad.BuildSystem.CMakeAdapter.Execution;
-using CppPad.EnvironmentConfiguration;
 using CppPad.MockSystemAdapter;
 using CppPad.Scripting;
 using CppPad.Scripting.Persistence;
@@ -25,10 +24,9 @@ public class BuilderTest
         {
             Settings = envVars
         };
+        var scriptLoader = new ScriptLoader(new ScriptSerializer(), fileSystem);
         var cmake = new CMake(
-            fileSystem,
-            new ScriptLoader(new ScriptSerializer(), fileSystem),
-            new FileBuilder(),
+            new FileWriter(scriptLoader, new FileBuilder(), fileSystem),
             new CMakeExecutor(fileSystem, process));
         var builder = new Builder(environmentConfigurationDetector, cmake);
 

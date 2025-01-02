@@ -11,8 +11,8 @@ public class EditorTest
     {
         _bootstrapper.Builder.SetOutputMessage("Output_1");
         _bootstrapper.Builder.SetErrorMessage("Error_1");
-        await _bootstrapper.OpenEditors.CurrentEditor!.BuildAndRunAsync();
-        Assert.Contains("Output_1", _bootstrapper.OpenEditors.CurrentEditor!.CompilerOutput.Output);
-        Assert.Contains("Error_1", _bootstrapper.OpenEditors.CurrentEditor!.CompilerOutput.Output);
+        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync();
+        Assert.Contains("Output_1", _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output);
+        Assert.Contains("Error_1", _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output);
     }
 }

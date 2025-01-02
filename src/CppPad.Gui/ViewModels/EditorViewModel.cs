@@ -6,6 +6,7 @@ using System.Windows.Input;
 using CppAdapter.BuildAndRun;
 using CppPad.BuildSystem;
 using CppPad.Gui.Input;
+using CppPad.Scripting;
 using CppPad.Scripting.Persistence;
 using CppPad.Scripting.Serialization;
 using CppPad.SystemAdapter.IO;
@@ -15,22 +16,30 @@ namespace CppPad.Gui.ViewModels;
 public class EditorViewModel : ViewModelBase
 {
     private readonly IBuilder _builder;
+
+    private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
     private readonly ScriptLoader _loader;
     private string _title = "Untitled";
-        
-    private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
 
-
-    public EditorViewModel(ScriptLoader loader, IBuilder builder, SourceCodeViewModel sourceCode)
+    public EditorViewModel(
+        ScriptSettingsViewModel scriptSettings,
+        ScriptLoader loader,
+        IBuilder builder,
+        SourceCodeViewModel sourceCode)
     {
+        ScriptSettings = scriptSettings;
         _loader = loader;
         _builder = builder;
         SourceCode = sourceCode;
+        scriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
         CloseCommand = new RelayCommand(_ => CloseRequested?.Invoke(this, EventArgs.Empty));
     }
 
+    public ScriptSettingsViewModel ScriptSettings { get; }
+
     public static EditorViewModel DesignInstance { get; } =
         new(
+            ScriptSettingsViewModel.DesignInstance,
             new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()),
             new DummyBuilder(),
             SourceCodeViewModel.DesignInstance);
@@ -48,6 +57,17 @@ public class EditorViewModel : ViewModelBase
     public CompilerOutputViewModel CompilerOutput { get; } = new();
 
     public event EventHandler? CloseRequested;
+
+    public void ApplySettings(CppBuildSettings settings)
+    {
+        SourceCode.ScriptDocument = SourceCode.ScriptDocument with
+        {
+            Script = SourceCode.ScriptDocument.Script with
+            {
+                BuildSettings = settings
+            }
+        };
+    }
 
     public async Task OpenFileAsync(string fileName)
     {
@@ -79,6 +99,7 @@ public class EditorViewModel : ViewModelBase
         {
             throw new InvalidOperationException("Another build is already in progress.");
         }
+
         try
         {
             CompilerOutput.Reset();

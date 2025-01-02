@@ -11,12 +11,12 @@ public class MainWindowViewModel : ViewModelBase
     private readonly IDialogs _dialogs;
 
     public MainWindowViewModel(
-        OpenEditorsViewModel openEditorsViewModel,
+        OpenEditorsViewModel openEditors,
         ToolbarViewModel toolbar,
         IDialogs dialogs)
     {
         _dialogs = dialogs;
-        OpenEditors = openEditorsViewModel;
+        OpenEditors = openEditors;
         Toolbar = toolbar;
         Toolbar.CreateNewFileRequested += OnCreateNewFileRequested;
         Toolbar.OpenFileRequested += OnOpenFileRequestedAsync;
@@ -24,15 +24,42 @@ public class MainWindowViewModel : ViewModelBase
         Toolbar.SaveFileRequested += OnSaveFileRequestedAsync;
         Toolbar.GoToLineRequested += OnGoToLineRequestedAsync;
         Toolbar.BuildAndRunRequested += OnBuildAndRunRequestedAsync;
+        Toolbar.OpenSettingsRequested += OnOpenSettingsRequestedAsync;
         CreateNewEditor();
     }
 
     public static MainWindowViewModel DesignInstance { get; } =
-        new(OpenEditorsViewModel.DesignInstance, ToolbarViewModel.DesignInstance, new Dialogs());
+        new(OpenEditorsViewModel.DesignInstance,
+            ToolbarViewModel.DesignInstance,
+            new Dialogs());
 
     public ToolbarViewModel Toolbar { get; }
 
     public OpenEditorsViewModel OpenEditors { get; }
+
+    private async Task OnOpenSettingsRequestedAsync(object sender, EventArgs e)
+    {
+        await ShowSettingsAsync();
+    }
+
+    private async Task ShowSettingsAsync()
+    {
+        var editor = OpenEditors.CurrentEditor;
+        if (editor == null)
+        {
+            return;
+        }
+
+        using var editScope = editor.ScriptSettings.StartEdit();
+        await _dialogs.ShowScriptSettingsDialogAsync(editor.ScriptSettings);
+        if (!editor.ScriptSettings.ShouldApplySettings)
+        {
+            editScope.Rollback();
+            return;
+        }
+
+        editor.ApplySettings(editScope.Commit());
+    }
 
     private async Task OnGoToLineRequestedAsync(object? sender, EventArgs e)
     {

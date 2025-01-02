@@ -42,5 +42,10 @@
                 Go to a specific line (Ctrl+G).
             </ToolTip.Tip>
         </Button>
+        <Button Content="⚙️" Command="{Binding OpenSettingsCommand}">
+            <ToolTip.Tip>
+                Open settings.
+            </ToolTip.Tip>
+        </Button>
     </StackPanel>
 </UserControl>

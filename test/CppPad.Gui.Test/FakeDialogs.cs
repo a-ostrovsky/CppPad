@@ -1,4 +1,6 @@
-﻿namespace CppPad.Gui.Tests;
+﻿using CppPad.Gui.ViewModels;
+
+namespace CppPad.Gui.Tests;
 
 public class FakeDialogs : IDialogs
 {
@@ -28,6 +30,11 @@ public class FakeDialogs : IDialogs
     public Task<string?> InputBoxAsync(string prompt, string title, string defaultResponse = "")
     {
         return Task.FromResult(_inputBoxResponse);
+    }
+
+    public Task ShowScriptSettingsDialogAsync(ScriptSettingsViewModel viewModel)
+    {
+        return Task.CompletedTask;
     }
 
     public void WillSelectFileWithName(string fileName)

@@ -10,6 +10,8 @@ using Avalonia.Layout;
 using Avalonia.Media;
 using Avalonia.Platform.Storage;
 using CppPad.Gui.Input;
+using CppPad.Gui.ViewModels;
+using CppPad.Gui.Views;
 
 namespace CppPad.Gui;
 
@@ -198,6 +200,15 @@ public class Dialogs : IDialogs
         
         // Show as a modal dialog returning a string (or null).
         return await inputWindow.ShowDialog<string?>(MainWindow);
+    }
+
+    public Task ShowScriptSettingsDialogAsync(ScriptSettingsViewModel viewModel)
+    {
+        var dialog = new ScriptSettingsWindow
+        {
+            DataContext = viewModel
+        };
+        return dialog.ShowDialog(MainWindow);
     }
 
     private static List<FilePickerFileType> ParseFilter(string filter)

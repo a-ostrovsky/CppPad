@@ -17,6 +17,9 @@ public sealed class InMemoryFileSystem : DiskFileSystem
 
     private readonly ConcurrentDictionary<string, string> _files =
         new(StringComparer.OrdinalIgnoreCase);
+    
+    private readonly ConcurrentDictionary<string, DateTimeOffset> _lastWriteTimes =
+        new(StringComparer.OrdinalIgnoreCase);
 
     private bool _alwaysCreateDirectoriesIfNotExist;
 
@@ -40,6 +43,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
     {
         EnsureDirectoryOfFileExists(path);
         _files[path] = contents;
+        _lastWriteTimes[path] = DateTimeOffset.UtcNow;
     }
 
     public override Stream OpenWrite(string path)
@@ -55,6 +59,8 @@ public sealed class InMemoryFileSystem : DiskFileSystem
             // Update the file content when the stream is disposed
             _files[path] = Encoding.UTF8.GetString(memoryStream.ToArray());
         };
+        
+        _lastWriteTimes[path] = DateTimeOffset.UtcNow;
 
         return delegatingStream;
     }
@@ -68,6 +74,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
     {
         EnsureFileExists(path);
         _files[path] = string.Join(Environment.NewLine, contents);
+        _lastWriteTimes[path] = DateTimeOffset.UtcNow;
     }
 
     public override Task WriteAllLinesAsync(string path, string[] contents)
@@ -201,6 +208,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
     public override void DeleteFile(string path)
     {
         _files.TryRemove(path, out _);
+        _lastWriteTimes.TryRemove(path, out _);
     }
 
     public override void DeleteDirectory(string path)
@@ -216,6 +224,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         foreach (var file in filesToDelete)
         {
             _files.TryRemove(file, out _);
+            _lastWriteTimes.TryRemove(file, out _);
         }
 
         // Get all subdirectories
@@ -232,6 +241,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         EnsureFileExists(sourceFileName);
         EnsureDirectoryOfFileExists(destFileName);
         _files[destFileName] = _files[sourceFileName];
+        _lastWriteTimes[destFileName] = DateTimeOffset.UtcNow;
         return Task.CompletedTask;
     }
 
@@ -260,10 +270,16 @@ public sealed class InMemoryFileSystem : DiskFileSystem
                 using var memoryStream = new MemoryStream();
                 await entryStream.CopyToAsync(memoryStream, token);
                 _files[entryPath] = Encoding.UTF8.GetString(memoryStream.ToArray());
+                _lastWriteTimes[entryPath] = DateTimeOffset.UtcNow;
             }
         }
     }
-
+    
+    public override DateTimeOffset GetLastWriteTime(string path)
+    {
+        EnsureFileExists(path);
+        return _lastWriteTimes[path];
+    }
 
     private void EnsureFileExists(string filePath)
     {

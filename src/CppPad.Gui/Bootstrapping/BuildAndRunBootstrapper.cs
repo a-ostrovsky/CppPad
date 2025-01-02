@@ -20,13 +20,14 @@ public class BuildAndRunBootstrapper
             DeveloperCommandPromptDetector,
             parent.SystemAdapterBootstrapper.Process);
         FileBuilder = new FileBuilder();
+        FileWriter = new FileWriter(
+            parent.ScriptingBootstrapper.ScriptLoader,
+            FileBuilder,
+            parent.SystemAdapterBootstrapper.FileSystem);
         Executor = new CMakeExecutor(
             parent.SystemAdapterBootstrapper.FileSystem,
             parent.SystemAdapterBootstrapper.Process);
-        CMake = new CMake(
-            parent.SystemAdapterBootstrapper.FileSystem,
-            parent.ScriptingBootstrapper.ScriptLoader,
-            FileBuilder,
+        CMake = new CMake(FileWriter,
             Executor);
         Builder = new Builder(EnvironmentConfigurationDetector, CMake);
     }
@@ -38,6 +39,8 @@ public class BuildAndRunBootstrapper
     public IEnvironmentConfigurationDetector EnvironmentConfigurationDetector { get; }
 
     public FileBuilder FileBuilder { get; }
+    
+    public FileWriter FileWriter { get; }
 
     public CMakeExecutor Executor { get; }
 

@@ -10,10 +10,15 @@ public class GuiBootstrapper
     {
         _parent = parent;
         Dialogs = new Dialogs();
+        ScriptSettingsViewModel = new ScriptSettingsViewModel();
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel();
-        MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel, ToolbarViewModel, Dialogs);
+        MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel,
+            ToolbarViewModel,
+            Dialogs);
     }
+
+    public ScriptSettingsViewModel ScriptSettingsViewModel { get; }
 
     public IDialogs Dialogs { get; }
 
@@ -26,6 +31,7 @@ public class GuiBootstrapper
     private EditorViewModel CreateEditorViewModel()
     {
         return new EditorViewModel(
+            ScriptSettingsViewModel,
             _parent.ScriptingBootstrapper.ScriptLoader, 
             _parent.BuildAndRunBootstrapper.Builder,
             new SourceCodeViewModel());

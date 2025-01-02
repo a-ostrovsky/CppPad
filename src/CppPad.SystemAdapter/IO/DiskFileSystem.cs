@@ -136,6 +136,11 @@ public class DiskFileSystem
     {
         return Task.Run(() => File.Copy(sourceFileName, destFileName, true));
     }
+    
+    public virtual DateTimeOffset GetLastWriteTime(string path)
+    {
+        return File.GetLastWriteTime(path);
+    }
 
     public virtual async Task UnzipAsync(string zipFilePath, string extractPath,
         CancellationToken cancellationToken = default)

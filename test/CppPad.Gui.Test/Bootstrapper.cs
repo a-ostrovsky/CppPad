@@ -10,9 +10,13 @@ public class Bootstrapper
     public Bootstrapper()
     {
         ScriptLoader = new ScriptLoader(new ScriptSerializer(), FileSystem);
-        OpenEditors = new OpenEditorsViewModel(CreateEditorViewModel);
+        OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel();
-        MainWindowViewModel = new MainWindowViewModel(OpenEditors, ToolbarViewModel, Dialogs);
+        ScriptSettingsViewModel = new ScriptSettingsViewModel();
+        MainWindowViewModel = new MainWindowViewModel(
+            OpenEditorsViewModel,
+            ToolbarViewModel,
+            Dialogs);
     }
 
     public FakeDialogs Dialogs { get; } = new();
@@ -25,12 +29,18 @@ public class Bootstrapper
 
     public MainWindowViewModel MainWindowViewModel { get; }
 
-    public OpenEditorsViewModel OpenEditors { get; }
+    public ScriptSettingsViewModel ScriptSettingsViewModel { get; }
+
+    public OpenEditorsViewModel OpenEditorsViewModel { get; }
 
     public ToolbarViewModel ToolbarViewModel { get; }
 
     private EditorViewModel CreateEditorViewModel()
     {
-        return new EditorViewModel(ScriptLoader, Builder, new SourceCodeViewModel());
+        return new EditorViewModel(
+            ScriptSettingsViewModel,
+            ScriptLoader,
+            Builder,
+            new SourceCodeViewModel());
     }
 }

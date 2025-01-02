@@ -19,8 +19,9 @@ public class CMakeTest
         var fileSystem = new InMemoryFileSystem();
         var loader = new ScriptLoader(new ScriptSerializer(), fileSystem);
         var fileBuilder = new FileBuilder();
+        var fileWriter = new FileWriter(loader, fileBuilder, fileSystem);
         var executor = new CMakeExecutor(fileSystem, process);
-        var cmake = new CMake(fileSystem, loader, fileBuilder, executor);
+        var cmake = new CMake(fileWriter, executor);
 
         var scriptDocument = new ScriptDocument
         {
