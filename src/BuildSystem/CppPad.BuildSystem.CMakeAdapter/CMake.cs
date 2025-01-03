@@ -15,6 +15,7 @@ public class CMake(FileWriter cmakeFileWriter, CMakeExecutor executor)
         var fileWriterResult = await cmakeFileWriter.WriteCMakeFileAsync(scriptDocument, token);
         var executionOptions = new CMakeExecutionOptions
         {
+            Configuration = buildConfiguration.Configuration,
             ErrorReceived = buildConfiguration.ErrorReceived,
             ProgressReceived = buildConfiguration.ProgressReceived,
             EnvironmentSettings = environmentSettings,

@@ -1,7 +1,10 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
+using CppPad.BuildSystem;
 using CppPad.Common;
 using CppPad.Gui.Input;
 
@@ -11,6 +14,8 @@ namespace CppPad.Gui.ViewModels;
 
 public class ToolbarViewModel : ViewModelBase
 {
+    private Configuration _selectedConfiguration;
+
     public ToolbarViewModel()
     {
         GoToLineCommand = new AsyncRelayCommand(_ => GoToLineRequested?.InvokeAsync(this, EventArgs.Empty));
@@ -21,6 +26,7 @@ public class ToolbarViewModel : ViewModelBase
         BuildAndRunCommand = new AsyncRelayCommand(_ => BuildAndRunRequested?.InvokeAsync(this, EventArgs.Empty));
         CancelBuildAndRunCommand = new AsyncRelayCommand(_ => CancelBuildAndRunRequested?.InvokeAsync(this, EventArgs.Empty));
         OpenSettingsCommand = new AsyncRelayCommand(_ => OpenSettingsRequested?.InvokeAsync(this, EventArgs.Empty));
+        SelectedConfiguration = Configurations[0];
     }
 
     public IAsyncCommand GoToLineCommand { get; }
@@ -56,4 +62,12 @@ public class ToolbarViewModel : ViewModelBase
     public event EventHandler? CreateNewFileRequested;
 
     public event AsyncEventHandler? OpenFileRequested;
+    
+    public IReadOnlyList<Configuration> Configurations { get; } = Enum.GetValues<Configuration>();
+
+    public Configuration SelectedConfiguration
+    {
+        get => _selectedConfiguration;
+        set => SetProperty(ref _selectedConfiguration, value);
+    }
 }

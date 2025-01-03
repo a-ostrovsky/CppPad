@@ -120,7 +120,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         await cancellationTokenSource.CancelAsync();
     }
 
-    public async Task BuildAndRunAsync()
+    public async Task BuildAndRunAsync(Configuration configuration)
     {
         if (!await _buildSemaphore.WaitAsync(0))
         {
@@ -135,6 +135,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
             var buildConfiguration = new BuildConfiguration
             {
                 ScriptDocument = SourceCode.ScriptDocument,
+                Configuration = configuration,
                 ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
                 ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
             };

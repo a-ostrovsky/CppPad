@@ -4,6 +4,8 @@ namespace CppPad.BuildSystem.CMakeAdapter.Execution;
 
 public class CMakeExecutionOptions
 {
+    public required Configuration Configuration { get; init; }
+
     public required EnvironmentSettings EnvironmentSettings { get; init; }
 
     public required string CMakeListsFolder { get; init; }

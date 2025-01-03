@@ -227,7 +227,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         try
         {
-            await editor.BuildAndRunAsync();
+            await editor.BuildAndRunAsync(Toolbar.SelectedConfiguration);
         }
         catch (OperationCanceledException)
         {
