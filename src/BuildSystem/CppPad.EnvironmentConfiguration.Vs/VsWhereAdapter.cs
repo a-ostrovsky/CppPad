@@ -1,11 +1,15 @@
 ﻿using System.Text;
+using CppPad.Logging;
 using CppPad.SystemAdapter.Execution;
+using Microsoft.Extensions.Logging;
 
 namespace CppPad.EnvironmentConfiguration.Vs;
 
 public class VsWhereAdapter(Process process, CancellationToken token = default)
     : IVsWhereAdapter
 {
+    private readonly ILogger _logger = Log.CreateLogger<VsWhereAdapter>();
+    
     private static readonly string VsWherePath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder
             .ProgramFilesX86),
@@ -42,6 +46,7 @@ public class VsWhereAdapter(Process process, CancellationToken token = default)
         var result = resultBuilder
             .ToString()
             .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        _logger.LogDebug("Found Visual Studio installations: {result}", result.ToArray<object?>());
         return result;
     }
 }

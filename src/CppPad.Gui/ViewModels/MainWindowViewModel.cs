@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia.Threading;
+using CppPad.BuildSystem.CMakeAdapter.Execution;
 using CppPad.SystemAdapter.IO;
 
 namespace CppPad.Gui.ViewModels;
@@ -232,6 +233,10 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         catch (OperationCanceledException)
         {
             // Ignore
+        }
+        catch (CMakeExecutionException)
+        {
+            // Ignore because the information is already displayed in the compiler output.
         }
         catch (Exception ex)
         {
