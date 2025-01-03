@@ -2,12 +2,12 @@
 
 public interface IRunner
 {
-    Task RunAsync(string executablePath, string arguments, CancellationToken cancellationToken);
+    Task RunAsync(RunConfiguration runConfiguration, CancellationToken cancellationToken);
 }
 
 public class DummyRunner : IRunner
 {
-    public Task RunAsync(string executablePath, string arguments, CancellationToken cancellationToken)
+    public Task RunAsync(RunConfiguration runConfiguration, CancellationToken cancellationToken)
     {
         return Task.CompletedTask;
     }

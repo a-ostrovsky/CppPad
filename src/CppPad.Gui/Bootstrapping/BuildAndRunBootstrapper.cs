@@ -35,6 +35,8 @@ public class BuildAndRunBootstrapper
         );
         CMake = new CMake(parent.SystemAdapterBootstrapper.FileSystem, FileWriter, Executor);
         Builder = new Builder(EnvironmentConfigurationCache, CMake);
+        Runner = new Runner(parent.SystemAdapterBootstrapper.Process);
+        BuildAndRunFacade = new BuildAndRunFacade(Builder, Runner);
     }
 
     public VsWhereAdapter VsWhereAdapter { get; }
@@ -54,4 +56,8 @@ public class BuildAndRunBootstrapper
     public CMake CMake { get; }
 
     public IBuilder Builder { get; }
+    
+    public IRunner Runner { get; }
+    
+    public IBuildAndRunFacade BuildAndRunFacade { get; }
 }

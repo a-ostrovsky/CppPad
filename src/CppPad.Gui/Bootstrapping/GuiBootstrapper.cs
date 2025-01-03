@@ -33,7 +33,7 @@ public class GuiBootstrapper
         return new EditorViewModel(
             ScriptSettingsViewModel,
             _parent.ScriptingBootstrapper.ScriptLoader,
-            _parent.BuildAndRunBootstrapper.Builder,
+            _parent.BuildAndRunBootstrapper.BuildAndRunFacade,
             new SourceCodeViewModel());
     }
 }

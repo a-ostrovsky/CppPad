@@ -1,6 +1,6 @@
 ﻿using CppPad.Gui.ViewModels;
 
-namespace CppPad.Gui.Tests;
+namespace CppPad.Gui.Tests.Fakes;
 
 public class FakeDialogs : IDialogs
 {

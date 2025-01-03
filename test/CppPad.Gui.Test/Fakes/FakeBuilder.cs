@@ -1,7 +1,7 @@
 ﻿using CppAdapter.BuildAndRun;
 using CppPad.BuildSystem;
 
-namespace CppPad.Gui.Tests;
+namespace CppPad.Gui.Tests.Fakes;
 
 public class FakeBuilder : IBuilder
 {

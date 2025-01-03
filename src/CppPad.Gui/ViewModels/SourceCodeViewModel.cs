@@ -5,7 +5,14 @@ namespace CppPad.Gui.ViewModels;
 
 public class SourceCodeViewModel : ViewModelBase
 {
-    private string _content = $"// Type code here{Environment.NewLine}";
+    private string _content = """
+                              #include <iostream>
+                              
+                              int main() {
+                                  std::cout << "Hello World!";
+                                  return 0;
+                              }
+                              """;
     private int _currentColumn;
     private int _currentLine;
     private ScriptDocument _scriptDocument = new();

@@ -15,26 +15,56 @@ namespace CppPad.Gui.ViewModels;
 
 public class EditorViewModel : ViewModelBase, IDisposable
 {
-    private readonly IBuilder _builder;
-    private CancellationTokenSource? _buildCancellationTokenSource;
+    private readonly IBuildAndRunFacade _buildAndRunFacade;
 
     private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
     private readonly ScriptLoader _loader;
+    private CancellationTokenSource? _buildCancellationTokenSource;
     private string _title = "Untitled";
 
     public EditorViewModel(
         ScriptSettingsViewModel scriptSettings,
         ScriptLoader loader,
-        IBuilder builder,
+        IBuildAndRunFacade buildAndRunFacade,
         SourceCodeViewModel sourceCode)
     {
         ScriptSettings = scriptSettings;
         _loader = loader;
-        _builder = builder;
+        _buildAndRunFacade = buildAndRunFacade;
         SourceCode = sourceCode;
         scriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
         CloseCommand = new RelayCommand(_ => CloseRequested?.Invoke(this, EventArgs.Empty));
-        _builder.BuildStatusChanged += Builder_BuildStatusChanged;
+        _buildAndRunFacade.BuildStatusChanged += Builder_BuildStatusChanged;
+    }
+
+    public ScriptSettingsViewModel ScriptSettings { get; }
+
+    public static EditorViewModel DesignInstance { get; } =
+        new(
+            ScriptSettingsViewModel.DesignInstance,
+            new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()),
+            new DummyBuildAndRunFacade(),
+            SourceCodeViewModel.DesignInstance);
+
+    public SourceCodeViewModel SourceCode { get; }
+
+    public string Title
+    {
+        get => _title;
+        private set => SetProperty(ref _title, value);
+    }
+
+    public ICommand CloseCommand { get; }
+
+    public CompilerOutputViewModel CompilerOutput { get; } = new();
+
+    public ApplicationOutputViewModel ApplicationOutput { get; } = new();
+
+    public void Dispose()
+    {
+        _buildAndRunFacade.BuildStatusChanged -= Builder_BuildStatusChanged;
+        _buildSemaphore.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     private void Builder_BuildStatusChanged(object? sender, BuildStatusChangedEventArgs e)
@@ -50,27 +80,6 @@ public class EditorViewModel : ViewModelBase, IDisposable
         };
         CompilerOutput.AddMessage(message);
     }
-
-    public ScriptSettingsViewModel ScriptSettings { get; }
-
-    public static EditorViewModel DesignInstance { get; } =
-        new(
-            ScriptSettingsViewModel.DesignInstance,
-            new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()),
-            new DummyBuilder(),
-            SourceCodeViewModel.DesignInstance);
-
-    public SourceCodeViewModel SourceCode { get; }
-
-    public string Title
-    {
-        get => _title;
-        private set => SetProperty(ref _title, value);
-    }
-
-    public ICommand CloseCommand { get; }
-
-    public CompilerOutputViewModel CompilerOutput { get; } = new();
 
     public event EventHandler? CloseRequested;
 
@@ -108,7 +117,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
 
         return _loader.SaveAsync(SourceCode.ScriptDocument, SourceCode.ScriptDocument.FileName);
     }
-    
+
     public async Task CancelBuildAndRunAsync()
     {
         var cancellationTokenSource = _buildCancellationTokenSource;
@@ -116,7 +125,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         {
             return;
         }
-        
+
         await cancellationTokenSource.CancelAsync();
     }
 
@@ -126,7 +135,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         {
             throw new InvalidOperationException("Another build is already in progress.");
         }
-        
+
         _buildCancellationTokenSource = new CancellationTokenSource();
 
         try
@@ -139,7 +148,13 @@ public class EditorViewModel : ViewModelBase, IDisposable
                 ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
                 ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
             };
-            await _builder.BuildAsync(buildConfiguration, _buildCancellationTokenSource.Token);
+            var buildAndRunConfiguration = new BuildAndRunConfiguration
+            {
+                BuildConfiguration = buildConfiguration,
+                ExeErrorReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); },
+                ExeOutputReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); }
+            };
+            await _buildAndRunFacade.BuildAndRunAsync(buildAndRunConfiguration, _buildCancellationTokenSource.Token);
         }
         finally
         {
@@ -147,12 +162,5 @@ public class EditorViewModel : ViewModelBase, IDisposable
             _buildCancellationTokenSource = null;
             _buildSemaphore.Release();
         }
-    }
-
-    public void Dispose()
-    {
-        _builder.BuildStatusChanged -= Builder_BuildStatusChanged;
-        _buildSemaphore.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

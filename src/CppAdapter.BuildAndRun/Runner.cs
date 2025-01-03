@@ -4,8 +4,17 @@ namespace CppAdapter.BuildAndRun;
 
 public class Runner(Process process) : IRunner
 {
-    public Task RunAsync(string executablePath, string arguments, CancellationToken cancellationToken)
+    public Task RunAsync(RunConfiguration runConfiguration, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        var info = process.Start(
+            new StartInfo
+            {
+                FileName = runConfiguration.ExecutablePath,
+                Arguments = [.. runConfiguration.Arguments],
+                OutputReceived = runConfiguration.OutputReceived,
+                ErrorReceived = runConfiguration.ErrorReceived,
+            }
+        );
+        return process.WaitForExitAsync(info, cancellationToken);
     }
 }

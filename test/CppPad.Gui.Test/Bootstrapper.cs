@@ -1,4 +1,6 @@
-﻿using CppPad.Gui.ViewModels;
+﻿using CppAdapter.BuildAndRun;
+using CppPad.Gui.Tests.Fakes;
+using CppPad.Gui.ViewModels;
 using CppPad.MockSystemAdapter;
 using CppPad.Scripting.Persistence;
 using CppPad.Scripting.Serialization;
@@ -9,6 +11,8 @@ public class Bootstrapper : IDisposable
 {
     public Bootstrapper()
     {
+        Runner = new FakeRunner();
+        BuildAndRunFacade = new BuildAndRunFacade(Builder, Runner);
         ScriptLoader = new ScriptLoader(new ScriptSerializer(), FileSystem);
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel();
@@ -19,11 +23,15 @@ public class Bootstrapper : IDisposable
             Dialogs);
     }
 
+    public BuildAndRunFacade BuildAndRunFacade { get; }
+
     public FakeDialogs Dialogs { get; } = new();
 
     public InMemoryFileSystem FileSystem { get; } = new();
 
     public FakeBuilder Builder { get; } = new();
+    
+    public FakeRunner Runner { get; }
 
     public ScriptLoader ScriptLoader { get; }
 
@@ -40,7 +48,7 @@ public class Bootstrapper : IDisposable
         return new EditorViewModel(
             ScriptSettingsViewModel,
             ScriptLoader,
-            Builder,
+            BuildAndRunFacade,
             new SourceCodeViewModel());
     }
 

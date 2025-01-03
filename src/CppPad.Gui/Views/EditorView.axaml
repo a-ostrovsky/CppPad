@@ -24,7 +24,16 @@
                          ScrollViewer.VerticalScrollBarVisibility="Auto"
                          ScrollViewer.HorizontalScrollBarVisibility="Auto" />
             </TabItem>
-            <TabItem Header="Output" />
+            <TabItem Header="Output">
+                <TextBox Text="{Binding ApplicationOutput.Output}"
+                         TextChanged="ApplicationOutput_OnTextChanged"
+                         TextWrapping="Wrap"
+                         HorizontalAlignment="Stretch"
+                         VerticalAlignment="Stretch"
+                         IsReadOnly="True"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto" />
+            </TabItem>
         </TabControl>
     </Grid>
 </UserControl>
