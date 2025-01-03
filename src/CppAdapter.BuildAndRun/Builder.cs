@@ -8,7 +8,7 @@ public class Builder(
     IEnvironmentConfigurationDetector environmentConfigurationDetector,
     CMake cmake) : IBuilder
 {
-    public async Task BuildAsync(BuildConfiguration buildConfiguration, CancellationToken token = default)
+    public async Task<BuildSuccessResult> BuildAsync(BuildConfiguration buildConfiguration, CancellationToken token = default)
     {
         try
         {
@@ -16,9 +16,9 @@ public class Builder(
             var settings = await environmentConfigurationDetector.GetSettingsAsync(token);
             BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Building));
             token.ThrowIfCancellationRequested();
-            await cmake.BuildAsync(buildConfiguration, settings, token);
-            token.ThrowIfCancellationRequested();
+            var createdFile = await cmake.BuildAsync(buildConfiguration, settings, token);
             BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Succeeded));
+            return new BuildSuccessResult { CreatedFile = createdFile };
         }
         catch (Exception e)
         {

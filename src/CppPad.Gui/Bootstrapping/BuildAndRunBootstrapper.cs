@@ -11,25 +11,29 @@ public class BuildAndRunBootstrapper
 {
     public BuildAndRunBootstrapper(Bootstrapper parent)
     {
-        VsWhereAdapter = new VsWhereAdapter(
-            parent.SystemAdapterBootstrapper.Process);
+        VsWhereAdapter = new VsWhereAdapter(parent.SystemAdapterBootstrapper.Process);
         DeveloperCommandPromptDetector = new DeveloperCommandPromptDetector(
             parent.SystemAdapterBootstrapper.FileSystem,
-            VsWhereAdapter);
+            VsWhereAdapter
+        );
         EnvironmentConfigurationDetector = new EnvironmentConfigurationDetector(
             DeveloperCommandPromptDetector,
-            parent.SystemAdapterBootstrapper.Process);
-        EnvironmentConfigurationCache = new EnvironmentConfigurationCache(EnvironmentConfigurationDetector);
+            parent.SystemAdapterBootstrapper.Process
+        );
+        EnvironmentConfigurationCache = new EnvironmentConfigurationCache(
+            EnvironmentConfigurationDetector
+        );
         FileBuilder = new FileBuilder();
         FileWriter = new FileWriter(
             parent.ScriptingBootstrapper.ScriptLoader,
             FileBuilder,
-            parent.SystemAdapterBootstrapper.FileSystem);
+            parent.SystemAdapterBootstrapper.FileSystem
+        );
         Executor = new CMakeExecutor(
             parent.SystemAdapterBootstrapper.FileSystem,
-            parent.SystemAdapterBootstrapper.Process);
-        CMake = new CMake(FileWriter,
-            Executor);
+            parent.SystemAdapterBootstrapper.Process
+        );
+        CMake = new CMake(parent.SystemAdapterBootstrapper.FileSystem, FileWriter, Executor);
         Builder = new Builder(EnvironmentConfigurationCache, CMake);
     }
 
@@ -40,7 +44,7 @@ public class BuildAndRunBootstrapper
     public IEnvironmentConfigurationDetector EnvironmentConfigurationDetector { get; }
 
     public IEnvironmentConfigurationDetector EnvironmentConfigurationCache { get; }
-    
+
     public FileBuilder FileBuilder { get; }
 
     public FileWriter FileWriter { get; }

@@ -21,7 +21,7 @@ public class CMakeTest
         var fileBuilder = new FileBuilder();
         var fileWriter = new FileWriter(loader, fileBuilder, fileSystem);
         var executor = new CMakeExecutor(fileSystem, process);
-        var cmake = new CMake(fileWriter, executor);
+        var cmake = new CMake(fileSystem, fileWriter, executor);
 
         var scriptDocument = new ScriptDocument
         {

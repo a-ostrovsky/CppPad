@@ -7,6 +7,7 @@ public class FakeProcess : Process
     private readonly List<StartInfo> _capturedStartInfo = [];
     private EventHandler<DataReceivedEventArgs>? _errorHandler;
     private EventHandler<DataReceivedEventArgs>? _outputHandler;
+    private Action<IReadOnlyList<string>> _whenCalled = _ => { };
 
     public bool StartCalled { get; private set; }
 
@@ -23,6 +24,8 @@ public class FakeProcess : Process
         _outputHandler = startInfo.OutputReceived;
         _errorHandler = startInfo.ErrorReceived;
 
+        _whenCalled(startInfo.Arguments.AsReadOnly());
+        
         return new MockProcessInfo();
     }
 
@@ -63,5 +66,14 @@ public class FakeProcess : Process
         {
             return new object();
         }
+    }
+
+    /// <summary>
+    ///     Sets the action to be executed when the process is started.
+    /// </summary>
+    /// <param name="action">Arguments passed to the process</param>
+    public void WhenCalledDo(Action<IReadOnlyList<string>> action)
+    {
+        _whenCalled = action;
     }
 }

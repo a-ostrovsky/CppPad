@@ -8,6 +8,7 @@ public class FileWriterResult
 {
     public required string CppFolder { get; init; }
     public required string BuildFolder { get; init; }
+    public required string CppFileName { get; init; }
 }
 
 public class FileWriter(
@@ -67,6 +68,7 @@ public class FileWriter(
         return new FileWriterResult
         {
             CppFolder = cppFolder,
+            CppFileName = cppFileName,
             BuildFolder = buildFolder,
         };
     }

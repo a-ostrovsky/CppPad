@@ -8,7 +8,7 @@ public class FakeBuilder : IBuilder
     private string? _errorMessage;
     private string? _outputMessage;
 
-    public Task BuildAsync(BuildConfiguration buildConfiguration, CancellationToken token = default)
+    public Task<BuildSuccessResult> BuildAsync(BuildConfiguration buildConfiguration, CancellationToken token = default)
     {
         BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Building));
 
@@ -24,7 +24,7 @@ public class FakeBuilder : IBuilder
 
         BuildStatusChanged?.Invoke(this, new BuildStatusChangedEventArgs(BuildStatus.Succeeded));
 
-        return Task.CompletedTask;
+        return Task.FromResult(new BuildSuccessResult{ CreatedFile = "C:\\x.exe" });
     }
 
     public event EventHandler<BuildStatusChangedEventArgs>? BuildStatusChanged;
