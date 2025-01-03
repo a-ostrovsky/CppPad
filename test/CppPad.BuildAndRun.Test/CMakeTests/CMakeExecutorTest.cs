@@ -1,4 +1,5 @@
-﻿using CppPad.BuildSystem.CMakeAdapter.Execution;
+﻿using CppPad.BuildSystem;
+using CppPad.BuildSystem.CMakeAdapter.Execution;
 using CppPad.MockSystemAdapter;
 
 namespace CppPad.BuildAndRun.Test.CMakeTests;
@@ -38,7 +39,8 @@ public class CMakeExecutorTests
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
-            ForceConfigure = true
+            ForceConfigure = true,
+            Configuration = Configuration.Debug
         };
 
         // Act
@@ -62,6 +64,8 @@ public class CMakeExecutorTests
         // 3. After configure, the executor calls build
         Assert.Contains("--build", mockProcess.CapturedStartInfo[1].Arguments);
         Assert.Contains(buildDir, mockProcess.CapturedStartInfo[1].Arguments);
+        Assert.Contains("--config", mockProcess.CapturedStartInfo[1].Arguments);
+        Assert.Contains("Debug", mockProcess.CapturedStartInfo[1].Arguments);
     }
 
     [Fact]
@@ -92,6 +96,7 @@ public class CMakeExecutorTests
         // No force re-configure
         var options = new CMakeExecutionOptions
         {
+            Configuration = Configuration.Debug,
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
@@ -136,6 +141,7 @@ public class CMakeExecutorTests
 
         var options = new CMakeExecutionOptions
         {
+            Configuration = Configuration.Release,
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
@@ -166,6 +172,7 @@ public class CMakeExecutorTests
 
         var options = new CMakeExecutionOptions
         {
+            Configuration = Configuration.Debug,
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,

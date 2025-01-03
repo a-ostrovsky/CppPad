@@ -33,6 +33,7 @@ public class BuilderTest
         // Act
         await builder.BuildAsync(new BuildConfiguration
         {
+            Configuration = Configuration.Debug,
             ScriptDocument = new ScriptDocument
             {
                 Script = new ScriptData

@@ -1,11 +1,16 @@
 ﻿using System.Diagnostics;
+using CppPad.Logging;
+using Microsoft.Extensions.Logging;
 
 namespace CppPad.SystemAdapter.Execution;
 
 public class Process
 {
+    private readonly ILogger _logger = Log.CreateLogger<Process>(); 
+    
     public virtual IProcessInfo Start(StartInfo startInfo)
     {
+        _logger.LogDebug("Starting process: {FileName} {Arguments}", startInfo.FileName, startInfo.Arguments);
         var process = new System.Diagnostics.Process();
         process.StartInfo.FileName = startInfo.FileName;
         process.StartInfo.RedirectStandardOutput = true;

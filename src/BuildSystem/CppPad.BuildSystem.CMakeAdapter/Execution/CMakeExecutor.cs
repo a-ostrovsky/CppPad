@@ -8,7 +8,8 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
 {
     public async Task RunCMakeAsync(
         CMakeExecutionOptions options,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default
+    )
     {
         if (!fileSystem.DirectoryExists(options.BuildDirectory))
         {
@@ -21,8 +22,21 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         await BuildAsync(cmakeExecutablePath, options, cancellationToken);
     }
 
+    private static string GetCMakeBuildType(Configuration configuration)
+    {
+        return configuration switch
+        {
+            Configuration.Debug => "Debug",
+            Configuration.Release => "Release",
+            _ => throw new ArgumentException($"Unsupported configuration: {configuration}")
+        };
+    }
+
     private async Task ConfigureAsync(
-        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken token = default)
+        string cmakeExecutablePath,
+        CMakeExecutionOptions options,
+        CancellationToken token = default
+    )
     {
         token.ThrowIfCancellationRequested();
         if (!options.ForceConfigure)
@@ -40,12 +54,16 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         if (errorCode != 0)
         {
             throw new CMakeExecutionException(
-                $"CMake configure failed with error code {errorCode}.");
+                $"CMake configure failed with error code {errorCode}."
+            );
         }
     }
 
     private async Task BuildAsync(
-        string cmakeExecutablePath, CMakeExecutionOptions options, CancellationToken token = default)
+        string cmakeExecutablePath,
+        CMakeExecutionOptions options,
+        CancellationToken token = default
+    )
     {
         token.ThrowIfCancellationRequested();
         var startInfo = CreateStartInfoForBuild(cmakeExecutablePath, options);
@@ -53,22 +71,22 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         var errorCode = await process.WaitForExitAsync(processInfo, token);
         if (errorCode != 0)
         {
-            throw new CMakeExecutionException(
-                $"CMake build failed with error code {errorCode}.");
+            throw new CMakeExecutionException($"CMake build failed with error code {errorCode}.");
         }
     }
 
     private string GetCMakeExecutablePath(EnvironmentSettings environmentSettings)
     {
-        var paths = environmentSettings.TryGet("PATH")
-            ?.Split(Path.PathSeparator, StringSplitOptions.TrimEntries);
-        if (paths is null)
-        {
+        var paths =
+            environmentSettings
+                .TryGet("PATH")
+                ?.Split(Path.PathSeparator, StringSplitOptions.TrimEntries) ??
             throw new CMakeExecutionException("Environment variables do not contain PATH");
-        }
-
-        var cmakePath = paths.Select(p => Path.Combine(p, "cmake")).FirstOrDefault(fileSystem.FileExists) ??
-                        paths.Select(p => Path.Combine(p, "cmake.exe")).FirstOrDefault(fileSystem.FileExists);
+        var cmakePath =
+            paths.Select(p => Path.Combine(p, "cmake")).FirstOrDefault(fileSystem.FileExists)
+            ?? paths
+                .Select(p => Path.Combine(p, "cmake.exe"))
+                .FirstOrDefault(fileSystem.FileExists);
         if (cmakePath is null)
         {
             throw new CMakeExecutionException("CMake not found in PATH");
@@ -78,20 +96,28 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
     }
 
     private static StartInfo CreateStartInfoForBuild(
-        string cmakeExecutablePath, CMakeExecutionOptions options)
+        string cmakeExecutablePath,
+        CMakeExecutionOptions options
+    )
     {
         var startInfo = new StartInfo
         {
             FileName = cmakeExecutablePath,
-            Arguments = new List<string>
-            {
-                "--build", options.BuildDirectory
-            },
+            Arguments =
+            [
+                "--build",
+                options.BuildDirectory,
+                "--config",
+                GetCMakeBuildType(options.Configuration)
+            ],
             OutputReceived = (sender, args) =>
             {
                 if (!string.IsNullOrEmpty(args.Data))
                 {
-                    options.ProgressReceived?.Invoke(sender, new ProgressReceivedEventArgs(args.Data));
+                    options.ProgressReceived?.Invoke(
+                        sender,
+                        new ProgressReceivedEventArgs(args.Data)
+                    );
                 }
             },
             ErrorReceived = (sender, args) =>
@@ -112,21 +138,29 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
     }
 
     private static StartInfo CreateStartInfoForConfigure(
-        string cmakeExecutablePath, CMakeExecutionOptions options)
+        string cmakeExecutablePath,
+        CMakeExecutionOptions options
+    )
     {
         var startInfo = new StartInfo
         {
             FileName = cmakeExecutablePath,
-            Arguments = new List<string>
-            {
-                "-S", options.CMakeListsFolder,
-                "-B", options.BuildDirectory
-            },
+            Arguments =
+            [
+                "-S",
+                options.CMakeListsFolder,
+                "-B",
+                options.BuildDirectory,
+                $"-DCMAKE_BUILD_TYPE={GetCMakeBuildType(options.Configuration)}"
+            ],
             OutputReceived = (sender, args) =>
             {
                 if (!string.IsNullOrEmpty(args.Data))
                 {
-                    options.ProgressReceived?.Invoke(sender, new ProgressReceivedEventArgs(args.Data));
+                    options.ProgressReceived?.Invoke(
+                        sender,
+                        new ProgressReceivedEventArgs(args.Data)
+                    );
                 }
             },
             ErrorReceived = (sender, args) =>
