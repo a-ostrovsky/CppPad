@@ -36,7 +36,9 @@ public class EditorViewModel : ViewModelBase, IDisposable
         _buildAndRunFacade = buildAndRunFacade;
         SourceCode = sourceCode;
         scriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
-        CloseCommand = new AsyncRelayCommand(_ => CloseRequested?.InvokeAsync(this, EventArgs.Empty));
+        CloseCommand = new AsyncRelayCommand(_ =>
+            CloseRequested?.InvokeAsync(this, EventArgs.Empty)
+        );
         _buildAndRunFacade.BuildStatusChanged += Builder_BuildStatusChanged;
         SourceCode.PropertyChanged += SourceCode_PropertyChanged;
         IsModified = false;
@@ -115,7 +117,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
             BuildStatus.Succeeded => "Build succeeded.",
             BuildStatus.Failed => "Build failed.",
             BuildStatus.Cancelled => "Build cancelled.",
-            _ => throw new ArgumentException("Unknown build status.", nameof(e))
+            _ => throw new ArgumentException("Unknown build status.", nameof(e)),
         };
         CompilerOutput.AddMessage(message);
     }
@@ -127,7 +129,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         IsModified = true;
         SourceCode.ScriptDocument = SourceCode.ScriptDocument with
         {
-            Script = SourceCode.ScriptDocument.Script with { BuildSettings = settings }
+            Script = SourceCode.ScriptDocument.Script with { BuildSettings = settings },
         };
     }
 
@@ -186,14 +188,26 @@ public class EditorViewModel : ViewModelBase, IDisposable
             {
                 ScriptDocument = SourceCode.ScriptDocument,
                 BuildMode = buildMode,
-                ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
-                ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
+                ErrorReceived = (_, args) =>
+                {
+                    CompilerOutput.AddMessage($"ERR:{args.Data}");
+                },
+                ProgressReceived = (_, args) =>
+                {
+                    CompilerOutput.AddMessage(args.Data);
+                },
             };
             var buildAndRunConfiguration = new BuildAndRunConfiguration
             {
                 BuildConfiguration = buildConfiguration,
-                ExeErrorReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); },
-                ExeOutputReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); }
+                ExeErrorReceived = (_, args) =>
+                {
+                    ApplicationOutput.AddMessage(args.Data);
+                },
+                ExeOutputReceived = (_, args) =>
+                {
+                    ApplicationOutput.AddMessage(args.Data);
+                },
             };
             SelectedTabIndex = TabIndices.CompilerOutput;
             _buildAndRunFacade.BuildStatusChanged += ChangeTabWhenBuildStatusChanges;
@@ -225,13 +239,13 @@ public class EditorViewModel : ViewModelBase, IDisposable
     {
         var wasModified = IsModified;
         SourceCode.Content = """
-                             #include <iostream>
+            #include <iostream>
 
-                             int main() {
-                                 std::cout << "Hello World!";
-                                 return 0;
-                             }
-                             """;
+            int main() {
+                std::cout << "Hello World!";
+                return 0;
+            }
+            """;
         IsModified = wasModified;
     }
 

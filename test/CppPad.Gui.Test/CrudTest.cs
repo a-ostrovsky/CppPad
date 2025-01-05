@@ -12,8 +12,9 @@ public class CrudTest : IDisposable
 
     private Task CloseAllEditorsAsync()
     {
-        return _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor?.CloseCommand.ExecuteAsync(null) ??
-               Task.CompletedTask;
+        return _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor?.CloseCommand.ExecuteAsync(
+                null
+            ) ?? Task.CompletedTask;
     }
 
     [Fact]
@@ -199,10 +200,10 @@ public class CrudTest : IDisposable
         currentEditor.SourceCode.Content += "X";
         _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(true);
         _bootstrapper.Dialogs.WillSelectFileWithName("C:\\s.cpppad");
-        
+
         // Act
         await CloseAllEditorsAsync();
-        
+
         // Assert
         Assert.True(_bootstrapper.FileSystem.FileExists("C:\\s.cpppad"));
     }
@@ -230,10 +231,10 @@ public class CrudTest : IDisposable
         var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
         currentEditor.SourceCode.Content += "X";
         _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(null);
-        
+
         // Act
         await CloseAllEditorsAsync();
-        
+
         // Assert
         // should still not close
         Assert.NotNull(_bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor);

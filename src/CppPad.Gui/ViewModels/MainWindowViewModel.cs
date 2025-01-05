@@ -122,8 +122,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
                 column = Math.Min(parsedColumn, lineContent.Length);
             }
 
-            editor.SourceCode.CurrentColumn =
-                1; // Set to 1 first to avoid caret position issues. The line can be too short.
+            editor.SourceCode.CurrentColumn = 1; // Set to 1 first to avoid caret position issues. The line can be too short.
             editor.SourceCode.CurrentLine = line;
             editor.SourceCode.CurrentColumn = column;
         }

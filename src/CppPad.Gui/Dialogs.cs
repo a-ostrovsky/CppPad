@@ -215,9 +215,24 @@ public class Dialogs : IDialogs
     public Task<bool?> ShowYesNoCancelDialogAsync(string message, string title)
     {
         var textBlock = new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap };
-        var yesButton = new Button { HorizontalContentAlignment = HorizontalAlignment.Center, Content = "_Yes", MinWidth = 80 };
-        var noButton = new Button { HorizontalContentAlignment = HorizontalAlignment.Center, Content = "_No", MinWidth = 80 };
-        var cancelButton = new Button { HorizontalContentAlignment = HorizontalAlignment.Center, Content = "_Cancel", MinWidth = 80 };
+        var yesButton = new Button
+        {
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            Content = "_Yes",
+            MinWidth = 80,
+        };
+        var noButton = new Button
+        {
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            Content = "_No",
+            MinWidth = 80,
+        };
+        var cancelButton = new Button
+        {
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            Content = "_Cancel",
+            MinWidth = 80,
+        };
 
         var dialogWindow = new Window
         {

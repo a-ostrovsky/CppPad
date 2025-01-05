@@ -5,11 +5,11 @@ namespace CppPad.Gui.Tests.Fakes;
 public class FakeDialogs : IDialogs
 {
     private string? _fileName;
-    
+
     private bool? _yesNoCancelResponse;
 
     private string? _inputBoxResponse;
-    
+
     public bool YesNoCancelResponseShown { get; set; }
 
     public Task NotifyErrorAsync(string message, Exception? exception)
@@ -39,7 +39,7 @@ public class FakeDialogs : IDialogs
         YesNoCancelResponseShown = true;
         return Task.FromResult(_yesNoCancelResponse);
     }
-    
+
     public void WillReturnYesNoCancelResponse(bool? response)
     {
         _yesNoCancelResponse = response;
