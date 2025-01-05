@@ -11,11 +11,12 @@ public class OpenEditorsViewModel(Func<EditorViewModel> editorViewModelFactory) 
 {
     private EditorViewModel? _currentEditor;
 
-    public static OpenEditorsViewModel DesignInstance { get; } = new(() => EditorViewModel.DesignInstance)
-    {
-        Editors = { EditorViewModel.DesignInstance },
-        CurrentEditor = EditorViewModel.DesignInstance
-    };
+    public static OpenEditorsViewModel DesignInstance { get; } =
+        new(() => EditorViewModel.DesignInstance)
+        {
+            Editors = { EditorViewModel.DesignInstance },
+            CurrentEditor = EditorViewModel.DesignInstance,
+        };
 
     public ObservableCollection<EditorViewModel> Editors { get; } = [];
 

@@ -11,10 +11,7 @@ public class FileWriterResult
     public required string CppFileName { get; init; }
 }
 
-public class FileWriter(
-    ScriptLoader loader,
-    FileBuilder fileBuilder,
-    DiskFileSystem fileSystem)
+public class FileWriter(ScriptLoader loader, FileBuilder fileBuilder, DiskFileSystem fileSystem)
 {
     private async Task<string> CreateBuildFolderAsync(string cppFolder)
     {
@@ -23,7 +20,10 @@ public class FileWriter(
         return buildFolder;
     }
 
-    private async Task<bool> HasCMakeFileChangedAsync(string cmakeListsFile, string newCMakeFileContent)
+    private async Task<bool> HasCMakeFileChangedAsync(
+        string cmakeListsFile,
+        string newCMakeFileContent
+    )
     {
         if (fileSystem.FileExists(cmakeListsFile))
         {
@@ -39,8 +39,10 @@ public class FileWriter(
         await fileSystem.WriteAllTextAsync(cmakeListsFile, cmakeFileContent);
     }
 
-    public async Task<FileWriterResult> WriteCMakeFileAsync(ScriptDocument scriptDocument,
-        CancellationToken token = default)
+    public async Task<FileWriterResult> WriteCMakeFileAsync(
+        ScriptDocument scriptDocument,
+        CancellationToken token = default
+    )
     {
         var cppFileName = await loader.CreateCppFileAsync(scriptDocument, token);
         var cppFolder = Path.GetDirectoryName(cppFileName)!;
@@ -54,7 +56,7 @@ public class FileWriter(
             LibFiles = scriptDocument.Script.BuildSettings.LibFiles,
             LibSearchPaths = scriptDocument.Script.BuildSettings.LibSearchPaths,
             CppStandard = scriptDocument.Script.BuildSettings.CppStandard,
-            OptimizationLevel = scriptDocument.Script.BuildSettings.OptimizationLevel
+            OptimizationLevel = scriptDocument.Script.BuildSettings.OptimizationLevel,
         };
 
         var cmakeFile = fileBuilder.Build(options);

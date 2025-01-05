@@ -7,9 +7,6 @@ using CppAdapter.BuildAndRun;
 using CppPad.BuildSystem;
 using CppPad.Gui.Input;
 using CppPad.Scripting;
-using CppPad.Scripting.Persistence;
-using CppPad.Scripting.Serialization;
-using CppPad.SystemAdapter.IO;
 
 namespace CppPad.Gui.ViewModels;
 
@@ -20,7 +17,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         public const int CompilerOutput = 0;
         public const int ApplicationOutput = 1;
     }
-    
+
     private readonly IBuildAndRunFacade _buildAndRunFacade;
 
     private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
@@ -33,7 +30,8 @@ public class EditorViewModel : ViewModelBase, IDisposable
         ScriptSettingsViewModel scriptSettings,
         ScriptLoaderViewModel scriptLoader,
         IBuildAndRunFacade buildAndRunFacade,
-        SourceCodeViewModel sourceCode)
+        SourceCodeViewModel sourceCode
+    )
     {
         ScriptSettings = scriptSettings;
         _scriptLoader = scriptLoader;
@@ -51,7 +49,8 @@ public class EditorViewModel : ViewModelBase, IDisposable
             ScriptSettingsViewModel.DesignInstance,
             ScriptLoaderViewModel.DesignInstance,
             new DummyBuildAndRunFacade(),
-            SourceCodeViewModel.DesignInstance);
+            SourceCodeViewModel.DesignInstance
+        );
 
     public SourceCodeViewModel SourceCode { get; }
 
@@ -89,7 +88,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
             BuildStatus.Succeeded => "Build succeeded.",
             BuildStatus.Failed => "Build failed.",
             BuildStatus.Cancelled => "Build cancelled.",
-            _ => throw new ArgumentException("Unknown build status.", nameof(e))
+            _ => throw new ArgumentException("Unknown build status.", nameof(e)),
         };
         CompilerOutput.AddMessage(message);
     }
@@ -100,10 +99,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
     {
         SourceCode.ScriptDocument = SourceCode.ScriptDocument with
         {
-            Script = SourceCode.ScriptDocument.Script with
-            {
-                BuildSettings = settings
-            }
+            Script = SourceCode.ScriptDocument.Script with { BuildSettings = settings },
         };
     }
 
@@ -128,7 +124,10 @@ public class EditorViewModel : ViewModelBase, IDisposable
             throw new InvalidOperationException("File name is not set.");
         }
 
-        return _scriptLoader.SaveAsync(SourceCode.ScriptDocument, SourceCode.ScriptDocument.FileName);
+        return _scriptLoader.SaveAsync(
+            SourceCode.ScriptDocument,
+            SourceCode.ScriptDocument.FileName
+        );
     }
 
     public async Task CancelBuildAndRunAsync()
@@ -158,18 +157,33 @@ public class EditorViewModel : ViewModelBase, IDisposable
             {
                 ScriptDocument = SourceCode.ScriptDocument,
                 BuildMode = buildMode,
-                ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
-                ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
+                ErrorReceived = (_, args) =>
+                {
+                    CompilerOutput.AddMessage($"ERR:{args.Data}");
+                },
+                ProgressReceived = (_, args) =>
+                {
+                    CompilerOutput.AddMessage(args.Data);
+                },
             };
             var buildAndRunConfiguration = new BuildAndRunConfiguration
             {
                 BuildConfiguration = buildConfiguration,
-                ExeErrorReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); },
-                ExeOutputReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); }
+                ExeErrorReceived = (_, args) =>
+                {
+                    ApplicationOutput.AddMessage(args.Data);
+                },
+                ExeOutputReceived = (_, args) =>
+                {
+                    ApplicationOutput.AddMessage(args.Data);
+                },
             };
             SelectedTabIndex = TabIndices.CompilerOutput;
             _buildAndRunFacade.BuildStatusChanged += ChangeTabWhenBuildStatusChanges;
-            await _buildAndRunFacade.BuildAndRunAsync(buildAndRunConfiguration, _buildCancellationTokenSource.Token);
+            await _buildAndRunFacade.BuildAndRunAsync(
+                buildAndRunConfiguration,
+                _buildCancellationTokenSource.Token
+            );
         }
         finally
         {
@@ -192,13 +206,13 @@ public class EditorViewModel : ViewModelBase, IDisposable
 
     public void AddPlaceholderText()
     {
-        SourceCode.Content =  """
-                              #include <iostream>
+        SourceCode.Content = """
+            #include <iostream>
 
-                              int main() {
-                                  std::cout << "Hello World!";
-                                  return 0;
-                              }
-                              """;
+            int main() {
+                std::cout << "Hello World!";
+                return 0;
+            }
+            """;
     }
 }

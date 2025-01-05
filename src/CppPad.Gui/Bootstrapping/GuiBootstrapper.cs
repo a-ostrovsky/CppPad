@@ -12,17 +12,20 @@ public class GuiBootstrapper
         Dialogs = new Dialogs();
         ScriptLoaderViewModel = new ScriptLoaderViewModel(
             _parent.ScriptingBootstrapper.ScriptLoader,
-            _parent.ConfigurationBootstrapper.RecentFiles);
+            _parent.ConfigurationBootstrapper.RecentFiles
+        );
         ScriptSettingsViewModel = new ScriptSettingsViewModel();
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel(parent.ConfigurationBootstrapper.RecentFiles);
-        MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel,
+        MainWindowViewModel = new MainWindowViewModel(
+            OpenEditorsViewModel,
             ToolbarViewModel,
-            Dialogs);
+            Dialogs
+        );
     }
 
     public ScriptLoaderViewModel ScriptLoaderViewModel { get; }
-    
+
     public ScriptSettingsViewModel ScriptSettingsViewModel { get; }
 
     public IDialogs Dialogs { get; }
@@ -39,6 +42,7 @@ public class GuiBootstrapper
             ScriptSettingsViewModel,
             ScriptLoaderViewModel,
             _parent.BuildAndRunBootstrapper.BuildAndRunFacade,
-            new SourceCodeViewModel());
+            new SourceCodeViewModel()
+        );
     }
 }

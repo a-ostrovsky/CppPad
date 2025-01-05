@@ -28,7 +28,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         {
             BuildMode.Debug => "Debug",
             BuildMode.Release => "Release",
-            _ => throw new ArgumentException($"Unsupported configuration: {buildMode}")
+            _ => throw new ArgumentException($"Unsupported configuration: {buildMode}"),
         };
     }
 
@@ -80,8 +80,8 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         var paths =
             environmentSettings
                 .TryGet("PATH")
-                ?.Split(Path.PathSeparator, StringSplitOptions.TrimEntries) ??
-            throw new CMakeExecutionException("Environment variables do not contain PATH");
+                ?.Split(Path.PathSeparator, StringSplitOptions.TrimEntries)
+            ?? throw new CMakeExecutionException("Environment variables do not contain PATH");
         var cmakePath =
             paths.Select(p => Path.Combine(p, "cmake")).FirstOrDefault(fileSystem.FileExists)
             ?? paths
@@ -108,7 +108,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 "--build",
                 options.BuildDirectory,
                 "--config",
-                GetCMakeBuildType(options.BuildMode)
+                GetCMakeBuildType(options.BuildMode),
             ],
             OutputReceived = (sender, args) =>
             {
@@ -126,7 +126,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 {
                     options.ErrorReceived?.Invoke(sender, new ErrorReceivedEventArgs(args.Data));
                 }
-            }
+            },
         };
 
         if (!string.IsNullOrEmpty(options.AdditionalArgsForBuild))
@@ -151,7 +151,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 options.CMakeListsFolder,
                 "-B",
                 options.BuildDirectory,
-                $"-DCMAKE_BUILD_TYPE={GetCMakeBuildType(options.BuildMode)}"
+                $"-DCMAKE_BUILD_TYPE={GetCMakeBuildType(options.BuildMode)}",
             ],
             OutputReceived = (sender, args) =>
             {
@@ -169,7 +169,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 {
                     options.ErrorReceived?.Invoke(sender, new ErrorReceivedEventArgs(args.Data));
                 }
-            }
+            },
         };
 
         if (!string.IsNullOrEmpty(options.AdditionalArgsForConfigure))

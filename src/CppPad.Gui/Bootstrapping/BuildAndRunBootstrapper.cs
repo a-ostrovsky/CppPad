@@ -56,8 +56,8 @@ public class BuildAndRunBootstrapper
     public CMake CMake { get; }
 
     public IBuilder Builder { get; }
-    
+
     public IRunner Runner { get; }
-    
+
     public IBuildAndRunFacade BuildAndRunFacade { get; }
 }

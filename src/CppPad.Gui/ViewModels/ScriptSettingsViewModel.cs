@@ -42,7 +42,8 @@ public class ScriptSettingsViewModel : ViewModelBase
         set => SetProperty(ref _additionalIncludeDirs, value);
     }
 
-    public ObservableCollection<CppStandard> CppStandards { get; } = new(Enum.GetValues<CppStandard>());
+    public ObservableCollection<CppStandard> CppStandards { get; } =
+        new(Enum.GetValues<CppStandard>());
 
     public ObservableCollection<OptimizationLevel> OptimizationLevels { get; } =
         new(Enum.GetValues<OptimizationLevel>());
@@ -112,8 +113,10 @@ public class ScriptSettingsViewModel : ViewModelBase
 
     private static void CloseCurrentDialogWindow()
     {
-        if (Application.Current?.ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime
-            desktop)
+        if (
+            Application.Current?.ApplicationLifetime
+            is not IClassicDesktopStyleApplicationLifetime desktop
+        )
         {
             return;
         }
@@ -123,8 +126,10 @@ public class ScriptSettingsViewModel : ViewModelBase
 
     private static string[] SplitString(string value)
     {
-        return value.Split(Environment.NewLine,
-            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return value.Split(
+            Environment.NewLine,
+            StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries
+        );
     }
 
     public CppBuildSettings GetCppBuildSettings()
@@ -138,7 +143,7 @@ public class ScriptSettingsViewModel : ViewModelBase
             CppStandard = CppStandard,
             OptimizationLevel = OptimizationLevel,
             AdditionalBuildArgs = AdditionalBuildArgs,
-            PreBuildCommand = PreBuildCommand
+            PreBuildCommand = PreBuildCommand,
         };
     }
 
@@ -146,7 +151,10 @@ public class ScriptSettingsViewModel : ViewModelBase
     {
         AdditionalIncludeDirs = string.Join(Environment.NewLine, settings.AdditionalIncludeDirs);
         LibrarySearchPaths = string.Join(Environment.NewLine, settings.LibSearchPaths);
-        AdditionalEnvironmentPaths = string.Join(Environment.NewLine, settings.AdditionalEnvironmentPaths);
+        AdditionalEnvironmentPaths = string.Join(
+            Environment.NewLine,
+            settings.AdditionalEnvironmentPaths
+        );
         AdditionalBuildArgs = settings.AdditionalBuildArgs;
         LibFiles = string.Join(Environment.NewLine, settings.LibFiles);
         CppStandard = settings.CppStandard;

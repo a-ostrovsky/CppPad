@@ -3,5 +3,5 @@
 public enum BuildMode
 {
     Debug,
-    Release
+    Release,
 }

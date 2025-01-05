@@ -33,7 +33,8 @@ public class FileBuilder
         {
             builder.AppendLine("# Optimization level");
             builder.AppendLine(
-                $"set(CMAKE_CXX_FLAGS \"${{CMAKE_CXX_FLAGS}} {GetOptimizationLevel(options.OptimizationLevel)}\")");
+                $"set(CMAKE_CXX_FLAGS \"${{CMAKE_CXX_FLAGS}} {GetOptimizationLevel(options.OptimizationLevel)}\")"
+            );
             builder.AppendLine();
         }
 
@@ -85,7 +86,7 @@ public class FileBuilder
             OptimizationLevel.O1 => "-O1",
             OptimizationLevel.O2 => "-O2",
             OptimizationLevel.O3 => "-O3",
-            _ => "-O0"
+            _ => "-O0",
         };
     }
 
@@ -99,7 +100,7 @@ public class FileBuilder
             CppStandard.Cpp20 => "20",
             CppStandard.Cpp23 => "23",
             CppStandard.CppLatest => "latest",
-            _ => "latest"
+            _ => "latest",
         };
     }
 }
