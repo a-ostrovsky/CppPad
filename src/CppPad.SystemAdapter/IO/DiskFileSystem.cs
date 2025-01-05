@@ -10,7 +10,7 @@ public class DiskFileSystem
 {
     public SpecialFolders SpecialFolders { get; } =
         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
-    
+
     public static string ExecutableExtension => ".exe";
 
     public virtual Task<string> ReadAllTextAsync(string path)
@@ -43,8 +43,11 @@ public class DiskFileSystem
         return Task.Run(() => Directory.GetFiles(path, searchPattern));
     }
 
-    public virtual Task<string[]> ListFilesAsync(string path, string searchPattern,
-        SearchOption searchOption)
+    public virtual Task<string[]> ListFilesAsync(
+        string path,
+        string searchPattern,
+        SearchOption searchOption
+    )
     {
         return Task.Run(() => Directory.GetFiles(path, searchPattern, searchOption));
     }
@@ -144,8 +147,11 @@ public class DiskFileSystem
         return File.GetLastWriteTime(path);
     }
 
-    public virtual async Task UnzipAsync(string zipFilePath, string extractPath,
-        CancellationToken cancellationToken = default)
+    public virtual async Task UnzipAsync(
+        string zipFilePath,
+        string extractPath,
+        CancellationToken cancellationToken = default
+    )
     {
         // Ensure the cancellation token is checked at the start
         cancellationToken.ThrowIfCancellationRequested();
@@ -175,8 +181,11 @@ public class DiskFileSystem
 
                 // Extract the file
                 await using var entryStream = entry.Open();
-                await using var fileStream =
-                    new FileStream(destinationPath, FileMode.Create, FileAccess.Write);
+                await using var fileStream = new FileStream(
+                    destinationPath,
+                    FileMode.Create,
+                    FileAccess.Write
+                );
                 await entryStream.CopyToAsync(fileStream, cancellationToken);
             }
         }
@@ -194,8 +203,9 @@ public class DiskFileSystem
             }
         }
 
-        foreach (var subDirectoryInfo in directoryInfo.GetDirectories("*",
-                     SearchOption.AllDirectories))
+        foreach (
+            var subDirectoryInfo in directoryInfo.GetDirectories("*", SearchOption.AllDirectories)
+        )
         {
             if ((subDirectoryInfo.Attributes & FileAttributes.ReadOnly) == FileAttributes.ReadOnly)
             {

@@ -7,9 +7,7 @@ namespace CppPad.Scripting.Serialization;
 
 [JsonSerializable(typeof(ScriptDocumentDto))]
 [JsonSourceGenerationOptions(WriteIndented = true, UseStringEnumConverter = true)]
-internal partial class ScriptJsonContext : JsonSerializerContext
-{
-}
+internal partial class ScriptJsonContext : JsonSerializerContext { }
 
 public class ScriptSerializer
 {
@@ -23,11 +21,11 @@ public class ScriptSerializer
                 BuildSettings = new CppBuildSettingsDto
                 {
                     OptimizationLevel = script.Script.BuildSettings.OptimizationLevel,
-                    CppStandard = script.Script.BuildSettings.CppStandard
-                }
+                    CppStandard = script.Script.BuildSettings.CppStandard,
+                },
             },
             Identifier = script.Identifier.ToString(),
-            FileName = script.FileName
+            FileName = script.FileName,
         };
 
         return JsonSerializer.Serialize(dto, ScriptJsonContext.Default.ScriptDocumentDto);
@@ -38,11 +36,17 @@ public class ScriptSerializer
         ScriptDocumentDto? dto;
         try
         {
-            dto = JsonSerializer.Deserialize<ScriptDocumentDto>(json, ScriptJsonContext.Default.ScriptDocumentDto);
+            dto = JsonSerializer.Deserialize<ScriptDocumentDto>(
+                json,
+                ScriptJsonContext.Default.ScriptDocumentDto
+            );
         }
         catch (JsonException e)
         {
-            throw new ScriptSerializationException("Failed to deserialize script document. Invalid json.", e);
+            throw new ScriptSerializationException(
+                "Failed to deserialize script document. Invalid json.",
+                e
+            );
         }
 
         if (dto == null)
@@ -58,11 +62,11 @@ public class ScriptSerializer
                 BuildSettings = new CppBuildSettings
                 {
                     OptimizationLevel = dto.Script.BuildSettings.OptimizationLevel,
-                    CppStandard = dto.Script.BuildSettings.CppStandard
-                }
+                    CppStandard = dto.Script.BuildSettings.CppStandard,
+                },
             },
             Identifier = new Identifier(dto.Identifier),
-            FileName = dto.FileName
+            FileName = dto.FileName,
         };
     }
 }

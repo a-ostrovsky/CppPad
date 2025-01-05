@@ -14,7 +14,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     public MainWindowViewModel(
         OpenEditorsViewModel openEditors,
         ToolbarViewModel toolbar,
-        IDialogs dialogs)
+        IDialogs dialogs
+    )
     {
         _dialogs = dialogs;
         OpenEditors = openEditors;
@@ -31,9 +32,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     }
 
     public static MainWindowViewModel DesignInstance { get; } =
-        new(OpenEditorsViewModel.DesignInstance,
-            ToolbarViewModel.DesignInstance,
-            new Dialogs());
+        new(OpenEditorsViewModel.DesignInstance, ToolbarViewModel.DesignInstance, new Dialogs());
 
     public ToolbarViewModel Toolbar { get; }
 
@@ -74,32 +73,42 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
             }
 
             var lineCount = editor.SourceCode.Content.Split('\n').Length;
-            var currentLineAndColumn = $"{editor.SourceCode.CurrentLine}:{editor.SourceCode.CurrentColumn}";
+            var currentLineAndColumn =
+                $"{editor.SourceCode.CurrentLine}:{editor.SourceCode.CurrentColumn}";
             var result = await _dialogs.InputBoxAsync(
                 $"Line[:Column]. Lines: 1 - {lineCount}",
                 "Go to Line:Column",
-                currentLineAndColumn);
+                currentLineAndColumn
+            );
             if (result == null)
             {
                 return;
             }
 
             var parts = result.Split(':');
-            if (parts.Length == 0 || !int.TryParse(parts[0], out var line) || line < 0 || line > lineCount)
+            if (
+                parts.Length == 0
+                || !int.TryParse(parts[0], out var line)
+                || line < 0
+                || line > lineCount
+            )
             {
                 return; // Invalid input
             }
 
             var column = 1;
 
-            if (parts.Length > 1 && int.TryParse(parts[1], out var parsedColumn) && parsedColumn > 0)
+            if (
+                parts.Length > 1
+                && int.TryParse(parts[1], out var parsedColumn)
+                && parsedColumn > 0
+            )
             {
                 var lineContent = editor.SourceCode.Content.Split('\n')[line - 1];
                 column = Math.Min(parsedColumn, lineContent.Length);
             }
 
-            editor.SourceCode.CurrentColumn =
-                1; // Set to 1 first to avoid caret position issues. The line can be too short.
+            editor.SourceCode.CurrentColumn = 1; // Set to 1 first to avoid caret position issues. The line can be too short.
             editor.SourceCode.CurrentLine = line;
             editor.SourceCode.CurrentColumn = column;
         }
@@ -146,7 +155,9 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
             {
                 try
                 {
-                    var fileName = await _dialogs.ShowFileSaveDialogAsync(Extensions.CppPadFileFilter);
+                    var fileName = await _dialogs.ShowFileSaveDialogAsync(
+                        Extensions.CppPadFileFilter
+                    );
                     if (fileName == null)
                     {
                         return;
@@ -261,9 +272,10 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
             if (OpenEditors.Editors.Count > 0)
             {
                 // Select the next editor if available, otherwise select the previous one
-                OpenEditors.CurrentEditor = index < OpenEditors.Editors.Count
-                    ? OpenEditors.Editors[index]
-                    : OpenEditors.Editors[index - 1];
+                OpenEditors.CurrentEditor =
+                    index < OpenEditors.Editors.Count
+                        ? OpenEditors.Editors[index]
+                        : OpenEditors.Editors[index - 1];
             }
             else
             {

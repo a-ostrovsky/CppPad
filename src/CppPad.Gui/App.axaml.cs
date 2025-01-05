@@ -25,7 +25,7 @@ public class App : Application
         {
             desktop.MainWindow = new MainWindow
             {
-                DataContext = _bootstrapper.GuiBootstrapper.MainWindowViewModel
+                DataContext = _bootstrapper.GuiBootstrapper.MainWindowViewModel,
             };
         }
 
