@@ -43,7 +43,7 @@ public class BuilderTest
         var buildResult = await builder.BuildAsync(
             new BuildConfiguration
             {
-                Configuration = Configuration.Debug,
+                BuildMode = BuildMode.Debug,
                 ScriptDocument = scriptDocument,
                 ErrorReceived = (_, _) => { Assert.Fail("No error expected."); },
                 ProgressReceived = (_, _) => { }

@@ -22,13 +22,13 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
         await BuildAsync(cmakeExecutablePath, options, cancellationToken);
     }
 
-    private static string GetCMakeBuildType(Configuration configuration)
+    private static string GetCMakeBuildType(BuildMode buildMode)
     {
-        return configuration switch
+        return buildMode switch
         {
-            Configuration.Debug => "Debug",
-            Configuration.Release => "Release",
-            _ => throw new ArgumentException($"Unsupported configuration: {configuration}")
+            BuildMode.Debug => "Debug",
+            BuildMode.Release => "Release",
+            _ => throw new ArgumentException($"Unsupported configuration: {buildMode}")
         };
     }
 
@@ -108,7 +108,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 "--build",
                 options.BuildDirectory,
                 "--config",
-                GetCMakeBuildType(options.Configuration)
+                GetCMakeBuildType(options.BuildMode)
             ],
             OutputReceived = (sender, args) =>
             {
@@ -151,7 +151,7 @@ public class CMakeExecutor(DiskFileSystem fileSystem, Process process)
                 options.CMakeListsFolder,
                 "-B",
                 options.BuildDirectory,
-                $"-DCMAKE_BUILD_TYPE={GetCMakeBuildType(options.Configuration)}"
+                $"-DCMAKE_BUILD_TYPE={GetCMakeBuildType(options.BuildMode)}"
             ],
             OutputReceived = (sender, args) =>
             {

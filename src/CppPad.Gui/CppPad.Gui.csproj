@@ -33,6 +33,7 @@
         <ProjectReference Include="..\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj"/>
         <ProjectReference Include="..\CppAdapter.BuildAndRun\CppAdapter.BuildAndRun.csproj"/>
         <ProjectReference Include="..\CppPad.Common\CppPad.Common.csproj"/>
+        <ProjectReference Include="..\CppPad.Configuration\CppPad.Configuration.csproj" />
         <ProjectReference Include="..\CppPad.Scripting\CppPad.Scripting.csproj"/>
     </ItemGroup>
 </Project>

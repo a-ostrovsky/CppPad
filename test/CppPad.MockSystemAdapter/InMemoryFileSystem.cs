@@ -27,6 +27,8 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         CreateDirectory(@"C:\");
     }
 
+    public override FileNameComparer FileNameComparer { get; } = new FakeFileNameComparer();
+
     public void AlwaysCreateDirectoriesIfNotExist(bool alwaysCreate = true)
     {
         _alwaysCreateDirectoriesIfNotExist = alwaysCreate;
@@ -71,7 +73,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
 
     public override void WriteAllLines(string path, string[] contents)
     {
-        EnsureFileExists(path);
+        EnsureDirectoryOfFileExists(path);
         _files[path] = string.Join(Environment.NewLine, contents);
         _lastWriteTimes[path] = DateTimeOffset.UtcNow;
     }
@@ -300,5 +302,13 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         {
             throw new DirectoryNotFoundException($"The directory '{directory}' was not found.");
         }
+    }
+}
+
+public class FakeFileNameComparer : FileNameComparer
+{
+    public override int Compare(string? x, string? y)
+    {
+        return string.Compare(x, y, StringComparison.OrdinalIgnoreCase);
     }
 }

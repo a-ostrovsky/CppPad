@@ -28,7 +28,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         Toolbar.BuildAndRunRequested += OnBuildAndRunRequestedAsync;
         Toolbar.CancelBuildAndRunRequested += OnCancelBuildAndRunRequestedAsync;
         Toolbar.OpenSettingsRequested += OnOpenSettingsRequestedAsync;
-        CreateNewEditor();
+        CreateNewEditorWithPlaceholderText();
     }
 
     public static MainWindowViewModel DesignInstance { get; } =
@@ -177,11 +177,13 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         }
     }
 
-    private async Task OnOpenFileRequestedAsync(object? sender, EventArgs e)
+    private async Task OnOpenFileRequestedAsync(object? sender, OpenFileRequestedEventArgs e)
     {
         try
         {
-            var fileName = await _dialogs.ShowFileOpenDialogAsync(Extensions.CppPadFileFilter);
+            var fileName =
+                e.FileName ?? await _dialogs.ShowFileOpenDialogAsync(Extensions.CppPadFileFilter);
+
             if (fileName == null)
             {
                 return;
@@ -189,13 +191,15 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
             await Dispatcher.UIThread.Invoke(async () =>
             {
+                EditorViewModel? editor = null;
                 try
                 {
-                    var editor = CreateNewEditor();
+                    editor = CreateNewEditor();
                     await editor.OpenFileAsync(fileName);
                 }
                 catch (Exception ex)
                 {
+                    editor?.CloseCommand.Execute(null);
                     await _dialogs.NotifyErrorAsync("Failed to open file.", ex);
                 }
             });
@@ -208,7 +212,13 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void OnCreateNewFileRequested(object? sender, EventArgs e)
     {
-        CreateNewEditor();
+        CreateNewEditorWithPlaceholderText();
+    }
+
+    private void CreateNewEditorWithPlaceholderText()
+    {
+        var editor = CreateNewEditor();
+        editor.AddPlaceholderText();
     }
 
     private EditorViewModel CreateNewEditor()
@@ -239,7 +249,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
         try
         {
-            await editor.BuildAndRunAsync(Toolbar.SelectedConfiguration);
+            await editor.BuildAndRunAsync(Toolbar.SelectedBuildMode);
         }
         catch (OperationCanceledException)
         {

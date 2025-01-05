@@ -5,14 +5,7 @@ namespace CppPad.Gui.ViewModels;
 
 public class SourceCodeViewModel : ViewModelBase
 {
-    private string _content = """
-                              #include <iostream>
-                              
-                              int main() {
-                                  std::cout << "Hello World!";
-                                  return 0;
-                              }
-                              """;
+    private string _content = string.Empty;
     private int _currentColumn;
     private int _currentLine;
     private ScriptDocument _scriptDocument = new();

@@ -34,7 +34,7 @@ public class CMakeTest
         // Act
         await cmake.BuildAsync(new BuildConfiguration
         {
-            Configuration = Configuration.Debug,
+            BuildMode = BuildMode.Debug,
             ScriptDocument = scriptDocument,
             ErrorReceived = (_, _) => { Assert.Fail("No error expected."); },
             ProgressReceived = (_, _) => { }

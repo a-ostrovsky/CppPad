@@ -155,4 +155,34 @@ public class CrudTest : IDisposable
         // Must not save to the new file.
         Assert.False(_bootstrapper.FileSystem.FileExists(@"C:\x.cpppad"));
     }
+    
+    [Fact]
+    public async Task Save_and_load_recent_file()
+    {
+        // Arrange
+        _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
+        
+        // Act & Assert
+        await _bootstrapper.ToolbarViewModel.SaveFileCommand.ExecuteAsync(null);
+        Assert.Contains(@"C:\s.cpppad", _bootstrapper.ToolbarViewModel.RecentFiles);
+        await _bootstrapper.ToolbarViewModel.OpenFileCommand.ExecuteAsync(@"C:\s.cpppad");
+        Assert.Contains("s.cpppad", _bootstrapper.OpenEditorsViewModel.CurrentEditor?.Title);
+    }
+    
+    [Fact]
+    public async Task Recent_file_is_deleted_from_list_if_it_does_not_exist()
+    {
+        // Arange
+        await _bootstrapper.RecentFiles.AddAsync("DOES_NOT_EXIST");
+        var editorCountBeforeOpening = _bootstrapper.OpenEditorsViewModel.Editors.Count;
+        
+        // Act
+        await _bootstrapper.ToolbarViewModel.OpenRecentFileCommand.ExecuteAsync("DOES_NOT_EXIST");
+        
+        // Assert
+        // File does not exist, so it should be removed from the recent files.
+        Assert.DoesNotContain("DOES_NOT_EXIST", await _bootstrapper.RecentFiles.LoadRecentFilesAsync());
+        var editorCountAfterFailedOpening = _bootstrapper.OpenEditorsViewModel.Editors.Count;
+        Assert.Equal(editorCountBeforeOpening, editorCountAfterFailedOpening);
+    }
 }

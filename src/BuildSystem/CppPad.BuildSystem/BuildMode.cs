@@ -1,6 +1,6 @@
 ﻿namespace CppPad.BuildSystem;
 
-public enum Configuration
+public enum BuildMode
 {
     Debug,
     Release

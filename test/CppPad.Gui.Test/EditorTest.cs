@@ -19,7 +19,7 @@ public class EditorTest : IDisposable
         _bootstrapper.Builder.SetOutputMessage("Output_1");
         _bootstrapper.Builder.SetErrorMessage("Error_1");
         await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(
-            Configuration.Debug
+            BuildMode.Debug
         );
         Assert.Contains(
             "Output_1",
@@ -35,7 +35,7 @@ public class EditorTest : IDisposable
     public async Task BuildAndRunAsync_application_is_started_after_build()
     {
         await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(
-            Configuration.Debug
+            BuildMode.Debug
         );
         Assert.True(_bootstrapper.Runner.WasRunCalled);
     }
@@ -45,7 +45,7 @@ public class EditorTest : IDisposable
     {
         var currentEditor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
         var selectedTabIndices = new List<int> { currentEditor.SelectedTabIndex };
-        currentEditor.PropertyChanged += (sender, args) =>
+        currentEditor.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(currentEditor.SelectedTabIndex))
             {
@@ -53,7 +53,7 @@ public class EditorTest : IDisposable
             }
         };
         await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(
-            Configuration.Debug
+            BuildMode.Debug
         );
         Assert.Equal(
             [

@@ -40,7 +40,7 @@ public class CMakeExecutorTests
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
             ForceConfigure = true,
-            Configuration = Configuration.Debug
+            BuildMode = BuildMode.Debug
         };
 
         // Act
@@ -96,7 +96,7 @@ public class CMakeExecutorTests
         // No force re-configure
         var options = new CMakeExecutionOptions
         {
-            Configuration = Configuration.Debug,
+            BuildMode = BuildMode.Debug,
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
@@ -141,7 +141,7 @@ public class CMakeExecutorTests
 
         var options = new CMakeExecutionOptions
         {
-            Configuration = Configuration.Release,
+            BuildMode = BuildMode.Release,
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
@@ -172,7 +172,7 @@ public class CMakeExecutorTests
 
         var options = new CMakeExecutionOptions
         {
-            Configuration = Configuration.Debug,
+            BuildMode = BuildMode.Debug,
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,

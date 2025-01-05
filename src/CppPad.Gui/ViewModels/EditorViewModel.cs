@@ -24,19 +24,19 @@ public class EditorViewModel : ViewModelBase, IDisposable
     private readonly IBuildAndRunFacade _buildAndRunFacade;
 
     private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
-    private readonly ScriptLoader _loader;
+    private readonly ScriptLoaderViewModel _scriptLoader;
     private CancellationTokenSource? _buildCancellationTokenSource;
     private string _title = "Untitled";
     private int _selectedTabIndex = TabIndices.CompilerOutput;
 
     public EditorViewModel(
         ScriptSettingsViewModel scriptSettings,
-        ScriptLoader loader,
+        ScriptLoaderViewModel scriptLoader,
         IBuildAndRunFacade buildAndRunFacade,
         SourceCodeViewModel sourceCode)
     {
         ScriptSettings = scriptSettings;
-        _loader = loader;
+        _scriptLoader = scriptLoader;
         _buildAndRunFacade = buildAndRunFacade;
         SourceCode = sourceCode;
         scriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
@@ -49,7 +49,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
     public static EditorViewModel DesignInstance { get; } =
         new(
             ScriptSettingsViewModel.DesignInstance,
-            new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()),
+            ScriptLoaderViewModel.DesignInstance,
             new DummyBuildAndRunFacade(),
             SourceCodeViewModel.DesignInstance);
 
@@ -109,14 +109,14 @@ public class EditorViewModel : ViewModelBase, IDisposable
 
     public async Task OpenFileAsync(string fileName)
     {
-        var document = await _loader.LoadAsync(fileName);
+        var document = await _scriptLoader.LoadAsync(fileName);
         SourceCode.ScriptDocument = document;
         Title = Path.GetFileName(document.FileName) ?? "Untitled";
     }
 
     public async Task SaveFileAsAsync(string fileName)
     {
-        await _loader.SaveAsync(SourceCode.ScriptDocument, fileName);
+        await _scriptLoader.SaveAsync(SourceCode.ScriptDocument, fileName);
         SourceCode.ScriptDocument = SourceCode.ScriptDocument with { FileName = fileName };
         Title = Path.GetFileName(fileName);
     }
@@ -128,7 +128,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
             throw new InvalidOperationException("File name is not set.");
         }
 
-        return _loader.SaveAsync(SourceCode.ScriptDocument, SourceCode.ScriptDocument.FileName);
+        return _scriptLoader.SaveAsync(SourceCode.ScriptDocument, SourceCode.ScriptDocument.FileName);
     }
 
     public async Task CancelBuildAndRunAsync()
@@ -142,7 +142,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         await cancellationTokenSource.CancelAsync();
     }
 
-    public async Task BuildAndRunAsync(Configuration configuration)
+    public async Task BuildAndRunAsync(BuildMode buildMode)
     {
         if (!await _buildSemaphore.WaitAsync(0))
         {
@@ -157,7 +157,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
             var buildConfiguration = new BuildConfiguration
             {
                 ScriptDocument = SourceCode.ScriptDocument,
-                Configuration = configuration,
+                BuildMode = buildMode,
                 ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
                 ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
             };
@@ -188,5 +188,17 @@ public class EditorViewModel : ViewModelBase, IDisposable
                 SelectedTabIndex = TabIndices.ApplicationOutput;
             }
         }
+    }
+
+    public void AddPlaceholderText()
+    {
+        SourceCode.Content =  """
+                              #include <iostream>
+
+                              int main() {
+                                  std::cout << "Hello World!";
+                                  return 0;
+                              }
+                              """;
     }
 }

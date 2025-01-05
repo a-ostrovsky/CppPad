@@ -8,6 +8,8 @@ namespace CppPad.SystemAdapter.IO;
 
 public class DiskFileSystem
 {
+    public virtual FileNameComparer FileNameComparer { get; } = new();
+    
     public SpecialFolders SpecialFolders { get; } =
         new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
 

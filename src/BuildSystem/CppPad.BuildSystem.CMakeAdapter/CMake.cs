@@ -17,7 +17,7 @@ public class CMake(DiskFileSystem fileSystem, FileWriter cmakeFileWriter, CMakeE
         var fileWriterResult = await cmakeFileWriter.WriteCMakeFileAsync(scriptDocument, token);
         var executionOptions = new CMakeExecutionOptions
         {
-            Configuration = buildConfiguration.Configuration,
+            BuildMode = buildConfiguration.BuildMode,
             ErrorReceived = buildConfiguration.ErrorReceived,
             ProgressReceived = buildConfiguration.ProgressReceived,
             EnvironmentSettings = environmentSettings,

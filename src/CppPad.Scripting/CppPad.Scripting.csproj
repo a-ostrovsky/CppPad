@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\CppPad.Configuration\CppPad.Configuration.csproj" />
         <ProjectReference Include="..\CppPad.SystemAdapter\CppPad.SystemAdapter.csproj"/>
         <ProjectReference Include="..\CppPad.UniqueIdentifier\CppPad.UniqueIdentifier.csproj"/>
     </ItemGroup>

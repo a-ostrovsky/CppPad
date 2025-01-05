@@ -10,14 +10,19 @@ public class GuiBootstrapper
     {
         _parent = parent;
         Dialogs = new Dialogs();
+        ScriptLoaderViewModel = new ScriptLoaderViewModel(
+            _parent.ScriptingBootstrapper.ScriptLoader,
+            _parent.ConfigurationBootstrapper.RecentFiles);
         ScriptSettingsViewModel = new ScriptSettingsViewModel();
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
-        ToolbarViewModel = new ToolbarViewModel();
+        ToolbarViewModel = new ToolbarViewModel(parent.ConfigurationBootstrapper.RecentFiles);
         MainWindowViewModel = new MainWindowViewModel(OpenEditorsViewModel,
             ToolbarViewModel,
             Dialogs);
     }
 
+    public ScriptLoaderViewModel ScriptLoaderViewModel { get; }
+    
     public ScriptSettingsViewModel ScriptSettingsViewModel { get; }
 
     public IDialogs Dialogs { get; }
@@ -32,7 +37,7 @@ public class GuiBootstrapper
     {
         return new EditorViewModel(
             ScriptSettingsViewModel,
-            _parent.ScriptingBootstrapper.ScriptLoader,
+            ScriptLoaderViewModel,
             _parent.BuildAndRunBootstrapper.BuildAndRunFacade,
             new SourceCodeViewModel());
     }
