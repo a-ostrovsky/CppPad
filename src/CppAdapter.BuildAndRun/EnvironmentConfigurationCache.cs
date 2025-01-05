@@ -10,7 +10,7 @@ public class EnvironmentConfigurationCache : IEnvironmentConfigurationDetector
         using var lck = await _lock.LockAsync();
         return _settings ??= await _detector.GetSettingsAsync(token);
     }
-    
+
     private readonly AsyncLock _lock = new();
     private EnvironmentSettings? _settings;
     private readonly IEnvironmentConfigurationDetector _detector;

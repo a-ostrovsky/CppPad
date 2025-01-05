@@ -17,10 +17,7 @@ public class FileWriterTest
         var cmakeFileWriter = new FileWriter(scriptLoader, new FileBuilder(), fileSystem);
         var scriptDocument = new ScriptDocument
         {
-            Script = new ScriptData
-            {
-                Content = "int main() { return 0; }"
-            }
+            Script = new ScriptData { Content = "int main() { return 0; }" },
         };
 
         // Act
@@ -37,7 +34,8 @@ public class FileWriterTest
         var cmakeListsFiles = await fileSystem.ListFilesAsync(
             "C:\\",
             "CMakeLists.txt",
-            SearchOption.AllDirectories);
+            SearchOption.AllDirectories
+        );
         Assert.Single(cmakeListsFiles);
         var cmakeListsFile = cmakeListsFiles.Single();
         return cmakeListsFile;

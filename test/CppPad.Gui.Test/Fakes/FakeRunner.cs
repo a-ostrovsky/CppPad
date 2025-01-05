@@ -9,6 +9,6 @@ public class FakeRunner : IRunner
         WasRunCalled = true;
         return Task.CompletedTask;
     }
-    
+
     public bool WasRunCalled { get; private set; }
 }

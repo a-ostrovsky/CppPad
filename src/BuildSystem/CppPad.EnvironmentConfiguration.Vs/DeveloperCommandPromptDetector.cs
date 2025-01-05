@@ -2,7 +2,10 @@
 
 namespace CppPad.EnvironmentConfiguration.Vs;
 
-public class DeveloperCommandPromptDetector(DiskFileSystem fileSystem, IVsWhereAdapter vsWhereAdapter)
+public class DeveloperCommandPromptDetector(
+    DiskFileSystem fileSystem,
+    IVsWhereAdapter vsWhereAdapter
+)
 {
     public async Task<string> GetDeveloperCommandPromptAsync()
     {
@@ -10,7 +13,10 @@ public class DeveloperCommandPromptDetector(DiskFileSystem fileSystem, IVsWhereA
 
         foreach (var visualStudioPath in visualStudioPaths)
         {
-            var developerCommandPromptPath = Path.Combine(visualStudioPath, @"Common7\Tools\VsDevCmd.bat");
+            var developerCommandPromptPath = Path.Combine(
+                visualStudioPath,
+                @"Common7\Tools\VsDevCmd.bat"
+            );
             if (fileSystem.FileExists(developerCommandPromptPath))
             {
                 return developerCommandPromptPath;

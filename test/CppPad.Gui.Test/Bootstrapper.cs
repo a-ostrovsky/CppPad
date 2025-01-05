@@ -24,21 +24,22 @@ public class Bootstrapper : IDisposable
         MainWindowViewModel = new MainWindowViewModel(
             OpenEditorsViewModel,
             ToolbarViewModel,
-            Dialogs);
+            Dialogs
+        );
     }
-    
+
     public ScriptSerializer ScriptSerializer { get; }
-    
+
     public BuildAndRunFacade BuildAndRunFacade { get; }
 
     public FakeDialogs Dialogs { get; } = new();
 
     public InMemoryFileSystem FileSystem { get; } = new();
-    
+
     public RecentFiles RecentFiles { get; }
 
     public FakeBuilder Builder { get; } = new();
-    
+
     public FakeRunner Runner { get; }
 
     public ScriptLoader ScriptLoader { get; }
@@ -50,7 +51,7 @@ public class Bootstrapper : IDisposable
     public OpenEditorsViewModel OpenEditorsViewModel { get; }
 
     public ToolbarViewModel ToolbarViewModel { get; }
-    
+
     public ScriptLoaderViewModel ScriptLoaderViewModel { get; }
 
     private EditorViewModel CreateEditorViewModel()
@@ -59,7 +60,8 @@ public class Bootstrapper : IDisposable
             ScriptSettingsViewModel,
             ScriptLoaderViewModel,
             BuildAndRunFacade,
-            new SourceCodeViewModel());
+            new SourceCodeViewModel()
+        );
     }
 
     public void Dispose()

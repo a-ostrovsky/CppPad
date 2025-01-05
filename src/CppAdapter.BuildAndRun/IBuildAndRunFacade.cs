@@ -4,14 +4,20 @@ namespace CppAdapter.BuildAndRun;
 
 public interface IBuildAndRunFacade
 {
-    Task BuildAndRunAsync(BuildAndRunConfiguration configuration, CancellationToken token = default);
-    
+    Task BuildAndRunAsync(
+        BuildAndRunConfiguration configuration,
+        CancellationToken token = default
+    );
+
     event EventHandler<BuildStatusChangedEventArgs>? BuildStatusChanged;
 }
 
 public class DummyBuildAndRunFacade : IBuildAndRunFacade
 {
-    public Task BuildAndRunAsync(BuildAndRunConfiguration configuration, CancellationToken token = default)
+    public Task BuildAndRunAsync(
+        BuildAndRunConfiguration configuration,
+        CancellationToken token = default
+    )
     {
         BuildStatusChanged?.Invoke(
             this,

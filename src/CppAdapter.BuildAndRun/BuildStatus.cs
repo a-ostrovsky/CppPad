@@ -6,5 +6,5 @@ public enum BuildStatus
     Building,
     Succeeded,
     Failed,
-    Cancelled
+    Cancelled,
 }

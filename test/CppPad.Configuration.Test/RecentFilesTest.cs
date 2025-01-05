@@ -16,7 +16,10 @@ public class RecentFilesTest
     public async Task Add_single_recent_file()
     {
         var receivedUpdates = new List<string>();
-        _recentFiles.RecentFilesChanged += (_, args) => { receivedUpdates.AddRange(args.RecentFiles); };
+        _recentFiles.RecentFilesChanged += (_, args) =>
+        {
+            receivedUpdates.AddRange(args.RecentFiles);
+        };
         await _recentFiles.AddAsync("test.cpp");
         Assert.Contains("test.cpp", await _recentFiles.LoadRecentFilesAsync());
         Assert.Contains("test.cpp", receivedUpdates);

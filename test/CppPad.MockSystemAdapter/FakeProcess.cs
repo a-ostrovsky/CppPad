@@ -25,7 +25,7 @@ public class FakeProcess : Process
         _errorHandler = startInfo.ErrorReceived;
 
         _whenCalled(startInfo.Arguments.AsReadOnly());
-        
+
         return new MockProcessInfo();
     }
 

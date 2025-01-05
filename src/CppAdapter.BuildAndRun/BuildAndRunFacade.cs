@@ -3,7 +3,9 @@
 public class BuildAndRunFacade(IBuilder builder, IRunner runner) : IBuildAndRunFacade
 {
     public async Task BuildAndRunAsync(
-        BuildAndRunConfiguration configuration, CancellationToken token = default)
+        BuildAndRunConfiguration configuration,
+        CancellationToken token = default
+    )
     {
         try
         {
@@ -20,7 +22,7 @@ public class BuildAndRunFacade(IBuilder builder, IRunner runner) : IBuildAndRunF
                     ExecutablePath = exeFile.CreatedFile,
                     Arguments = configuration.ExeArguments,
                     OutputReceived = configuration.ExeOutputReceived,
-                    ErrorReceived = configuration.ExeErrorReceived
+                    ErrorReceived = configuration.ExeErrorReceived,
                 },
                 token
             );

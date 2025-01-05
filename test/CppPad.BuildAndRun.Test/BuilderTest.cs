@@ -19,7 +19,7 @@ public class BuilderTest
         // Arrange
         var scriptDocument = new ScriptDocument
         {
-            Script = new ScriptData { Content = "int main() { return 0; }" }
+            Script = new ScriptData { Content = "int main() { return 0; }" },
         };
         var fileSystem = new InMemoryFileSystem();
         var scriptLoader = new ScriptLoader(new ScriptSerializer(), fileSystem);
@@ -30,7 +30,7 @@ public class BuilderTest
         var envVars = CMakeInstaller.Install(fileSystem);
         var environmentConfigurationDetector = new FakeEnvironmentConfigurationDetector
         {
-            Settings = envVars
+            Settings = envVars,
         };
         var cmake = new CMake(
             fileSystem,
@@ -45,8 +45,11 @@ public class BuilderTest
             {
                 BuildMode = BuildMode.Debug,
                 ScriptDocument = scriptDocument,
-                ErrorReceived = (_, _) => { Assert.Fail("No error expected."); },
-                ProgressReceived = (_, _) => { }
+                ErrorReceived = (_, _) =>
+                {
+                    Assert.Fail("No error expected.");
+                },
+                ProgressReceived = (_, _) => { },
             }
         );
 
@@ -74,7 +77,9 @@ public class BuilderTest
                 return;
             }
 
-            var buildFolder = args.SkipWhile(arg => !string.Equals(arg, "-B", StringComparison.OrdinalIgnoreCase))
+            var buildFolder = args.SkipWhile(arg =>
+                    !string.Equals(arg, "-B", StringComparison.OrdinalIgnoreCase)
+                )
                 .Skip(1)
                 .First();
             var exeFile = Path.Combine(buildFolder, exeFileName);

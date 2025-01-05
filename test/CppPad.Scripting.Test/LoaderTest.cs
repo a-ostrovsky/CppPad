@@ -24,17 +24,21 @@ public class LoaderTest
                 BuildSettings = new CppBuildSettings
                 {
                     OptimizationLevel = OptimizationLevel.O2,
-                    CppStandard = CppStandard.Cpp17
-                }
+                    CppStandard = CppStandard.Cpp17,
+                },
             },
             Identifier = new Identifier("12345"),
-            FileName = "test.cpp"
+            FileName = "test.cpp",
         };
 
         await loader.SaveAsync(originalDocument, @"c:\test.json");
         var loadedDocument = await loader.LoadAsync(@"c:\test.json");
-        (loadedDocument with { FileName = string.Empty })
-            .ShouldDeepEqual(originalDocument with { FileName = string.Empty });
+        (loadedDocument with { FileName = string.Empty }).ShouldDeepEqual(
+            originalDocument with
+            {
+                FileName = string.Empty,
+            }
+        );
         Assert.Equal(@"c:\test.json", loadedDocument.FileName);
     }
 }

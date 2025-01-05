@@ -27,8 +27,8 @@ public partial class SourceCodeView : UserControl
         var registryOptions = new RegistryOptions(ThemeName.Light);
         var textMateInstallation = Editor.InstallTextMate(registryOptions);
         textMateInstallation.SetGrammar(
-            registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp")
-                .Id));
+            registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".cpp").Id)
+        );
 
         Editor.TextArea.Caret.PositionChanged += Caret_PositionChanged;
         Editor.TextChanged += TextEditor_TextChanged;
@@ -103,13 +103,19 @@ public partial class SourceCodeView : UserControl
         if (!_isInternalChange && e.PropertyName == nameof(SourceCodeViewModel.CurrentLine))
         {
             Editor.ScrollToLine(_viewModel!.CurrentLine);
-            Editor.CaretOffset = GetCaretOffsetForLine(Editor, _viewModel.CurrentLine) + _viewModel.CurrentColumn - 1;
+            Editor.CaretOffset =
+                GetCaretOffsetForLine(Editor, _viewModel.CurrentLine)
+                + _viewModel.CurrentColumn
+                - 1;
             Editor.TextArea.Focus();
         }
 
         if (!_isInternalChange && e.PropertyName == nameof(SourceCodeViewModel.CurrentColumn))
         {
-            Editor.CaretOffset = GetCaretOffsetForLine(Editor, _viewModel.CurrentLine) + _viewModel.CurrentColumn - 1;
+            Editor.CaretOffset =
+                GetCaretOffsetForLine(Editor, _viewModel.CurrentLine)
+                + _viewModel.CurrentColumn
+                - 1;
             Editor.TextArea.Focus();
         }
     }

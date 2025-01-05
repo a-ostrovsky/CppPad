@@ -19,7 +19,12 @@ public class FileNameComparer : IComparer<string>
             return 1;
         }
 
-        return string.Compare(x, y,
-            OperatingSystem.IsWindows() ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+        return string.Compare(
+            x,
+            y,
+            OperatingSystem.IsWindows()
+                ? StringComparison.OrdinalIgnoreCase
+                : StringComparison.Ordinal
+        );
     }
 }

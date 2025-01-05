@@ -3,7 +3,7 @@
 public class GoToLineTest : IDisposable
 {
     private readonly Bootstrapper _bootstrapper = new();
-    
+
     public void Dispose()
     {
         _bootstrapper.Dispose();

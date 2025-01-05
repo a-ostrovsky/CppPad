@@ -21,8 +21,9 @@ public class Dialogs : IDialogs
     {
         get
         {
-            var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)
-                ?.MainWindow;
+            var mainWindow = (
+                Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime
+            )?.MainWindow;
             if (mainWindow == null)
             {
                 throw new InvalidOperationException("Main window is not set.");
@@ -44,16 +45,12 @@ public class Dialogs : IDialogs
             ? message
             : $"{message}\n\nException: {exception.Message}";
 
-        var textBox = new TextBox
-        {
-            Text = fullMessage,
-            TextWrapping = TextWrapping.Wrap
-        };
+        var textBox = new TextBox { Text = fullMessage, TextWrapping = TextWrapping.Wrap };
         var button = new Button
         {
             Content = "OK",
             HorizontalAlignment = HorizontalAlignment.Right,
-            Margin = new Thickness(0, 10, 0, 0)
+            Margin = new Thickness(0, 10, 0, 0),
         };
         // Create a simple Window to show the error.
         var errorWindow = new Window
@@ -68,11 +65,11 @@ public class Dialogs : IDialogs
                 RowDefinitions =
                 {
                     new RowDefinition(GridLength.Star),
-                    new RowDefinition(GridLength.Auto)
+                    new RowDefinition(GridLength.Auto),
                 },
                 Margin = new Thickness(16),
-                Children = { textBox, button }
-            }
+                Children = { textBox, button },
+            },
         };
 
         Grid.SetRow(textBox, 0);
@@ -91,21 +88,22 @@ public class Dialogs : IDialogs
     public virtual async Task<string?> ShowFileOpenDialogAsync(string filter)
     {
         var storageProvider = TopLevel.GetTopLevel(MainWindow)!.StorageProvider;
-        var result = await storageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            AllowMultiple = false,
-            FileTypeFilter = ParseFilter(filter)
-        });
+        var result = await storageProvider.OpenFilePickerAsync(
+            new FilePickerOpenOptions
+            {
+                AllowMultiple = false,
+                FileTypeFilter = ParseFilter(filter),
+            }
+        );
         return result.Count == 0 ? null : result[0].Path.AbsolutePath;
     }
 
     public async Task<string?> ShowFileSaveDialogAsync(string filter)
     {
         var storageProvider = TopLevel.GetTopLevel(MainWindow)!.StorageProvider;
-        var result = await storageProvider.SaveFilePickerAsync(new FilePickerSaveOptions
-        {
-            FileTypeChoices = ParseFilter(filter)
-        });
+        var result = await storageProvider.SaveFilePickerAsync(
+            new FilePickerSaveOptions { FileTypeChoices = ParseFilter(filter) }
+        );
         return result?.Path.AbsolutePath;
     }
 
@@ -117,16 +115,28 @@ public class Dialogs : IDialogs
     /// <param name="title">Text displayed in the dialog’s title bar.</param>
     /// <param name="defaultResponse">Default text initially placed in the input box.</param>
     /// <returns>User’s input or null if canceled.</returns>
-    public virtual async Task<string?> InputBoxAsync(string prompt, string title, string defaultResponse = "")
+    public virtual async Task<string?> InputBoxAsync(
+        string prompt,
+        string title,
+        string defaultResponse = ""
+    )
     {
         // Create the controls:
         var promptTextBlock = new TextBlock { Text = prompt };
         var textBox = new TextBox { Text = defaultResponse };
 
         var okButton = new Button
-            { Content = "OK", MinWidth = 80, HorizontalContentAlignment = HorizontalAlignment.Center };
+        {
+            Content = "OK",
+            MinWidth = 80,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+        };
         var cancelButton = new Button
-            { Content = "Cancel", MinWidth = 80, HorizontalContentAlignment = HorizontalAlignment.Center };
+        {
+            Content = "Cancel",
+            MinWidth = 80,
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+        };
 
         // Create window:
         var inputWindow = new Window
@@ -135,7 +145,7 @@ public class Dialogs : IDialogs
             Width = 400,
             Height = 125,
             CanResize = false,
-            WindowStartupLocation = WindowStartupLocation.CenterOwner
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
         };
 
         // Wire up commands to close the dialog with the appropriate return value:
@@ -155,7 +165,7 @@ public class Dialogs : IDialogs
         {
             Orientation = Orientation.Vertical,
             Spacing = 10,
-            Margin = new Thickness(10)
+            Margin = new Thickness(10),
         };
         contentPanel.Children.Add(promptTextBlock);
         contentPanel.Children.Add(textBox);
@@ -165,7 +175,7 @@ public class Dialogs : IDialogs
         {
             Orientation = Orientation.Horizontal,
             HorizontalAlignment = HorizontalAlignment.Right,
-            Spacing = 10
+            Spacing = 10,
         };
         buttonPanel.Children.Add(okButton);
         buttonPanel.Children.Add(cancelButton);
@@ -204,21 +214,19 @@ public class Dialogs : IDialogs
 
     public Task ShowScriptSettingsDialogAsync(ScriptSettingsViewModel viewModel)
     {
-        var dialog = new ScriptSettingsWindow
-        {
-            DataContext = viewModel
-        };
+        var dialog = new ScriptSettingsWindow { DataContext = viewModel };
         return dialog.ShowDialog(MainWindow);
     }
 
     private static List<FilePickerFileType> ParseFilter(string filter)
     {
-        return filter.Split('|')
+        return filter
+            .Split('|')
             .Select((f, i) => new { Filter = f, Index = i })
             .GroupBy(f => f.Index / 2)
             .Select(g => new FilePickerFileType(g.First().Filter)
             {
-                Patterns = g.Last().Filter.Split(';').Select(ext => ext).ToList()
+                Patterns = g.Last().Filter.Split(';').Select(ext => ext).ToList(),
             })
             .ToList();
     }

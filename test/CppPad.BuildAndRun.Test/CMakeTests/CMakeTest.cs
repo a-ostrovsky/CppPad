@@ -25,25 +25,30 @@ public class CMakeTest
 
         var scriptDocument = new ScriptDocument
         {
-            Script = new ScriptData
-            {
-                Content = "int main() { return 0; }"
-            }
+            Script = new ScriptData { Content = "int main() { return 0; }" },
         };
 
         // Act
-        await cmake.BuildAsync(new BuildConfiguration
-        {
-            BuildMode = BuildMode.Debug,
-            ScriptDocument = scriptDocument,
-            ErrorReceived = (_, _) => { Assert.Fail("No error expected."); },
-            ProgressReceived = (_, _) => { }
-        }, CMakeInstaller.Install(fileSystem));
+        await cmake.BuildAsync(
+            new BuildConfiguration
+            {
+                BuildMode = BuildMode.Debug,
+                ScriptDocument = scriptDocument,
+                ErrorReceived = (_, _) =>
+                {
+                    Assert.Fail("No error expected.");
+                },
+                ProgressReceived = (_, _) => { },
+            },
+            CMakeInstaller.Install(fileSystem)
+        );
 
         Assert.True(process.StartCalled);
-        var createdFiles =
-            await fileSystem.ListFilesAsync(fileSystem.SpecialFolders.TempFolder,
-                "*", SearchOption.AllDirectories);
+        var createdFiles = await fileSystem.ListFilesAsync(
+            fileSystem.SpecialFolders.TempFolder,
+            "*",
+            SearchOption.AllDirectories
+        );
         Assert.Contains(createdFiles, f => f.Contains("CMakeLists.txt"));
     }
 }

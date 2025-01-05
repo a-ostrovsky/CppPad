@@ -20,11 +20,11 @@ public class SerializerTest
                 BuildSettings = new CppBuildSettings
                 {
                     OptimizationLevel = OptimizationLevel.O2,
-                    CppStandard = CppStandard.Cpp17
-                }
+                    CppStandard = CppStandard.Cpp17,
+                },
             },
             Identifier = new Identifier("12345"),
-            FileName = "test.cpp"
+            FileName = "test.cpp",
         };
 
         // Act
@@ -43,12 +43,9 @@ public class SerializerTest
         {
             Script = new ScriptData
             {
-                BuildSettings = new CppBuildSettings
-                {
-                    CppStandard = CppStandard.Cpp17
-                }
+                BuildSettings = new CppBuildSettings { CppStandard = CppStandard.Cpp17 },
             },
-            Identifier = new Identifier("12345")
+            Identifier = new Identifier("12345"),
         };
 
         // Act

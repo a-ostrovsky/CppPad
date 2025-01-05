@@ -7,8 +7,7 @@ using System.Windows.Input;
 
 namespace CppPad.Gui.Input;
 
-public class RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null)
-    : ICommand
+public class RelayCommand(Action<object?> execute, Predicate<object?>? canExecute = null) : ICommand
 {
     public event EventHandler? CanExecuteChanged;
 

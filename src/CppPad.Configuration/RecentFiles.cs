@@ -6,8 +6,10 @@ public class RecentFiles(DiskFileSystem fileSystem)
 {
     public const int MaxRecentFiles = 10;
 
-    private readonly string _recentFilesPath =
-        Path.Combine(fileSystem.SpecialFolders.SettingsFolder, "RecentFiles.txt");
+    private readonly string _recentFilesPath = Path.Combine(
+        fileSystem.SpecialFolders.SettingsFolder,
+        "RecentFiles.txt"
+    );
 
     public async Task AddAsync(string path)
     {
@@ -22,7 +24,7 @@ public class RecentFiles(DiskFileSystem fileSystem)
         await SaveRecentFilesAsync(recentFiles);
         RecentFilesChanged?.Invoke(this, new RecentFilesChangedEventArgs(recentFiles));
     }
-    
+
     public async Task RemoveAsync(string path)
     {
         var recentFiles = await LoadRecentFilesAsync();
@@ -34,7 +36,7 @@ public class RecentFiles(DiskFileSystem fileSystem)
     private async Task SaveRecentFilesAsync(IEnumerable<string> recentFiles)
     {
         await fileSystem.CreateDirectoryAsync(Path.GetDirectoryName(_recentFilesPath)!);
-        await fileSystem.WriteAllLinesAsync(_recentFilesPath, [..recentFiles]);
+        await fileSystem.WriteAllLinesAsync(_recentFilesPath, [.. recentFiles]);
     }
 
     public async Task<List<string>> LoadRecentFilesAsync()

@@ -10,15 +10,16 @@ public class SourceCodeViewModel : ViewModelBase
     private int _currentLine;
     private ScriptDocument _scriptDocument = new();
 
-    public static SourceCodeViewModel DesignInstance { get; } = new()
-    {
-        Content = """
-                  #include <iostream>
-                  void main() {
-                      std::cout << "Hello, World!";
-                  }
-                  """
-    };
+    public static SourceCodeViewModel DesignInstance { get; } =
+        new()
+        {
+            Content = """
+                #include <iostream>
+                void main() {
+                    std::cout << "Hello, World!";
+                }
+                """,
+        };
 
     public string Content
     {
@@ -44,10 +45,7 @@ public class SourceCodeViewModel : ViewModelBase
         {
             _scriptDocument = _scriptDocument with
             {
-                Script = _scriptDocument.Script with
-                {
-                    Content = Content
-                }
+                Script = _scriptDocument.Script with { Content = Content },
             };
             return _scriptDocument;
         }

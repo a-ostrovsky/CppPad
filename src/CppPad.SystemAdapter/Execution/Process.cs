@@ -6,11 +6,15 @@ namespace CppPad.SystemAdapter.Execution;
 
 public class Process
 {
-    private readonly ILogger _logger = Log.CreateLogger<Process>(); 
-    
+    private readonly ILogger _logger = Log.CreateLogger<Process>();
+
     public virtual IProcessInfo Start(StartInfo startInfo)
     {
-        _logger.LogDebug("Starting process: {FileName} {Arguments}", startInfo.FileName, startInfo.Arguments);
+        _logger.LogDebug(
+            "Starting process: {FileName} {Arguments}",
+            startInfo.FileName,
+            startInfo.Arguments
+        );
         var process = new System.Diagnostics.Process();
         process.StartInfo.FileName = startInfo.FileName;
         process.StartInfo.RedirectStandardOutput = true;
@@ -56,8 +60,10 @@ public class Process
         return new ProcessInfo(process);
     }
 
-    public virtual async Task<IDictionary<string, string>>
-        RunAndGetEnvironmentVariablesAsync(string executablePath, CancellationToken token = default)
+    public virtual async Task<IDictionary<string, string>> RunAndGetEnvironmentVariablesAsync(
+        string executablePath,
+        CancellationToken token = default
+    )
     {
         var arguments = $"/c \"\"{executablePath}\" & set\"";
         var startInfo = new ProcessStartInfo("cmd.exe", arguments)
@@ -65,7 +71,7 @@ public class Process
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            CreateNoWindow = true
+            CreateNoWindow = true,
         };
         using var process = new System.Diagnostics.Process();
         process.StartInfo = startInfo;
@@ -99,8 +105,10 @@ public class Process
         return envVars;
     }
 
-    public virtual async Task<int> WaitForExitAsync(IProcessInfo processInfo,
-        CancellationToken token = default)
+    public virtual async Task<int> WaitForExitAsync(
+        IProcessInfo processInfo,
+        CancellationToken token = default
+    )
     {
         int exitCode;
         System.Diagnostics.Process? process = null;

@@ -13,9 +13,7 @@ public class FakeDialogs : IDialogs
         return Task.CompletedTask;
     }
 
-    public void NotifyError(string message, Exception? exception)
-    {
-    }
+    public void NotifyError(string message, Exception? exception) { }
 
     public Task<string?> ShowFileOpenDialogAsync(string filter)
     {

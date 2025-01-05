@@ -24,30 +24,50 @@ public class ToolbarViewModel : ViewModelBase, IDisposable
     {
         _recentFiles = recentFiles;
         _recentFiles.RecentFilesChanged += RecentFiles_RecentFilesChanged;
-        GoToLineCommand = new AsyncRelayCommand(_ => GoToLineRequested?.InvokeAsync(this, EventArgs.Empty));
-        CreateNewFileCommand = new RelayCommand(_ => CreateNewFileRequested?.Invoke(this, EventArgs.Empty));
-        OpenFileCommand =
-            new AsyncRelayCommand(_ => OpenFileRequested?.InvokeAsync(this, new OpenFileRequestedEventArgs()));
+        GoToLineCommand = new AsyncRelayCommand(_ =>
+            GoToLineRequested?.InvokeAsync(this, EventArgs.Empty)
+        );
+        CreateNewFileCommand = new RelayCommand(_ =>
+            CreateNewFileRequested?.Invoke(this, EventArgs.Empty)
+        );
+        OpenFileCommand = new AsyncRelayCommand(_ =>
+            OpenFileRequested?.InvokeAsync(this, new OpenFileRequestedEventArgs())
+        );
         OpenRecentFileCommand = new AsyncRelayCommand(fileName =>
-            OpenFileRequested?.InvokeAsync(this, new OpenFileRequestedEventArgs(fileName?.ToString())));
-        SaveFileCommand = new AsyncRelayCommand(_ => SaveFileRequested?.InvokeAsync(this, EventArgs.Empty));
-        SaveFileAsCommand = new AsyncRelayCommand(_ => SaveFileAsRequested?.InvokeAsync(this, EventArgs.Empty));
-        BuildAndRunCommand = new AsyncRelayCommand(_ => BuildAndRunRequested?.InvokeAsync(this, EventArgs.Empty));
-        CancelBuildAndRunCommand =
-            new AsyncRelayCommand(_ => CancelBuildAndRunRequested?.InvokeAsync(this, EventArgs.Empty));
-        OpenSettingsCommand = new AsyncRelayCommand(_ => OpenSettingsRequested?.InvokeAsync(this, EventArgs.Empty));
+            OpenFileRequested?.InvokeAsync(
+                this,
+                new OpenFileRequestedEventArgs(fileName?.ToString())
+            )
+        );
+        SaveFileCommand = new AsyncRelayCommand(_ =>
+            SaveFileRequested?.InvokeAsync(this, EventArgs.Empty)
+        );
+        SaveFileAsCommand = new AsyncRelayCommand(_ =>
+            SaveFileAsRequested?.InvokeAsync(this, EventArgs.Empty)
+        );
+        BuildAndRunCommand = new AsyncRelayCommand(_ =>
+            BuildAndRunRequested?.InvokeAsync(this, EventArgs.Empty)
+        );
+        CancelBuildAndRunCommand = new AsyncRelayCommand(_ =>
+            CancelBuildAndRunRequested?.InvokeAsync(this, EventArgs.Empty)
+        );
+        OpenSettingsCommand = new AsyncRelayCommand(_ =>
+            OpenSettingsRequested?.InvokeAsync(this, EventArgs.Empty)
+        );
         SelectedBuildMode = BuildModes[0];
-        _recentFiles.LoadRecentFilesAsync().ContinueWith(t =>
-        {
-            Dispatcher.UIThread.Invoke(() =>
+        _recentFiles
+            .LoadRecentFilesAsync()
+            .ContinueWith(t =>
             {
-                RecentFiles.Clear();
-                foreach (var file in t.Result)
+                Dispatcher.UIThread.Invoke(() =>
                 {
-                    RecentFiles.Add(file);
-                }
+                    RecentFiles.Clear();
+                    foreach (var file in t.Result)
+                    {
+                        RecentFiles.Add(file);
+                    }
+                });
             });
-        });
     }
 
     private void RecentFiles_RecentFilesChanged(object? sender, RecentFilesChangedEventArgs e)
@@ -71,7 +91,8 @@ public class ToolbarViewModel : ViewModelBase, IDisposable
 
     public IAsyncCommand CancelBuildAndRunCommand { get; }
 
-    public static ToolbarViewModel DesignInstance { get; } = new(new RecentFiles(new DiskFileSystem()));
+    public static ToolbarViewModel DesignInstance { get; } =
+        new(new RecentFiles(new DiskFileSystem()));
 
     public ICommand CreateNewFileCommand { get; }
 

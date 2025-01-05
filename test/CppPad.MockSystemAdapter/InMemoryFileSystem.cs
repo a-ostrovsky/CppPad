@@ -14,11 +14,13 @@ public sealed class InMemoryFileSystem : DiskFileSystem
 {
     private readonly HashSet<string> _directories = new(StringComparer.OrdinalIgnoreCase);
 
-    private readonly ConcurrentDictionary<string, string> _files =
-        new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, string> _files = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
-    private readonly ConcurrentDictionary<string, DateTimeOffset> _lastWriteTimes =
-        new(StringComparer.OrdinalIgnoreCase);
+    private readonly ConcurrentDictionary<string, DateTimeOffset> _lastWriteTimes = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
     private bool _alwaysCreateDirectoriesIfNotExist;
 
@@ -50,8 +52,7 @@ public sealed class InMemoryFileSystem : DiskFileSystem
     public override Stream OpenWrite(string path)
     {
         var memoryStream = new MemoryStream();
-        memoryStream.Position =
-            memoryStream.Length; // Set the position to the end of the stream for writing
+        memoryStream.Position = memoryStream.Length; // Set the position to the end of the stream for writing
         _files[path] = string.Empty; // Initialize the file content
 
         var delegatingStream = new DelegatingStream(memoryStream);
@@ -163,30 +164,29 @@ public sealed class InMemoryFileSystem : DiskFileSystem
     public override Task<string[]> ListFilesAsync(string path, string searchPattern)
     {
         // Convert the search pattern to a regex pattern
-        var regexPattern = "^" + Regex.Escape(searchPattern)
-            .Replace("\\*", ".*")
-            .Replace("\\?", ".") + "$";
+        var regexPattern =
+            "^" + Regex.Escape(searchPattern).Replace("\\*", ".*").Replace("\\?", ".") + "$";
         var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
 
-        var files = _files.Keys
-            .Where(f => Path.GetDirectoryName(f) == path && regex.IsMatch(Path.GetFileName(f)))
+        var files = _files
+            .Keys.Where(f => Path.GetDirectoryName(f) == path && regex.IsMatch(Path.GetFileName(f)))
             .ToArray();
 
         return Task.FromResult(files);
     }
 
-    public override Task<string[]> ListFilesAsync(string path, string searchPattern,
-        SearchOption searchOption)
+    public override Task<string[]> ListFilesAsync(
+        string path,
+        string searchPattern,
+        SearchOption searchOption
+    )
     {
         // Convert the search pattern to a regex pattern
-        var regexPattern = "^" + Regex.Escape(searchPattern)
-            .Replace("\\*", ".*")
-            .Replace("\\?", ".") + "$";
+        var regexPattern =
+            "^" + Regex.Escape(searchPattern).Replace("\\*", ".*").Replace("\\?", ".") + "$";
         var regex = new Regex(regexPattern, RegexOptions.IgnoreCase);
 
-        var files = _files.Keys
-            .Where(IsMatch)
-            .ToArray();
+        var files = _files.Keys.Where(IsMatch).ToArray();
 
         return Task.FromResult(files);
 
@@ -195,14 +195,14 @@ public sealed class InMemoryFileSystem : DiskFileSystem
             var directory = Path.GetDirectoryName(filePath);
             if (searchOption == SearchOption.AllDirectories)
             {
-                return directory != null &&
-                       directory.StartsWith(path, StringComparison.OrdinalIgnoreCase) &&
-                       regex.IsMatch(Path.GetFileName(filePath));
+                return directory != null
+                    && directory.StartsWith(path, StringComparison.OrdinalIgnoreCase)
+                    && regex.IsMatch(Path.GetFileName(filePath));
             }
 
-            return directory != null &&
-                   string.Equals(directory, path, StringComparison.OrdinalIgnoreCase) &&
-                   regex.IsMatch(Path.GetFileName(filePath));
+            return directory != null
+                && string.Equals(directory, path, StringComparison.OrdinalIgnoreCase)
+                && regex.IsMatch(Path.GetFileName(filePath));
         }
     }
 
@@ -220,8 +220,9 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         }
 
         // Get all files in the directory and its subdirectories
-        var filesToDelete = _files.Keys
-            .Where(f => f.StartsWith(path, StringComparison.OrdinalIgnoreCase)).ToList();
+        var filesToDelete = _files
+            .Keys.Where(f => f.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+            .ToList();
         foreach (var file in filesToDelete)
         {
             _files.TryRemove(file, out _);
@@ -230,7 +231,8 @@ public sealed class InMemoryFileSystem : DiskFileSystem
 
         // Get all subdirectories
         var directoriesToDelete = _directories
-            .Where(d => d.StartsWith(path, StringComparison.OrdinalIgnoreCase)).ToList();
+            .Where(d => d.StartsWith(path, StringComparison.OrdinalIgnoreCase))
+            .ToList();
         foreach (var directory in directoriesToDelete)
         {
             _directories.Remove(directory);
@@ -246,8 +248,11 @@ public sealed class InMemoryFileSystem : DiskFileSystem
         return Task.CompletedTask;
     }
 
-    public override async Task UnzipAsync(string zipFilePath, string extractPath,
-        CancellationToken token = default)
+    public override async Task UnzipAsync(
+        string zipFilePath,
+        string extractPath,
+        CancellationToken token = default
+    )
     {
         EnsureFileExists(zipFilePath);
         EnsureDirectoryOfFileExists(extractPath);

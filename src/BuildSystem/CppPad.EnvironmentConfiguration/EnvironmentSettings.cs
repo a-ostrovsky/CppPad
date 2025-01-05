@@ -2,7 +2,9 @@
 
 public class EnvironmentSettings
 {
-    private readonly Dictionary<string, string> _environmentVariables = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, string> _environmentVariables = new(
+        StringComparer.OrdinalIgnoreCase
+    );
 
     public EnvironmentSettings(IDictionary<string, string> environmentVariables)
     {
@@ -12,9 +14,7 @@ public class EnvironmentSettings
         }
     }
 
-    public EnvironmentSettings()
-    {
-    }
+    public EnvironmentSettings() { }
 
     public void Add(string key, string value)
     {

@@ -20,7 +20,8 @@ public static class AsyncEventHandlerExtensions
     public static async Task InvokeAsync<TEventArgs>(
         this AsyncEventHandler<TEventArgs>? handler,
         object sender,
-        TEventArgs e)
+        TEventArgs e
+    )
     {
         if (handler is null)
         {
@@ -31,8 +32,9 @@ public static class AsyncEventHandlerExtensions
         var invocationList = handler.GetInvocationList();
 
         // Convert each delegate back to AsyncEventHandler<TEventArgs> and invoke it
-        var handlerTasks = invocationList
-            .Select(d => ((AsyncEventHandler<TEventArgs>)d)(sender, e));
+        var handlerTasks = invocationList.Select(d =>
+            ((AsyncEventHandler<TEventArgs>)d)(sender, e)
+        );
 
         // Wait until all event handlers have finished
         await Task.WhenAll(handlerTasks);
@@ -41,9 +43,11 @@ public static class AsyncEventHandlerExtensions
     /// <summary>
     ///     Invokes all async event handlers in parallel and awaits them.
     /// </summary>
-    public static async Task InvokeAsync(this AsyncEventHandler? handler,
+    public static async Task InvokeAsync(
+        this AsyncEventHandler? handler,
         object sender,
-        EventArgs e)
+        EventArgs e
+    )
     {
         if (handler is null)
         {
@@ -54,8 +58,7 @@ public static class AsyncEventHandlerExtensions
         var invocationList = handler.GetInvocationList();
 
         // Convert each delegate back to AsyncEventHandler and invoke it
-        var tasks = invocationList
-            .Select(d => ((AsyncEventHandler)d)(sender, e));
+        var tasks = invocationList.Select(d => ((AsyncEventHandler)d)(sender, e));
 
         // Wait until all event handlers have finished
         await Task.WhenAll(tasks);

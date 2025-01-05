@@ -27,7 +27,7 @@ public class CMakeExecutorTests
         var mockProcess = new FakeProcess
         {
             // By default, set exit code 0 (success)
-            ExitCode = 0
+            ExitCode = 0,
         };
 
         // Instantiate the executor
@@ -40,7 +40,7 @@ public class CMakeExecutorTests
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
             ForceConfigure = true,
-            BuildMode = BuildMode.Debug
+            BuildMode = BuildMode.Debug,
         };
 
         // Act
@@ -48,8 +48,7 @@ public class CMakeExecutorTests
 
         // Assert
         // 1. Check that the process was started (configure step)
-        Assert.True(mockProcess.StartCalled,
-            "Expected the process to start for 'configure' step.");
+        Assert.True(mockProcess.StartCalled, "Expected the process to start for 'configure' step.");
 
         // 1st is configure, 2nd is build.
         Assert.Equal(2, mockProcess.CapturedStartInfo.Count);
@@ -100,7 +99,7 @@ public class CMakeExecutorTests
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
-            ForceConfigure = false
+            ForceConfigure = false,
         };
 
         // Act
@@ -110,11 +109,13 @@ public class CMakeExecutorTests
         // Because we had a CMakeCache.txt and ForceConfigure=false, we expect:
         //  - The executor to skip the configure step
         //  - Only the build step is invoked
-        Assert.True(mockProcess.StartCalled,
-            "Expected the process to be started at least once (for build).");
+        Assert.True(
+            mockProcess.StartCalled,
+            "Expected the process to be started at least once (for build)."
+        );
         Assert.NotNull(mockProcess.CapturedStartInfo);
 
-        // Because configure was skipped, the first time Start is actually called, 
+        // Because configure was skipped, the first time Start is actually called,
         // we expect build arguments:
         Assert.Contains("--build", mockProcess.CapturedStartInfo[0].Arguments);
         Assert.Contains(buildDir, mockProcess.CapturedStartInfo[0].Arguments);
@@ -131,8 +132,10 @@ public class CMakeExecutorTests
         const string srcDir = @"C:\MyProject";
 
         await fileSystem.CreateDirectoryAsync(srcDir);
-        await fileSystem.WriteAllTextAsync(Path.Combine(srcDir, "CMakeLists.txt"),
-            "dummy cmake content");
+        await fileSystem.WriteAllTextAsync(
+            Path.Combine(srcDir, "CMakeLists.txt"),
+            "dummy cmake content"
+        );
 
         // Mock process that returns error code
         var mockProcess = new FakeProcess { ExitCode = 1 };
@@ -145,11 +148,14 @@ public class CMakeExecutorTests
             EnvironmentSettings = CMakeInstaller.Install(fileSystem),
             CMakeListsFolder = srcDir,
             BuildDirectory = buildDir,
-            ForceConfigure = true
+            ForceConfigure = true,
         };
 
         // Act & Assert
-        await Assert.ThrowsAsync<CMakeExecutionException>(async () => { await executor.RunCMakeAsync(options); });
+        await Assert.ThrowsAsync<CMakeExecutionException>(async () =>
+        {
+            await executor.RunCMakeAsync(options);
+        });
     }
 
     [Fact]
@@ -178,7 +184,7 @@ public class CMakeExecutorTests
             BuildDirectory = buildDir,
             ForceConfigure = true,
             ProgressReceived = (_, e) => progressMessages.Add(e.Data),
-            ErrorReceived = (_, e) => errorMessages.Add(e.Data)
+            ErrorReceived = (_, e) => errorMessages.Add(e.Data),
         };
 
         var executor = new CMakeExecutor(fileSystem, mockProcess);

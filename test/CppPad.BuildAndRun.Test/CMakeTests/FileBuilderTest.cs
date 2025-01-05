@@ -8,10 +8,7 @@ public class FileBuilderTest
     [Fact]
     public void Build_ShouldIncludeProjectName()
     {
-        var options = new CMakeOptions
-        {
-            CppFileName = "main.cpp"
-        };
+        var options = new CMakeOptions { CppFileName = "main.cpp" };
         var builder = new FileBuilder();
         var result = builder.Build(options);
 
@@ -21,11 +18,7 @@ public class FileBuilderTest
     [Fact]
     public void Build_ShouldIncludeCompilerSetting()
     {
-        var options = new CMakeOptions
-        {
-            CppFileName = "main.cpp",
-            Compiler = "g++"
-        };
+        var options = new CMakeOptions { CppFileName = "main.cpp", Compiler = "g++" };
         var builder = new FileBuilder();
         var result = builder.Build(options);
 
@@ -38,7 +31,7 @@ public class FileBuilderTest
         var options = new CMakeOptions
         {
             CppFileName = "main.cpp",
-            CppStandard = CppStandard.Cpp17
+            CppStandard = CppStandard.Cpp17,
         };
         var builder = new FileBuilder();
         var result = builder.Build(options);
@@ -52,7 +45,7 @@ public class FileBuilderTest
         var options = new CMakeOptions
         {
             CppFileName = "main.cpp",
-            OptimizationLevel = OptimizationLevel.O2
+            OptimizationLevel = OptimizationLevel.O2,
         };
         var builder = new FileBuilder();
         var result = builder.Build(options);
@@ -66,7 +59,7 @@ public class FileBuilderTest
         var options = new CMakeOptions
         {
             CppFileName = "main.cpp",
-            IncludeDirectories = new List<string> { "include" }
+            IncludeDirectories = new List<string> { "include" },
         };
         var builder = new FileBuilder();
         var result = builder.Build(options);
@@ -80,7 +73,7 @@ public class FileBuilderTest
         var options = new CMakeOptions
         {
             CppFileName = "main.cpp",
-            LibSearchPaths = new List<string> { "lib" }
+            LibSearchPaths = new List<string> { "lib" },
         };
         var builder = new FileBuilder();
         var result = builder.Build(options);
@@ -94,7 +87,7 @@ public class FileBuilderTest
         var options = new CMakeOptions
         {
             CppFileName = "main.cpp",
-            LibFiles = new List<string> { "libmylib.a" }
+            LibFiles = new List<string> { "libmylib.a" },
         };
         var builder = new FileBuilder();
         var result = builder.Build(options);
@@ -105,10 +98,7 @@ public class FileBuilderTest
     [Fact]
     public void Build_ShouldIncludeSourceFile()
     {
-        var options = new CMakeOptions
-        {
-            CppFileName = "main.cpp"
-        };
+        var options = new CMakeOptions { CppFileName = "main.cpp" };
         var builder = new FileBuilder();
         var result = builder.Build(options);
 

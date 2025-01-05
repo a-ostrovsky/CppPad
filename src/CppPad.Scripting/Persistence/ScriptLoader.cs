@@ -20,10 +20,17 @@ public class ScriptLoader(ScriptSerializer serializer, DiskFileSystem fileSystem
         await fileSystem.WriteAllTextAsync(fileName, content);
     }
 
-    public async Task<string> CreateCppFileAsync(ScriptDocument document, CancellationToken token = default)
+    public async Task<string> CreateCppFileAsync(
+        ScriptDocument document,
+        CancellationToken token = default
+    )
     {
         var content = document.Script.Content;
-        var filePath = Path.Combine(fileSystem.SpecialFolders.TempFolder, document.Identifier.ToString(), "main.cpp");
+        var filePath = Path.Combine(
+            fileSystem.SpecialFolders.TempFolder,
+            document.Identifier.ToString(),
+            "main.cpp"
+        );
         token.ThrowIfCancellationRequested();
         await fileSystem.CreateDirectoryAsync(Path.GetDirectoryName(filePath)!);
         await fileSystem.WriteAllTextAsync(filePath, content);

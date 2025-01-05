@@ -21,9 +21,13 @@ public class AsyncLock : IDisposable
         var wait = _semaphore.WaitAsync();
         return wait.IsCompleted
             ? _releaser
-            : wait.ContinueWith((_, state) => (IDisposable)state!,
-                _releaser.Result, CancellationToken.None,
-                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+            : wait.ContinueWith(
+                (_, state) => (IDisposable)state!,
+                _releaser.Result,
+                CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously,
+                TaskScheduler.Default
+            );
     }
 
     private void Release()

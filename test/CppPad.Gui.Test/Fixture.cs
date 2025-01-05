@@ -15,11 +15,11 @@ public static class Fixture
                 BuildSettings = new CppBuildSettings
                 {
                     OptimizationLevel = OptimizationLevel.O2,
-                    CppStandard = CppStandard.Cpp17
-                }
+                    CppStandard = CppStandard.Cpp17,
+                },
             },
             Identifier = new Identifier("12345"),
-            FileName = "s.cpppad"
+            FileName = "s.cpppad",
         };
         return scriptDocument;
     }
