@@ -18,16 +18,25 @@ public class EditorTest : IDisposable
     {
         _bootstrapper.Builder.SetOutputMessage("Output_1");
         _bootstrapper.Builder.SetErrorMessage("Error_1");
-        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(Configuration.Debug);
-        Assert.Contains("Output_1", _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output);
-        Assert.Contains("Error_1", _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output);
+        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(
+            Configuration.Debug
+        );
+        Assert.Contains(
+            "Output_1",
+            _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output
+        );
+        Assert.Contains(
+            "Error_1",
+            _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output
+        );
     }
-
 
     [Fact]
     public async Task BuildAndRunAsync_application_is_started_after_build()
     {
-        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(Configuration.Debug);
+        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(
+            Configuration.Debug
+        );
         Assert.True(_bootstrapper.Runner.WasRunCalled);
     }
 
@@ -43,12 +52,15 @@ public class EditorTest : IDisposable
                 selectedTabIndices.Add(currentEditor.SelectedTabIndex);
             }
         };
-        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(Configuration.Debug);
+        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(
+            Configuration.Debug
+        );
         Assert.Equal(
             [
                 EditorViewModel.TabIndices.CompilerOutput,
-                EditorViewModel.TabIndices.ApplicationOutput
+                EditorViewModel.TabIndices.ApplicationOutput,
             ],
-            selectedTabIndices);
+            selectedTabIndices
+        );
     }
 }
