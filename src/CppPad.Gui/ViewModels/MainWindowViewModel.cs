@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using Avalonia.Threading;
 using CppPad.BuildSystem.CMakeAdapter.Execution;
@@ -283,6 +284,20 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     {
         var editor = (EditorViewModel?)sender;
         Debug.Assert(editor != null);
+        await CloseEditorAsync(editor);
+    }
+
+    public async Task CloseAllEditorsAsync()
+    {
+        var editors = OpenEditors.Editors.ToArray();
+        foreach (var editor in editors)
+        {
+            await CloseEditorAsync(editor);
+        }
+    }
+
+    private async Task CloseEditorAsync(EditorViewModel editor)
+    {
         try
         {
             if (editor.IsModified)
