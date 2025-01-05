@@ -13,7 +13,8 @@
                               Margin="2"
                               DataContext="{Binding SourceCode}" />
         <GridSplitter Grid.Row="1" ResizeDirection="Rows" />
-        <TabControl Grid.Row="2" Margin="2 2 2 5">
+        <TabControl Grid.Row="2" Margin="2 2 2 5"
+                    SelectedIndex="{Binding SelectedTabIndex,Mode=TwoWay}">
             <TabItem Header="Compiler">
                 <TextBox Text="{Binding CompilerOutput.Output}"
                          TextChanged="CompilerOutput_OnTextChanged"

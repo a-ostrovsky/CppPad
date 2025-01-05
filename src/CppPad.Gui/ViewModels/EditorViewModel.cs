@@ -15,12 +15,19 @@ namespace CppPad.Gui.ViewModels;
 
 public class EditorViewModel : ViewModelBase, IDisposable
 {
+    public static class TabIndices
+    {
+        public const int CompilerOutput = 0;
+        public const int ApplicationOutput = 1;
+    }
+    
     private readonly IBuildAndRunFacade _buildAndRunFacade;
 
     private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
     private readonly ScriptLoader _loader;
     private CancellationTokenSource? _buildCancellationTokenSource;
     private string _title = "Untitled";
+    private int _selectedTabIndex = TabIndices.CompilerOutput;
 
     public EditorViewModel(
         ScriptSettingsViewModel scriptSettings,
@@ -59,6 +66,12 @@ public class EditorViewModel : ViewModelBase, IDisposable
     public CompilerOutputViewModel CompilerOutput { get; } = new();
 
     public ApplicationOutputViewModel ApplicationOutput { get; } = new();
+
+    public int SelectedTabIndex
+    {
+        get => _selectedTabIndex;
+        set => SetProperty(ref _selectedTabIndex, value);
+    }
 
     public void Dispose()
     {
@@ -154,13 +167,26 @@ public class EditorViewModel : ViewModelBase, IDisposable
                 ExeErrorReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); },
                 ExeOutputReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); }
             };
+            SelectedTabIndex = TabIndices.CompilerOutput;
+            _buildAndRunFacade.BuildStatusChanged += ChangeTabWhenBuildStatusChanges;
             await _buildAndRunFacade.BuildAndRunAsync(buildAndRunConfiguration, _buildCancellationTokenSource.Token);
         }
         finally
         {
+            _buildAndRunFacade.BuildStatusChanged -= ChangeTabWhenBuildStatusChanges;
             _buildCancellationTokenSource.Dispose();
             _buildCancellationTokenSource = null;
             _buildSemaphore.Release();
+        }
+
+        return;
+
+        void ChangeTabWhenBuildStatusChanges(object? sender, BuildStatusChangedEventArgs e)
+        {
+            if (e.BuildStatus == BuildStatus.Succeeded)
+            {
+                SelectedTabIndex = TabIndices.ApplicationOutput;
+            }
         }
     }
 }

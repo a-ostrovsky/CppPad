@@ -1,4 +1,5 @@
 ﻿using CppPad.BuildSystem;
+using CppPad.Gui.ViewModels;
 
 namespace CppPad.Gui.Tests;
 
@@ -21,12 +22,33 @@ public class EditorTest : IDisposable
         Assert.Contains("Output_1", _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output);
         Assert.Contains("Error_1", _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CompilerOutput.Output);
     }
-    
-    
+
+
     [Fact]
     public async Task BuildAndRunAsync_application_is_started_after_build()
     {
         await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(Configuration.Debug);
         Assert.True(_bootstrapper.Runner.WasRunCalled);
+    }
+
+    [Fact]
+    public async Task BuildAndRunAsync_output_tabs_are_switched_when_needed()
+    {
+        var currentEditor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
+        var selectedTabIndices = new List<int> { currentEditor.SelectedTabIndex };
+        currentEditor.PropertyChanged += (sender, args) =>
+        {
+            if (args.PropertyName == nameof(currentEditor.SelectedTabIndex))
+            {
+                selectedTabIndices.Add(currentEditor.SelectedTabIndex);
+            }
+        };
+        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.BuildAndRunAsync(Configuration.Debug);
+        Assert.Equal(
+            [
+                EditorViewModel.TabIndices.CompilerOutput,
+                EditorViewModel.TabIndices.ApplicationOutput
+            ],
+            selectedTabIndices);
     }
 }
