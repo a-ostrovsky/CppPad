@@ -38,6 +38,19 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     public OpenEditorsViewModel OpenEditors { get; }
 
+    public void Dispose()
+    {
+        Toolbar.CreateNewFileRequested -= OnCreateNewFileRequested;
+        Toolbar.OpenFileRequested -= OnOpenFileRequestedAsync;
+        Toolbar.SaveFileAsRequested -= OnSaveFileAsRequestedAsync;
+        Toolbar.SaveFileRequested -= OnSaveFileRequestedAsync;
+        Toolbar.GoToLineRequested -= OnGoToLineRequestedAsync;
+        Toolbar.BuildAndRunRequested -= OnBuildAndRunRequestedAsync;
+        Toolbar.CancelBuildAndRunRequested -= OnCancelBuildAndRunRequestedAsync;
+        Toolbar.OpenSettingsRequested -= OnOpenSettingsRequestedAsync;
+        GC.SuppressFinalize(this);
+    }
+
     private async Task OnOpenSettingsRequestedAsync(object sender, EventArgs e)
     {
         await ShowSettingsAsync();
@@ -108,7 +121,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
                 column = Math.Min(parsedColumn, lineContent.Length);
             }
 
-            editor.SourceCode.CurrentColumn = 1; // Set to 1 first to avoid caret position issues. The line can be too short.
+            editor.SourceCode.CurrentColumn =
+                1; // Set to 1 first to avoid caret position issues. The line can be too short.
             editor.SourceCode.CurrentLine = line;
             editor.SourceCode.CurrentColumn = column;
         }
@@ -224,7 +238,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     private EditorViewModel CreateNewEditor()
     {
         var editor = OpenEditors.AddNewEditor();
-        editor.CloseRequested += OnCloseRequested;
+        editor.CloseRequested += OnCloseRequestedAsync;
         return editor;
     }
 
@@ -265,12 +279,34 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         }
     }
 
-    private void OnCloseRequested(object? sender, EventArgs e)
+    private async Task OnCloseRequestedAsync(object? sender, EventArgs e)
     {
         var editor = (EditorViewModel?)sender;
         Debug.Assert(editor != null);
         try
         {
+            if (editor.IsModified)
+            {
+                var result = await _dialogs.ShowYesNoCancelDialogAsync(
+                    "Do you want to save the changes?",
+                    "Save Changes?"
+                );
+                if (result == null)
+                {
+                    return;
+                }
+
+                if (result == true)
+                {
+                    await OnSaveFileRequestedAsync(this, EventArgs.Empty);
+                    if (editor.IsModified)
+                    {
+                        // Save was canceled
+                        return;
+                    }
+                }
+            }
+
             var index = OpenEditors.Editors.IndexOf(editor);
             OpenEditors.Editors.Remove(editor);
 
@@ -296,18 +332,5 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         {
             editor.Dispose();
         }
-    }
-
-    public void Dispose()
-    {
-        Toolbar.CreateNewFileRequested -= OnCreateNewFileRequested;
-        Toolbar.OpenFileRequested -= OnOpenFileRequestedAsync;
-        Toolbar.SaveFileAsRequested -= OnSaveFileAsRequestedAsync;
-        Toolbar.SaveFileRequested -= OnSaveFileRequestedAsync;
-        Toolbar.GoToLineRequested -= OnGoToLineRequestedAsync;
-        Toolbar.BuildAndRunRequested -= OnBuildAndRunRequestedAsync;
-        Toolbar.CancelBuildAndRunRequested -= OnCancelBuildAndRunRequestedAsync;
-        Toolbar.OpenSettingsRequested -= OnOpenSettingsRequestedAsync;
-        GC.SuppressFinalize(this);
     }
 }

@@ -10,9 +10,10 @@ public class CrudTest : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private void CloseAllEditors()
+    private Task CloseAllEditorsAsync()
     {
-        _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor?.CloseCommand.Execute(null);
+        return _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor?.CloseCommand.ExecuteAsync(null) ??
+               Task.CompletedTask;
     }
 
     [Fact]
@@ -27,10 +28,10 @@ public class CrudTest : IDisposable
     }
 
     [Fact]
-    public void CreateNewFile_creates_new_tab()
+    public async Task CreateNewFile_creates_new_tab()
     {
         // Arrange & Act
-        CloseAllEditors();
+        await CloseAllEditorsAsync();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
 
         // Assert
@@ -42,10 +43,10 @@ public class CrudTest : IDisposable
     }
 
     [Fact]
-    public void CloseEditor_closes_current_editor_and_selects_next()
+    public async Task CloseEditor_closes_current_editor_and_selects_next()
     {
         // Arrange
-        CloseAllEditors();
+        await CloseAllEditorsAsync();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         var editor1 = _bootstrapper.OpenEditorsViewModel.Editors[0];
@@ -53,7 +54,7 @@ public class CrudTest : IDisposable
         _bootstrapper.OpenEditorsViewModel.CurrentEditor = editor1;
 
         // Act
-        editor1.CloseCommand.Execute(null);
+        await editor1.CloseCommand.ExecuteAsync(null);
 
         // Assert
         Assert.DoesNotContain(editor1, _bootstrapper.OpenEditorsViewModel.Editors);
@@ -61,10 +62,10 @@ public class CrudTest : IDisposable
     }
 
     [Fact]
-    public void CloseEditor_closes_current_editor_and_selects_previous()
+    public async Task CloseEditor_closes_current_editor_and_selects_previous()
     {
         // Arrange
-        CloseAllEditors();
+        await CloseAllEditorsAsync();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         var editor1 = _bootstrapper.OpenEditorsViewModel.Editors[0];
@@ -72,7 +73,7 @@ public class CrudTest : IDisposable
         _bootstrapper.OpenEditorsViewModel.CurrentEditor = editor1;
 
         // Act
-        editor2.CloseCommand.Execute(null);
+        await editor2.CloseCommand.ExecuteAsync(null);
 
         // Assert
         Assert.DoesNotContain(editor2, _bootstrapper.OpenEditorsViewModel.Editors);
@@ -80,15 +81,15 @@ public class CrudTest : IDisposable
     }
 
     [Fact]
-    public void CloseEditor_closes_last_editor()
+    public async Task CloseEditor_closes_last_editor()
     {
         // Arrange
-        CloseAllEditors();
+        await CloseAllEditorsAsync();
         _bootstrapper.MainWindowViewModel.Toolbar.CreateNewFileCommand.Execute(null);
         var editor = _bootstrapper.OpenEditorsViewModel.Editors[0];
 
         // Act
-        editor.CloseCommand.Execute(null);
+        await editor.CloseCommand.ExecuteAsync(null);
 
         // Assert
         Assert.Empty(_bootstrapper.OpenEditorsViewModel.Editors);
@@ -115,7 +116,8 @@ public class CrudTest : IDisposable
         Assert.Contains("s.cpppad", _bootstrapper.OpenEditorsViewModel.CurrentEditor?.Title);
 
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor;
-        _bootstrapper.OpenEditorsViewModel.CurrentEditor?.CloseCommand.Execute(null);
+        Assert.NotNull(editor);
+        await _bootstrapper.OpenEditorsViewModel.CurrentEditor!.CloseCommand.ExecuteAsync(null);
         Assert.DoesNotContain(editor, _bootstrapper.OpenEditorsViewModel.Editors);
     }
 
@@ -180,9 +182,67 @@ public class CrudTest : IDisposable
     }
 
     [Fact]
+    public void Is_modified_notification_is_displayed()
+    {
+        var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
+        Assert.False(currentEditor.IsModified);
+        currentEditor.SourceCode.Content += "X";
+        Assert.True(currentEditor.IsModified);
+        Assert.Contains("*", currentEditor.Title);
+    }
+
+    [Fact]
+    public async Task Asking_user_to_save()
+    {
+        // Arrange
+        var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
+        currentEditor.SourceCode.Content += "X";
+        _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(true);
+        _bootstrapper.Dialogs.WillSelectFileWithName("C:\\s.cpppad");
+        
+        // Act
+        await CloseAllEditorsAsync();
+        
+        // Assert
+        Assert.True(_bootstrapper.FileSystem.FileExists("C:\\s.cpppad"));
+    }
+
+    [Fact]
+    public async Task Asking_can_abort_save_and_they_say_no()
+    {
+        // Arrange
+        var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
+        currentEditor.SourceCode.Content += "X";
+        _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(false);
+        _bootstrapper.Dialogs.WillSelectFileWithName("C:\\s.cpppad");
+
+        // Act
+        await CloseAllEditorsAsync();
+
+        // Assert
+        Assert.False(_bootstrapper.FileSystem.FileExists("C:\\s.cpppad"));
+    }
+
+    [Fact]
+    public async Task Asking_user_to_save_but_user_can_abort_save()
+    {
+        // Arrange
+        var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
+        currentEditor.SourceCode.Content += "X";
+        _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(null);
+        
+        // Act
+        await CloseAllEditorsAsync();
+        
+        // Assert
+        // should still not close
+        Assert.NotNull(_bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor);
+    }
+
+    [Fact]
     public async Task Recent_file_is_deleted_from_list_if_it_does_not_exist()
     {
-        // Arange
+        // Arrange
         await _bootstrapper.RecentFiles.AddAsync("DOES_NOT_EXIST");
         var editorCountBeforeOpening = _bootstrapper.OpenEditorsViewModel.Editors.Count;
 

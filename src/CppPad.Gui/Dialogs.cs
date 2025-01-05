@@ -212,6 +212,71 @@ public class Dialogs : IDialogs
         return await inputWindow.ShowDialog<string?>(MainWindow);
     }
 
+    public Task<bool?> ShowYesNoCancelDialogAsync(string message, string title)
+    {
+        var textBlock = new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap };
+        var yesButton = new Button { HorizontalContentAlignment = HorizontalAlignment.Center, Content = "_Yes", MinWidth = 80 };
+        var noButton = new Button { HorizontalContentAlignment = HorizontalAlignment.Center, Content = "_No", MinWidth = 80 };
+        var cancelButton = new Button { HorizontalContentAlignment = HorizontalAlignment.Center, Content = "_Cancel", MinWidth = 80 };
+
+        var dialogWindow = new Window
+        {
+            Title = title,
+            Width = 400,
+            Height = 100,
+            CanResize = false,
+            WindowStartupLocation = WindowStartupLocation.CenterOwner,
+            Content = new StackPanel
+            {
+                Orientation = Orientation.Vertical,
+                Spacing = 10,
+                Margin = new Thickness(10),
+                Children =
+                {
+                    textBlock,
+                    new StackPanel
+                    {
+                        Orientation = Orientation.Horizontal,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        Spacing = 10,
+                        Children = { yesButton, noButton, cancelButton },
+                    },
+                },
+            },
+        };
+
+        dialogWindow.Loaded += (_, _) => yesButton.Focus();
+
+        yesButton.Command = new RelayCommand(_ =>
+        {
+            dialogWindow.Close((bool?)true);
+        });
+        noButton.Command = new RelayCommand(_ =>
+        {
+            dialogWindow.Close((bool?)false);
+        });
+        cancelButton.Command = new RelayCommand(_ =>
+        {
+            dialogWindow.Close(null);
+        });
+        dialogWindow.KeyBindings.Add(
+            new KeyBinding
+            {
+                Command = new RelayCommand(_ => dialogWindow.Close((bool?)true)),
+                Gesture = new KeyGesture(Key.Enter),
+            }
+        );
+        dialogWindow.KeyBindings.Add(
+            new KeyBinding
+            {
+                Command = new RelayCommand(_ => dialogWindow.Close(null)),
+                Gesture = new KeyGesture(Key.Escape),
+            }
+        );
+
+        return dialogWindow.ShowDialog<bool?>(MainWindow);
+    }
+
     public Task ShowScriptSettingsDialogAsync(ScriptSettingsViewModel viewModel)
     {
         var dialog = new ScriptSettingsWindow { DataContext = viewModel };

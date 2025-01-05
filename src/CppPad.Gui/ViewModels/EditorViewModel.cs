@@ -1,10 +1,12 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using CppAdapter.BuildAndRun;
 using CppPad.BuildSystem;
+using CppPad.Common;
 using CppPad.Gui.Input;
 using CppPad.Scripting;
 
@@ -12,19 +14,15 @@ namespace CppPad.Gui.ViewModels;
 
 public class EditorViewModel : ViewModelBase, IDisposable
 {
-    public static class TabIndices
-    {
-        public const int CompilerOutput = 0;
-        public const int ApplicationOutput = 1;
-    }
-
     private readonly IBuildAndRunFacade _buildAndRunFacade;
 
     private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
     private readonly ScriptLoaderViewModel _scriptLoader;
     private CancellationTokenSource? _buildCancellationTokenSource;
-    private string _title = "Untitled";
+
+    private bool _isModified;
     private int _selectedTabIndex = TabIndices.CompilerOutput;
+    private string _title = "Untitled";
 
     public EditorViewModel(
         ScriptSettingsViewModel scriptSettings,
@@ -38,8 +36,22 @@ public class EditorViewModel : ViewModelBase, IDisposable
         _buildAndRunFacade = buildAndRunFacade;
         SourceCode = sourceCode;
         scriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
-        CloseCommand = new RelayCommand(_ => CloseRequested?.Invoke(this, EventArgs.Empty));
+        CloseCommand = new AsyncRelayCommand(_ => CloseRequested?.InvokeAsync(this, EventArgs.Empty));
         _buildAndRunFacade.BuildStatusChanged += Builder_BuildStatusChanged;
+        SourceCode.PropertyChanged += SourceCode_PropertyChanged;
+        IsModified = false;
+    }
+
+    public bool IsModified
+    {
+        get => _isModified;
+        private set
+        {
+            if (SetProperty(ref _isModified, value))
+            {
+                UpdateTitle();
+            }
+        }
     }
 
     public ScriptSettingsViewModel ScriptSettings { get; }
@@ -60,7 +72,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         private set => SetProperty(ref _title, value);
     }
 
-    public ICommand CloseCommand { get; }
+    public IAsyncCommand CloseCommand { get; }
 
     public CompilerOutputViewModel CompilerOutput { get; } = new();
 
@@ -75,8 +87,23 @@ public class EditorViewModel : ViewModelBase, IDisposable
     public void Dispose()
     {
         _buildAndRunFacade.BuildStatusChanged -= Builder_BuildStatusChanged;
+        SourceCode.PropertyChanged -= SourceCode_PropertyChanged;
         _buildSemaphore.Dispose();
         GC.SuppressFinalize(this);
+    }
+
+    private void SourceCode_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(SourceCode.Content))
+        {
+            IsModified = true;
+        }
+    }
+
+    private void UpdateTitle()
+    {
+        var fileName = Path.GetFileName(SourceCode.ScriptDocument.FileName) ?? "Untitled";
+        Title = IsModified ? $"*{fileName}" : fileName;
     }
 
     private void Builder_BuildStatusChanged(object? sender, BuildStatusChangedEventArgs e)
@@ -88,18 +115,19 @@ public class EditorViewModel : ViewModelBase, IDisposable
             BuildStatus.Succeeded => "Build succeeded.",
             BuildStatus.Failed => "Build failed.",
             BuildStatus.Cancelled => "Build cancelled.",
-            _ => throw new ArgumentException("Unknown build status.", nameof(e)),
+            _ => throw new ArgumentException("Unknown build status.", nameof(e))
         };
         CompilerOutput.AddMessage(message);
     }
 
-    public event EventHandler? CloseRequested;
+    public event AsyncEventHandler? CloseRequested;
 
     public void ApplySettings(CppBuildSettings settings)
     {
+        IsModified = true;
         SourceCode.ScriptDocument = SourceCode.ScriptDocument with
         {
-            Script = SourceCode.ScriptDocument.Script with { BuildSettings = settings },
+            Script = SourceCode.ScriptDocument.Script with { BuildSettings = settings }
         };
     }
 
@@ -107,27 +135,28 @@ public class EditorViewModel : ViewModelBase, IDisposable
     {
         var document = await _scriptLoader.LoadAsync(fileName);
         SourceCode.ScriptDocument = document;
-        Title = Path.GetFileName(document.FileName) ?? "Untitled";
+        IsModified = false;
     }
 
     public async Task SaveFileAsAsync(string fileName)
     {
         await _scriptLoader.SaveAsync(SourceCode.ScriptDocument, fileName);
         SourceCode.ScriptDocument = SourceCode.ScriptDocument with { FileName = fileName };
-        Title = Path.GetFileName(fileName);
+        IsModified = false;
     }
 
-    public Task SaveFileAsync()
+    public async Task SaveFileAsync()
     {
         if (string.IsNullOrEmpty(SourceCode.ScriptDocument.FileName))
         {
             throw new InvalidOperationException("File name is not set.");
         }
 
-        return _scriptLoader.SaveAsync(
+        await _scriptLoader.SaveAsync(
             SourceCode.ScriptDocument,
             SourceCode.ScriptDocument.FileName
         );
+        IsModified = false;
     }
 
     public async Task CancelBuildAndRunAsync()
@@ -157,26 +186,14 @@ public class EditorViewModel : ViewModelBase, IDisposable
             {
                 ScriptDocument = SourceCode.ScriptDocument,
                 BuildMode = buildMode,
-                ErrorReceived = (_, args) =>
-                {
-                    CompilerOutput.AddMessage($"ERR:{args.Data}");
-                },
-                ProgressReceived = (_, args) =>
-                {
-                    CompilerOutput.AddMessage(args.Data);
-                },
+                ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
+                ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
             };
             var buildAndRunConfiguration = new BuildAndRunConfiguration
             {
                 BuildConfiguration = buildConfiguration,
-                ExeErrorReceived = (_, args) =>
-                {
-                    ApplicationOutput.AddMessage(args.Data);
-                },
-                ExeOutputReceived = (_, args) =>
-                {
-                    ApplicationOutput.AddMessage(args.Data);
-                },
+                ExeErrorReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); },
+                ExeOutputReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); }
             };
             SelectedTabIndex = TabIndices.CompilerOutput;
             _buildAndRunFacade.BuildStatusChanged += ChangeTabWhenBuildStatusChanges;
@@ -206,13 +223,21 @@ public class EditorViewModel : ViewModelBase, IDisposable
 
     public void AddPlaceholderText()
     {
+        var wasModified = IsModified;
         SourceCode.Content = """
-            #include <iostream>
+                             #include <iostream>
 
-            int main() {
-                std::cout << "Hello World!";
-                return 0;
-            }
-            """;
+                             int main() {
+                                 std::cout << "Hello World!";
+                                 return 0;
+                             }
+                             """;
+        IsModified = wasModified;
+    }
+
+    public static class TabIndices
+    {
+        public const int CompilerOutput = 0;
+        public const int ApplicationOutput = 1;
     }
 }

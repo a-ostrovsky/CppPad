@@ -11,5 +11,6 @@ public interface IDialogs
     Task<string?> ShowFileOpenDialogAsync(string filter);
     Task<string?> ShowFileSaveDialogAsync(string filter);
     Task<string?> InputBoxAsync(string prompt, string title, string defaultResponse = "");
+    Task<bool?> ShowYesNoCancelDialogAsync(string message, string title);
     Task ShowScriptSettingsDialogAsync(ScriptSettingsViewModel viewModel);
 }
