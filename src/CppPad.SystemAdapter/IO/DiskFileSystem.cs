@@ -9,11 +9,26 @@ namespace CppPad.SystemAdapter.IO;
 public class DiskFileSystem
 {
     public virtual FileNameComparer FileNameComparer { get; } = new();
-    
+
     public SpecialFolders SpecialFolders { get; } =
-        new(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData));
+        new(
+            Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData),
+                "CppPad"
+            )
+        );
 
     public static string ExecutableExtension => ".exe";
+
+    public void CleanupTemporaryFiles()
+    {
+        if (Directory.Exists(SpecialFolders.TempFolder))
+        {
+            Directory.Delete(SpecialFolders.TempFolder, true);
+        }
+
+        Directory.CreateDirectory(SpecialFolders.TempFolder);
+    }
 
     public virtual Task<string> ReadAllTextAsync(string path)
     {
