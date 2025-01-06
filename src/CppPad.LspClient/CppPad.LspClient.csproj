@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EnableTrimming>false</EnableTrimming>
+        <IsTrimmable>false</IsTrimmable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- Preserve JsonDocument serialization -->
+        <TrimmerRootDescriptor Include="trim.xml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\CppPad.Common\CppPad.Common.csproj" />
+      <ProjectReference Include="..\CppPad.Logging\CppPad.Logging.csproj" />
+      <ProjectReference Include="..\CppPad.SystemAdapter\CppPad.SystemAdapter.csproj" />
+    </ItemGroup>
+
+</Project>

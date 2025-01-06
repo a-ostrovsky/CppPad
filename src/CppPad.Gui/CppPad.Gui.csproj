@@ -32,8 +32,18 @@
         <ProjectReference Include="..\BuildSystem\CppPad.EnvironmentConfiguration.Vs\CppPad.EnvironmentConfiguration.Vs.csproj"/>
         <ProjectReference Include="..\BuildSystem\CppPad.EnvironmentConfiguration\CppPad.EnvironmentConfiguration.csproj"/>
         <ProjectReference Include="..\CppAdapter.BuildAndRun\CppAdapter.BuildAndRun.csproj"/>
+        <ProjectReference Include="..\CppPad.CodeAssistance\CppPad.CodeAssistance.csproj" />
         <ProjectReference Include="..\CppPad.Common\CppPad.Common.csproj"/>
         <ProjectReference Include="..\CppPad.Configuration\CppPad.Configuration.csproj" />
+        <ProjectReference Include="..\CppPad.LspClient\CppPad.LspClient.csproj" />
         <ProjectReference Include="..\CppPad.Scripting\CppPad.Scripting.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\..\3rd_party\clangd\clangd-windows-19.1.2.zip">
+        <Link>Dependencies\clangd-windows-19.1.2.zip</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <TargetPath>clangd-windows.zip</TargetPath>
+      </Content>
     </ItemGroup>
 </Project>

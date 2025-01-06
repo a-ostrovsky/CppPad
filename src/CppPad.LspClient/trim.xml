@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<linker>
+    <assembly fullname="CppPad.LspClient">
+        <!-- Preserve JSON serialization for LSP messages -->
+        <type fullname="CppPad.LspClient.Model.*" preserve="all" />
+        <type fullname="CppPad.LspClient.LspClient" preserve="all" />
+        <type fullname="CppPad.LspClient.RequestSender" preserve="all" />
+        <type fullname="CppPad.LspClient.ResponseReceiver" preserve="all" />
+    </assembly>
+    <assembly fullname="System.Text.Json">
+        <!-- Preserve JsonDocument functionality -->
+        <type fullname="System.Text.Json.JsonDocument" preserve="all" />
+        <type fullname="System.Text.Json.JsonElement" preserve="all" />
+    </assembly>
+</linker>

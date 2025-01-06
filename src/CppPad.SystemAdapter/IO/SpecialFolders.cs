@@ -2,7 +2,9 @@
 
 public class SpecialFolders(string rootFolder)
 {
-    public virtual string TempFolder { get; } = Path.Combine(rootFolder, "Temp");
+    public string TempFolder { get; } = Path.Combine(rootFolder, "Temp");
 
-    public virtual string SettingsFolder { get; } = Path.Combine(rootFolder, "Settings");
+    public string SettingsFolder { get; } = Path.Combine(rootFolder, "Settings");
+    
+    public string ToolsFolder { get; } = Path.Combine(rootFolder, "Tools");
 }

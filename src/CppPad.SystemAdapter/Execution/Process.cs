@@ -19,6 +19,7 @@ public class Process
         process.StartInfo.FileName = startInfo.FileName;
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.RedirectStandardError = true;
+        process.StartInfo.RedirectStandardInput = true;
         process.StartInfo.UseShellExecute = false;
         process.StartInfo.CreateNoWindow = true;
         if (startInfo.Arguments.Count == 1)
@@ -33,10 +34,17 @@ public class Process
             }
         }
 
-        process.OutputDataReceived += (sender, args) =>
-            startInfo.OutputReceived.Invoke(sender, DataReceivedEventArgs.From(args));
-        process.ErrorDataReceived += (sender, args) =>
-            startInfo.ErrorReceived.Invoke(sender, DataReceivedEventArgs.From(args));
+        if (startInfo.OutputReceived != null)
+        {
+            process.OutputDataReceived += (sender, args) =>
+                startInfo.OutputReceived.Invoke(sender, DataReceivedEventArgs.From(args));
+        }
+
+        if (startInfo.ErrorReceived != null)
+        {
+            process.ErrorDataReceived += (sender, args) =>
+                startInfo.ErrorReceived.Invoke(sender, DataReceivedEventArgs.From(args));
+        }
 
         if (startInfo.EnvironmentVariables != null)
         {
@@ -55,9 +63,19 @@ public class Process
         }
 
         process.Start();
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
+        if (!startInfo.RedirectIoStreams)
+        {
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+        }
+
         return new ProcessInfo(process);
+    }
+    
+    public virtual void Kill(IProcessInfo processInfo)
+    {
+        var process = (System.Diagnostics.Process)processInfo.GetProcessData();
+        process.Kill();
     }
 
     public virtual async Task<IDictionary<string, string>> RunAndGetEnvironmentVariablesAsync(
@@ -71,7 +89,7 @@ public class Process
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            CreateNoWindow = true,
+            CreateNoWindow = true
         };
         using var process = new System.Diagnostics.Process();
         process.StartInfo = startInfo;

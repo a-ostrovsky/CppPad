@@ -1,10 +1,13 @@
 #region
 
+using System.Reflection.Metadata;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using CppPad.Gui.Bootstrapping;
 using CppPad.Gui.Views;
+using CppPad.LspClient.Model;
 
 #endregion
 
@@ -29,7 +32,7 @@ public class App : Application
                 DataContext = _bootstrapper.GuiBootstrapper.MainWindowViewModel,
             };
         }
-
+        
         base.OnFrameworkInitializationCompleted();
     }
 }

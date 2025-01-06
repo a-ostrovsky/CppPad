@@ -41,6 +41,11 @@ public class FakeProcess : Process
     {
         return ExitCode;
     }
+    
+    public override void Kill(IProcessInfo processInfo)
+    {
+        // Do nothing.
+    }
 
     public void RaiseOutputData(string data)
     {
@@ -60,11 +65,48 @@ public class FakeProcess : Process
         }
     }
 
-    private class MockProcessInfo : IProcessInfo
+    private class MockProcessInfo : IProcessInfo, IDisposable, IAsyncDisposable
     {
+        private readonly MemoryStream _outputStream = new();
+        private readonly MemoryStream _errorStream = new();
+        private readonly MemoryStream _inputStream = new();
+
+        public bool HasExited { get; set; }
+
         public object GetProcessData()
         {
             return new object();
+        }
+
+        public StreamReader GetStandardOutput()
+        {
+            return new StreamReader(_outputStream);
+        }
+
+        public StreamReader GetStandardError()
+        {
+            return new StreamReader(_errorStream);
+        }
+        
+        public StreamWriter GetStandardInput()
+        {
+            return new StreamWriter(_inputStream);
+        }
+
+        public void Dispose()
+        {
+            _outputStream.Dispose();
+            _errorStream.Dispose();
+            _inputStream.Dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        public async ValueTask DisposeAsync()
+        {
+            await _outputStream.DisposeAsync();
+            await _errorStream.DisposeAsync();
+            await _inputStream.DisposeAsync();
+            GC.SuppressFinalize(this);
         }
     }
 

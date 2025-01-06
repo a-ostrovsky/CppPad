@@ -10,7 +10,9 @@ public class StartInfo
 
     public IDictionary<string, string>? EnvironmentVariables { get; init; } = null;
 
-    public required EventHandler<DataReceivedEventArgs> OutputReceived { get; init; }
+    public EventHandler<DataReceivedEventArgs>? OutputReceived { get; init; }
 
-    public required EventHandler<DataReceivedEventArgs> ErrorReceived { get; init; }
+    public EventHandler<DataReceivedEventArgs>? ErrorReceived { get; init; }
+    
+    public bool RedirectIoStreams { get; init; }
 }
