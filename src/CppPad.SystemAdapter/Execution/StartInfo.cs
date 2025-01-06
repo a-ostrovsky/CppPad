@@ -13,6 +13,6 @@ public class StartInfo
     public EventHandler<DataReceivedEventArgs>? OutputReceived { get; init; }
 
     public EventHandler<DataReceivedEventArgs>? ErrorReceived { get; init; }
-    
+
     public bool RedirectIoStreams { get; init; }
 }

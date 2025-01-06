@@ -71,7 +71,7 @@ public class Process
 
         return new ProcessInfo(process);
     }
-    
+
     public virtual void Kill(IProcessInfo processInfo)
     {
         var process = (System.Diagnostics.Process)processInfo.GetProcessData();
@@ -89,7 +89,7 @@ public class Process
             UseShellExecute = false,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            CreateNoWindow = true
+            CreateNoWindow = true,
         };
         using var process = new System.Diagnostics.Process();
         process.StartInfo = startInfo;

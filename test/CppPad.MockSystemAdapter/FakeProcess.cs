@@ -41,7 +41,7 @@ public class FakeProcess : Process
     {
         return ExitCode;
     }
-    
+
     public override void Kill(IProcessInfo processInfo)
     {
         // Do nothing.
@@ -87,7 +87,7 @@ public class FakeProcess : Process
         {
             return new StreamReader(_errorStream);
         }
-        
+
         public StreamWriter GetStandardInput()
         {
             return new StreamWriter(_inputStream);

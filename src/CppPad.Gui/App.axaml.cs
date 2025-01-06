@@ -32,7 +32,7 @@ public class App : Application
                 DataContext = _bootstrapper.GuiBootstrapper.MainWindowViewModel,
             };
         }
-        
+
         base.OnFrameworkInitializationCompleted();
     }
 }

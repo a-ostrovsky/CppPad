@@ -8,17 +8,17 @@ public class ProcessInfo(System.Diagnostics.Process process) : IProcessInfo
     {
         return process;
     }
-    
+
     public StreamReader GetStandardOutput()
     {
         return process.StandardOutput;
     }
-    
+
     public StreamReader GetStandardError()
     {
         return process.StandardError;
     }
-    
+
     public StreamWriter GetStandardInput()
     {
         return process.StandardInput;
