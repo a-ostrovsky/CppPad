@@ -1,5 +1,4 @@
-﻿using System;
-using CppPad.Scripting;
+﻿using CppPad.Scripting;
 
 namespace CppPad.Gui.ViewModels;
 
@@ -14,11 +13,11 @@ public class SourceCodeViewModel : ViewModelBase
         new()
         {
             Content = """
-                #include <iostream>
-                void main() {
-                    std::cout << "Hello, World!";
-                }
-                """,
+                      #include <iostream>
+                      void main() {
+                          std::cout << "Hello, World!";
+                      }
+                      """
         };
 
     public string Content
@@ -45,7 +44,7 @@ public class SourceCodeViewModel : ViewModelBase
         {
             _scriptDocument = _scriptDocument with
             {
-                Script = _scriptDocument.Script with { Content = Content },
+                Script = _scriptDocument.Script with { Content = Content }
             };
             return _scriptDocument;
         }
