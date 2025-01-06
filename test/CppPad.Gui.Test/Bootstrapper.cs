@@ -1,5 +1,7 @@
 ﻿using CppAdapter.BuildAndRun;
 using CppPad.Configuration;
+using CppPad.Gui.Eventing;
+using CppPad.Gui.Observers;
 using CppPad.Gui.Tests.Fakes;
 using CppPad.Gui.ViewModels;
 using CppPad.MockSystemAdapter;
@@ -13,11 +15,13 @@ public class Bootstrapper : IDisposable
     public Bootstrapper()
     {
         Runner = new FakeRunner();
+        EventBus = new EventBus();
         RecentFiles = new RecentFiles(FileSystem);
         BuildAndRunFacade = new BuildAndRunFacade(Builder, Runner);
         ScriptSerializer = new ScriptSerializer();
         ScriptLoader = new ScriptLoader(ScriptSerializer, FileSystem);
-        ScriptLoaderViewModel = new ScriptLoaderViewModel(ScriptLoader, RecentFiles);
+        RecentFilesObserver = new RecentFilesObserver(RecentFiles, EventBus);
+        ScriptLoaderViewModel = new ScriptLoaderViewModel(ScriptLoader, EventBus);
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel(RecentFiles);
         ScriptSettingsViewModel = new ScriptSettingsViewModel();
@@ -26,7 +30,13 @@ public class Bootstrapper : IDisposable
             ToolbarViewModel,
             Dialogs
         );
+
+        RecentFilesObserver.Start();
     }
+
+    public EventBus EventBus { get; }
+
+    public RecentFilesObserver RecentFilesObserver { get; }
 
     public ScriptSerializer ScriptSerializer { get; }
 
@@ -67,6 +77,7 @@ public class Bootstrapper : IDisposable
     public void Dispose()
     {
         MainWindowViewModel.Dispose();
+        RecentFilesObserver.Dispose();
         GC.SuppressFinalize(this);
     }
 }

@@ -10,7 +10,7 @@ public class ScriptLoader(ScriptSerializer serializer, DiskFileSystem fileSystem
     {
         var content = await fileSystem.ReadAllTextAsync(fileName);
         var result = serializer.Deserialize(content);
-        result = result with { FileName = fileName };
+        result.FileName = fileName;
         return result;
     }
 
@@ -18,6 +18,7 @@ public class ScriptLoader(ScriptSerializer serializer, DiskFileSystem fileSystem
     {
         var content = serializer.Serialize(script);
         await fileSystem.WriteAllTextAsync(fileName, content);
+        script.FileName = fileName;
     }
 
     public async Task<string> CreateCppFileAsync(

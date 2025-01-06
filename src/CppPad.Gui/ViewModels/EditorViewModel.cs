@@ -143,7 +143,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
     public async Task SaveFileAsAsync(string fileName)
     {
         await _scriptLoader.SaveAsync(SourceCode.ScriptDocument, fileName);
-        SourceCode.ScriptDocument = SourceCode.ScriptDocument with { FileName = fileName };
+        SourceCode.ScriptDocument.FileName = fileName;
         IsModified = false;
     }
 

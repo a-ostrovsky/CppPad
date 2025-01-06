@@ -12,7 +12,7 @@ public class GuiBootstrapper
         Dialogs = new Dialogs();
         ScriptLoaderViewModel = new ScriptLoaderViewModel(
             _parent.ScriptingBootstrapper.ScriptLoader,
-            _parent.ConfigurationBootstrapper.RecentFiles
+            _parent.EventingBootstrapper.EventBus
         );
         ScriptSettingsViewModel = new ScriptSettingsViewModel();
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);

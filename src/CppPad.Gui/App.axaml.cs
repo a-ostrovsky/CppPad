@@ -25,6 +25,8 @@ public class App : Application
     public override void OnFrameworkInitializationCompleted()
     {
         _bootstrapper.SystemAdapterBootstrapper.FileSystem.CleanupTemporaryFiles();
+        _bootstrapper.EventingBootstrapper.RecentFilesObserver.Start();
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             desktop.MainWindow = new MainWindow

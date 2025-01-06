@@ -47,7 +47,7 @@ namespace CppPad.CodeAssistance.Test.Fakes
             Kill();
             return Task.CompletedTask;
         }
-        
+
         public void Dispose()
         {
             Kill();

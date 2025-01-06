@@ -9,8 +9,11 @@ public class Bootstrapper
         ScriptingBootstrapper = new ScriptingBootstrapper(this);
         CodeAssistanceBootstrapper = new CodeAssistanceBootstrapper(this);
         BuildAndRunBootstrapper = new BuildAndRunBootstrapper(this);
+        EventingBootstrapper = new EventingBootstrapper(this);
         GuiBootstrapper = new GuiBootstrapper(this);
     }
+
+    public EventingBootstrapper EventingBootstrapper { get; }
 
     public CodeAssistanceBootstrapper CodeAssistanceBootstrapper { get; }
 

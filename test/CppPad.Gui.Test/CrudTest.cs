@@ -177,6 +177,7 @@ public class CrudTest : IDisposable
 
         // Act & Assert
         await _bootstrapper.ToolbarViewModel.SaveFileCommand.ExecuteAsync(null);
+        _bootstrapper.EventBus.WaitForProcessing();
         Assert.Contains(@"C:\s.cpppad", _bootstrapper.ToolbarViewModel.RecentFiles);
         await _bootstrapper.ToolbarViewModel.OpenFileCommand.ExecuteAsync(@"C:\s.cpppad");
         Assert.Contains("s.cpppad", _bootstrapper.OpenEditorsViewModel.CurrentEditor?.Title);
@@ -249,6 +250,7 @@ public class CrudTest : IDisposable
 
         // Act
         await _bootstrapper.ToolbarViewModel.OpenRecentFileCommand.ExecuteAsync("DOES_NOT_EXIST");
+        _bootstrapper.EventBus.WaitForProcessing();
 
         // Assert
         // File does not exist, so it should be removed from the recent files.

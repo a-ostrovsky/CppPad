@@ -8,5 +8,5 @@ public record ScriptDocument
 
     public Identifier Identifier { get; init; } = IdentifierGenerator.GenerateUniqueId();
 
-    public string? FileName { get; init; }
+    public string? FileName { get; set; }
 }
