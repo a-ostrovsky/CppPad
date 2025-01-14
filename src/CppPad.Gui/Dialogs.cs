@@ -43,7 +43,7 @@ public class Dialogs : IDialogs
         // Combine custom message + exception details (if available).
         var fullMessage = string.IsNullOrWhiteSpace(exception?.Message)
             ? message
-            : $"{message}\n\nException: {exception.Message}";
+            : $"{message}\n\nException: {exception}";
 
         var textBox = new TextBox { Text = fullMessage, TextWrapping = TextWrapping.Wrap };
         var button = new Button

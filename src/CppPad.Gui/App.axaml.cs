@@ -26,6 +26,7 @@ public class App : Application
     {
         _bootstrapper.SystemAdapterBootstrapper.FileSystem.CleanupTemporaryFiles();
         _bootstrapper.EventingBootstrapper.RecentFilesObserver.Start();
+        _bootstrapper.EventingBootstrapper.CodeAssistanceObserver.Start();
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {

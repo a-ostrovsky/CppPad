@@ -7,9 +7,13 @@ public class EventingBootstrapper
 {
     public EventingBootstrapper(Bootstrapper parent)
     {
-        EventBus = new EventBus();
+        EventBus = new EventBus(parent.Dialogs);
         RecentFilesObserver = new RecentFilesObserver(
             parent.ConfigurationBootstrapper.RecentFiles,
+            EventBus
+        );
+        CodeAssistanceObserver = new CodeAssistanceObserver(
+            parent.CodeAssistanceBootstrapper.CodeAssistant,
             EventBus
         );
     }
@@ -17,4 +21,6 @@ public class EventingBootstrapper
     public EventBus EventBus { get; }
 
     public RecentFilesObserver RecentFilesObserver { get; }
+
+    public CodeAssistanceObserver CodeAssistanceObserver { get; }
 }

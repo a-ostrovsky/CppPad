@@ -9,7 +9,8 @@ public class CodeAssistanceBootstrapper
     {
         LspProcess = new ClangdProcess(
             parent.SystemAdapterBootstrapper.Process,
-            parent.SystemAdapterBootstrapper.FileSystem
+            parent.SystemAdapterBootstrapper.FileSystem,
+            new ClangdProcessSettings()
         );
 
         LspProxy = new LspProxy(LspProcess);

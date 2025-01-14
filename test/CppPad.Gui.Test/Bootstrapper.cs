@@ -1,5 +1,6 @@
 ﻿using CppAdapter.BuildAndRun;
 using CppPad.Configuration;
+using CppPad.Gui.AutoCompletion;
 using CppPad.Gui.Eventing;
 using CppPad.Gui.Observers;
 using CppPad.Gui.Tests.Fakes;
@@ -15,12 +16,14 @@ public class Bootstrapper : IDisposable
     public Bootstrapper()
     {
         Runner = new FakeRunner();
-        EventBus = new EventBus();
+        EventBus = new EventBus(Dialogs);
         RecentFiles = new RecentFiles(FileSystem);
         BuildAndRunFacade = new BuildAndRunFacade(Builder, Runner);
         ScriptSerializer = new ScriptSerializer();
         ScriptLoader = new ScriptLoader(ScriptSerializer, FileSystem);
+        CodeAssistant = new FakeCodeAssistant();
         RecentFilesObserver = new RecentFilesObserver(RecentFiles, EventBus);
+        CodeAssistanceObserver = new CodeAssistanceObserver(CodeAssistant, EventBus);
         ScriptLoaderViewModel = new ScriptLoaderViewModel(ScriptLoader, EventBus);
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel(RecentFiles);
@@ -32,11 +35,14 @@ public class Bootstrapper : IDisposable
         );
 
         RecentFilesObserver.Start();
+        CodeAssistanceObserver.Start();
     }
 
     public EventBus EventBus { get; }
 
     public RecentFilesObserver RecentFilesObserver { get; }
+
+    public CodeAssistanceObserver CodeAssistanceObserver { get; }
 
     public ScriptSerializer ScriptSerializer { get; }
 
@@ -45,6 +51,8 @@ public class Bootstrapper : IDisposable
     public FakeDialogs Dialogs { get; } = new();
 
     public InMemoryFileSystem FileSystem { get; } = new();
+
+    public FakeCodeAssistant CodeAssistant { get; }
 
     public RecentFiles RecentFiles { get; }
 
@@ -70,7 +78,8 @@ public class Bootstrapper : IDisposable
             ScriptSettingsViewModel,
             ScriptLoaderViewModel,
             BuildAndRunFacade,
-            new SourceCodeViewModel()
+            new DummyAutoCompletionAdapter(),
+            EventBus
         );
     }
 

@@ -16,12 +16,14 @@ namespace CppPad.CodeAssistance.Test.Fakes
         private readonly ProducerConsumerStream _inputStream = new();
         private readonly List<JsonObject> _jsonObjects = [];
         private readonly ProducerConsumerStream _outputStream = new();
+        private readonly ProducerConsumerStream _errorStream = new();
         private StreamWriter? _inputWriter;
         private Thread? _processingThread;
 
         public FakeLspProcess()
         {
             OutputReader = new StreamReader(_outputStream, Encoding.UTF8);
+            ErrorReader = new StreamReader(_errorStream, Encoding.UTF8);
         }
 
         public IList<string> CompletionItems { get; set; } = ["CompletionItem"];
@@ -29,6 +31,7 @@ namespace CppPad.CodeAssistance.Test.Fakes
         public IList<PositionInFile> DefinitionPositions { get; set; } = new List<PositionInFile>();
 
         public TextReader OutputReader { get; }
+        public TextReader? ErrorReader { get; }
 
         public TextWriter InputWriter =>
             _inputWriter ??= new StreamWriter(_inputStream, Encoding.UTF8) { AutoFlush = true };

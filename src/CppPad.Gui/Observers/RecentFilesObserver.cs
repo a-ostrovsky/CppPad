@@ -7,20 +7,20 @@ namespace CppPad.Gui.Observers;
 
 public class RecentFilesObserver(RecentFiles recentFiles, EventBus eventBus) : IDisposable
 {
+    public void Start()
+    {
+        eventBus.SubscribeToEvents(GetType(), OnNewEvent);
+    }
+
     public void Dispose()
     {
-        eventBus.NewEvent -= EventBus_NewEventAsync;
+        eventBus.UnsubscribeFromEvents(GetType());
         GC.SuppressFinalize(this);
     }
 
-    public void Start()
+    private async Task OnNewEvent(IEvent e)
     {
-        eventBus.NewEvent += EventBus_NewEventAsync;
-    }
-
-    private async Task EventBus_NewEventAsync(object? sender, NewEventEventArgs e)
-    {
-        switch (e.Event)
+        switch (e)
         {
             case FileOpenedEvent fileOpenedEvent:
                 await recentFiles.AddAsync(fileOpenedEvent.ScriptDocument.FileName!);

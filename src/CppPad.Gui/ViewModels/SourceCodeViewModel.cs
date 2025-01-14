@@ -1,8 +1,10 @@
-﻿using CppPad.Scripting;
+﻿using AvaloniaEdit;
+using CppPad.Gui.AutoCompletion;
+using CppPad.Scripting;
 
 namespace CppPad.Gui.ViewModels;
 
-public class SourceCodeViewModel : ViewModelBase
+public class SourceCodeViewModel(IAutoCompletionAdapter autoCompletionAdapter) : ViewModelBase
 {
     private string _content = string.Empty;
     private int _currentColumn;
@@ -10,7 +12,7 @@ public class SourceCodeViewModel : ViewModelBase
     private ScriptDocument _scriptDocument = new();
 
     public static SourceCodeViewModel DesignInstance { get; } =
-        new()
+        new(new DummyAutoCompletionAdapter())
         {
             Content = """
                 #include <iostream>
@@ -36,6 +38,16 @@ public class SourceCodeViewModel : ViewModelBase
     {
         get => _currentColumn;
         set => SetProperty(ref _currentColumn, value);
+    }
+    
+    public void InstallAutoCompletion(TextEditor textEditor)
+    { 
+        autoCompletionAdapter.Attach(textEditor, this);
+    }
+    
+    public void UninstallAutoCompletion()
+    {
+        autoCompletionAdapter.Detach();
     }
 
     public ScriptDocument ScriptDocument

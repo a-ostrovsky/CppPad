@@ -9,9 +9,12 @@ public class Bootstrapper
         ScriptingBootstrapper = new ScriptingBootstrapper(this);
         CodeAssistanceBootstrapper = new CodeAssistanceBootstrapper(this);
         BuildAndRunBootstrapper = new BuildAndRunBootstrapper(this);
+        Dialogs = new Dialogs();
         EventingBootstrapper = new EventingBootstrapper(this);
         GuiBootstrapper = new GuiBootstrapper(this);
     }
+
+    public Dialogs Dialogs { get; }
 
     public EventingBootstrapper EventingBootstrapper { get; }
 

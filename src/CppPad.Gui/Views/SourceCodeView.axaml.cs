@@ -82,12 +82,14 @@ public partial class SourceCodeView : UserControl
         if (_viewModel != null)
         {
             _viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            _viewModel.UninstallAutoCompletion();
         }
 
         _viewModel = (SourceCodeViewModel?)DataContext;
         if (_viewModel != null)
         {
             _viewModel.PropertyChanged += ViewModel_PropertyChanged;
+            _viewModel.InstallAutoCompletion(Editor);
             Editor.Text = _viewModel.Content;
         }
     }

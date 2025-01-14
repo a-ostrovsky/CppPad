@@ -7,20 +7,27 @@ using Microsoft.Extensions.Logging;
 
 namespace CppPad.LspClient;
 
+public record ClangdProcessSettings
+{
+    public bool VerboseLogging { get; init; }
+}
+
 public class ClangdProcess : ILspProcess, IDisposable
 {
     private const string ClangdZipFileName = "clangd-windows.zip";
     private readonly CancellationTokenSource _cts = new();
     private readonly DiskFileSystem _fileSystem;
+    private readonly ClangdProcessSettings _settings;
     private readonly AsyncLock _lock = new();
     private readonly ILogger _logger = Log.CreateLogger<ClangdProcess>();
     private readonly Process _process;
     private IProcessInfo? _processInfo;
 
-    public ClangdProcess(Process process, DiskFileSystem fileSystem)
+    public ClangdProcess(Process process, DiskFileSystem fileSystem, ClangdProcessSettings settings)
     {
         _process = process;
         _fileSystem = fileSystem;
+        _settings = settings;
         Task.Run(EnsureClangdExistsAsync);
     }
 
@@ -37,8 +44,18 @@ public class ClangdProcess : ILspProcess, IDisposable
     {
         var exeFileName = await EnsureClangdExistsAsync();
         using var lck = await _lock.LockAsync();
+        var arguments = new List<string>();
+        if (_settings.VerboseLogging)
+        {
+            arguments.Add("--log=verbose");
+        }
         var processInfo = _process.Start(
-            new StartInfo { FileName = exeFileName, RedirectIoStreams = true }
+            new StartInfo
+            {
+                FileName = exeFileName, 
+                RedirectIoStreams = true,
+                Arguments = arguments,
+            }
         );
         _processInfo = processInfo;
         InputWriter = new StreamWriter(
@@ -50,6 +67,10 @@ public class ClangdProcess : ILspProcess, IDisposable
         };
         OutputReader = new StreamReader(
             _processInfo.GetStandardOutput().BaseStream,
+            new UTF8Encoding(false)
+        );
+        ErrorReader = new StreamReader(
+            _processInfo.GetStandardError().BaseStream,
             new UTF8Encoding(false)
         );
     }
@@ -64,6 +85,7 @@ public class ClangdProcess : ILspProcess, IDisposable
     }
 
     public TextReader? OutputReader { get; private set; }
+    public TextReader? ErrorReader { get; private set; }
     public TextWriter? InputWriter { get; private set; }
     public bool HasExited => _processInfo?.HasExited ?? true;
 

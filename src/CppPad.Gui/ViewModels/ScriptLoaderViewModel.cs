@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using CppPad.Configuration;
 using CppPad.Gui.Eventing;
 using CppPad.Scripting;
 using CppPad.Scripting.Persistence;
@@ -13,7 +12,10 @@ namespace CppPad.Gui.ViewModels;
 public class ScriptLoaderViewModel(ScriptLoader scriptLoader, EventBus eventBus) : ViewModelBase
 {
     public static ScriptLoaderViewModel DesignInstance { get; } =
-        new(new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()), new EventBus());
+        new(
+            new ScriptLoader(new ScriptSerializer(), new DiskFileSystem()),
+            new EventBus(new Dialogs())
+        );
 
     public async Task<ScriptDocument> LoadAsync(string fileName)
     {

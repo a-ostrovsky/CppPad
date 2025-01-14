@@ -40,6 +40,7 @@ public class LspProxy(ILspProcess lspProcess)
         await inputWriter.WriteAsync($"Content-Length: {jsonBytes.Length}\r\n\r\n");
         await inputWriter.WriteAsync(json);
         await inputWriter.FlushAsync();
+        _logger.LogInformation("Send message with json: {json}", json);
     }
 
     public async Task<JsonDocument?> ReadResponseAsync(int expectedId)
@@ -98,6 +99,21 @@ public class LspProxy(ILspProcess lspProcess)
 
     private void StartListening()
     {
+        if (lspProcess.ErrorReader == null || lspProcess.OutputReader == null)
+        {
+            throw new InvalidOperationException("LspClient is not initialized.");
+        }
+        Task.Run(async () =>
+        {
+            while (!lspProcess.HasExited)
+            {
+                var errorLine = await lspProcess.ErrorReader.ReadLineAsync();
+                if (!string.IsNullOrEmpty(errorLine))
+                {
+                    _logger.LogInformation("Log from clangd: {errorLine}", errorLine);
+                }
+            }
+        });
         Task.Run(async () =>
         {
             while (!lspProcess.HasExited)

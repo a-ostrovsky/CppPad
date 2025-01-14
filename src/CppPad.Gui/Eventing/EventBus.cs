@@ -2,21 +2,50 @@
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
-using CppPad.Common;
+using CppPad.Gui.Observers;
 
 namespace CppPad.Gui.Eventing;
 
 public class EventBus : IDisposable
 {
-    private readonly ConcurrentQueue<IEvent> _eventQueue = new();
+    private static readonly Type[] AllObservers =
+    [
+        typeof(CodeAssistanceObserver),
+        typeof(RecentFilesObserver),
+    ];
+
+    private readonly IDialogs _dialogs;
+
     private readonly Lock _lock = new();
     private readonly ManualResetEventSlim _processingCompleted = new(false);
+    private readonly ConcurrentDictionary<Type, ObserverData> _receivers = new();
     private bool _isProcessing;
+
+    public EventBus(IDialogs dialogs)
+    {
+        _dialogs = dialogs;
+        foreach (var observer in AllObservers)
+        {
+            _receivers.TryAdd(observer, new ObserverData());
+        }
+    }
+
+    public void Dispose()
+    {
+        _processingCompleted.Wait();
+        _processingCompleted.Dispose();
+        _receivers.Clear();
+        GC.SuppressFinalize(this);
+    }
 
     public void Publish(IEvent @event)
     {
         _processingCompleted.Reset();
-        _eventQueue.Enqueue(@event);
+        foreach (var receiver in _receivers.Values)
+        {
+            receiver.Events.Enqueue(@event);
+        }
+
         ProcessQueue();
     }
 
@@ -35,14 +64,31 @@ public class EventBus : IDisposable
 
         Task.Run(async () =>
         {
-            while (_eventQueue.TryDequeue(out var @event))
+            foreach (var observerData in _receivers.Values)
             {
-                if (NewEvent != null)
+                Func<IEvent, Task>? callback;
+                lock (_lock)
                 {
-                    await NewEvent.InvokeAsync(this, new NewEventEventArgs(@event));
+                    callback = observerData.Callback;
                 }
 
-                await Task.Yield(); // Ensure other tasks can run
+                if (callback == null)
+                {
+                    continue;
+                }
+
+                while (observerData.Events.TryDequeue(out var @event))
+                {
+                    try
+                    {
+                        await callback.Invoke(@event);
+                        await Task.Yield(); // Ensure other tasks can
+                    }
+                    catch (Exception e)
+                    {
+                        await _dialogs.NotifyErrorAsync("Event processing failed.", e);
+                    }
+                }
             }
 
             lock (_lock)
@@ -53,17 +99,54 @@ public class EventBus : IDisposable
         });
     }
 
-    public event AsyncEventHandler<NewEventEventArgs>? NewEvent;
+    public void UnsubscribeFromEvents(Type caller)
+    {
+        if (!_receivers.TryGetValue(caller, out _))
+        {
+            throw new ArgumentException(
+                $"Unknown observer. Add observer to {nameof(AllObservers)}",
+                nameof(caller)
+            );
+        }
+
+        lock (_lock)
+        {
+            _receivers[caller].Callback = null;
+        }
+    }
+
+    public void SubscribeToEvents(Type caller, Func<IEvent, Task> callback)
+    {
+        if (!_receivers.TryGetValue(caller, out var receiver))
+        {
+            throw new ArgumentException(
+                $"Unknown observer. Add observer to {nameof(AllObservers)}",
+                nameof(caller)
+            );
+        }
+
+        lock (_lock)
+        {
+            if (receiver.Callback != null)
+            {
+                throw new InvalidOperationException("Observer already subscribed to events");
+            }
+
+            _receivers[caller].Callback = callback;
+
+            ProcessQueue();
+        }
+    }
 
     public void WaitForProcessing()
     {
         _processingCompleted.Wait();
     }
 
-    public void Dispose()
+    private class ObserverData
     {
-        _processingCompleted.Wait();
-        _processingCompleted.Dispose();
-        GC.SuppressFinalize(this);
+        public Func<IEvent, Task>? Callback { get; set; }
+
+        public ConcurrentQueue<IEvent> Events { get; } = new();
     }
 }

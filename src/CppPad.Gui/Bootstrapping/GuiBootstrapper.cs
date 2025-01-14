@@ -1,4 +1,6 @@
-﻿using CppPad.Gui.ViewModels;
+﻿using CppPad.Common;
+using CppPad.Gui.AutoCompletion;
+using CppPad.Gui.ViewModels;
 
 namespace CppPad.Gui.Bootstrapping;
 
@@ -9,26 +11,29 @@ public class GuiBootstrapper
     public GuiBootstrapper(Bootstrapper parent)
     {
         _parent = parent;
-        Dialogs = new Dialogs();
         ScriptLoaderViewModel = new ScriptLoaderViewModel(
             _parent.ScriptingBootstrapper.ScriptLoader,
             _parent.EventingBootstrapper.EventBus
         );
+        AutoCompletionAdapter = new AutoCompletionAdapter(
+            _parent.Dialogs,
+            _parent.CodeAssistanceBootstrapper.CodeAssistant,
+            new Timer());
         ScriptSettingsViewModel = new ScriptSettingsViewModel();
         OpenEditorsViewModel = new OpenEditorsViewModel(CreateEditorViewModel);
         ToolbarViewModel = new ToolbarViewModel(parent.ConfigurationBootstrapper.RecentFiles);
         MainWindowViewModel = new MainWindowViewModel(
             OpenEditorsViewModel,
             ToolbarViewModel,
-            Dialogs
+            _parent.Dialogs
         );
     }
+
+    public IAutoCompletionAdapter AutoCompletionAdapter { get; }
 
     public ScriptLoaderViewModel ScriptLoaderViewModel { get; }
 
     public ScriptSettingsViewModel ScriptSettingsViewModel { get; }
-
-    public IDialogs Dialogs { get; }
 
     public MainWindowViewModel MainWindowViewModel { get; }
 
@@ -42,7 +47,8 @@ public class GuiBootstrapper
             ScriptSettingsViewModel,
             ScriptLoaderViewModel,
             _parent.BuildAndRunBootstrapper.BuildAndRunFacade,
-            new SourceCodeViewModel()
+            AutoCompletionAdapter,
+            _parent.EventingBootstrapper.EventBus
         );
     }
 }

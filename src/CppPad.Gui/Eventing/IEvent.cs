@@ -1,4 +1,6 @@
-﻿using CppPad.Scripting;
+﻿using System.Collections.Generic;
+using CppPad.LspClient.Model;
+using CppPad.Scripting;
 
 namespace CppPad.Gui.Eventing;
 
@@ -14,4 +16,6 @@ public record FileOpenedFailedEvent(string FileName) : IEvent;
 
 public record FileSavedEvent(ScriptDocument ScriptDocument) : IEvent;
 
-public record ScriptDocumentChangedEvent(ScriptDocument ScriptDocument) : IEvent;
+public record SourceCodeChangedEvent(ScriptDocument ScriptDocument, bool FlushNow) : IEvent;
+
+public record SettingsChangedEvent(ScriptDocument ScriptDocument) : IEvent;

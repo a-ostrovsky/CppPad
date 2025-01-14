@@ -3,10 +3,11 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using CppAdapter.BuildAndRun;
 using CppPad.BuildSystem;
 using CppPad.Common;
+using CppPad.Gui.AutoCompletion;
+using CppPad.Gui.Eventing;
 using CppPad.Gui.Input;
 using CppPad.Scripting;
 
@@ -17,6 +18,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
     private readonly IBuildAndRunFacade _buildAndRunFacade;
 
     private readonly SemaphoreSlim _buildSemaphore = new(1, 1);
+    private readonly EventBus _eventBus;
     private readonly ScriptLoaderViewModel _scriptLoader;
     private CancellationTokenSource? _buildCancellationTokenSource;
 
@@ -28,14 +30,16 @@ public class EditorViewModel : ViewModelBase, IDisposable
         ScriptSettingsViewModel scriptSettings,
         ScriptLoaderViewModel scriptLoader,
         IBuildAndRunFacade buildAndRunFacade,
-        SourceCodeViewModel sourceCode
+        IAutoCompletionAdapter autoCompletionAdapter,
+        EventBus eventBus
     )
     {
         ScriptSettings = scriptSettings;
         _scriptLoader = scriptLoader;
         _buildAndRunFacade = buildAndRunFacade;
-        SourceCode = sourceCode;
-        scriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
+        _eventBus = eventBus;
+        SourceCode = new SourceCodeViewModel(autoCompletionAdapter);
+        ScriptSettings.ApplySettings(SourceCode.ScriptDocument.Script.BuildSettings);
         CloseCommand = new AsyncRelayCommand(_ =>
             CloseRequested?.InvokeAsync(this, EventArgs.Empty)
         );
@@ -63,7 +67,8 @@ public class EditorViewModel : ViewModelBase, IDisposable
             ScriptSettingsViewModel.DesignInstance,
             ScriptLoaderViewModel.DesignInstance,
             new DummyBuildAndRunFacade(),
-            SourceCodeViewModel.DesignInstance
+            new DummyAutoCompletionAdapter(),
+            new EventBus(new Dialogs())
         );
 
     public SourceCodeViewModel SourceCode { get; }
@@ -94,11 +99,17 @@ public class EditorViewModel : ViewModelBase, IDisposable
         GC.SuppressFinalize(this);
     }
 
+    public void OnClose()
+    {
+        _eventBus.Publish(new FileClosedEvent(SourceCode.ScriptDocument));
+    }
+
     private void SourceCode_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(SourceCode.Content))
         {
             IsModified = true;
+            _eventBus.Publish(new SourceCodeChangedEvent(SourceCode.ScriptDocument, false));
         }
     }
 
@@ -117,7 +128,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
             BuildStatus.Succeeded => "Build succeeded.",
             BuildStatus.Failed => "Build failed.",
             BuildStatus.Cancelled => "Build cancelled.",
-            _ => throw new ArgumentException("Unknown build status.", nameof(e)),
+            _ => throw new ArgumentException("Unknown build status.", nameof(e))
         };
         CompilerOutput.AddMessage(message);
     }
@@ -129,8 +140,9 @@ public class EditorViewModel : ViewModelBase, IDisposable
         IsModified = true;
         SourceCode.ScriptDocument = SourceCode.ScriptDocument with
         {
-            Script = SourceCode.ScriptDocument.Script with { BuildSettings = settings },
+            Script = SourceCode.ScriptDocument.Script with { BuildSettings = settings }
         };
+        _eventBus.Publish(new SettingsChangedEvent(SourceCode.ScriptDocument));
     }
 
     public async Task OpenFileAsync(string fileName)
@@ -188,26 +200,14 @@ public class EditorViewModel : ViewModelBase, IDisposable
             {
                 ScriptDocument = SourceCode.ScriptDocument,
                 BuildMode = buildMode,
-                ErrorReceived = (_, args) =>
-                {
-                    CompilerOutput.AddMessage($"ERR:{args.Data}");
-                },
-                ProgressReceived = (_, args) =>
-                {
-                    CompilerOutput.AddMessage(args.Data);
-                },
+                ErrorReceived = (_, args) => { CompilerOutput.AddMessage($"ERR:{args.Data}"); },
+                ProgressReceived = (_, args) => { CompilerOutput.AddMessage(args.Data); }
             };
             var buildAndRunConfiguration = new BuildAndRunConfiguration
             {
                 BuildConfiguration = buildConfiguration,
-                ExeErrorReceived = (_, args) =>
-                {
-                    ApplicationOutput.AddMessage(args.Data);
-                },
-                ExeOutputReceived = (_, args) =>
-                {
-                    ApplicationOutput.AddMessage(args.Data);
-                },
+                ExeErrorReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); },
+                ExeOutputReceived = (_, args) => { ApplicationOutput.AddMessage(args.Data); }
             };
             SelectedTabIndex = TabIndices.CompilerOutput;
             _buildAndRunFacade.BuildStatusChanged += ChangeTabWhenBuildStatusChanges;
@@ -235,17 +235,18 @@ public class EditorViewModel : ViewModelBase, IDisposable
         }
     }
 
-    public void AddPlaceholderText()
+    public void InitializeNewFile()
     {
+        _eventBus.Publish(new NewFileEvent(SourceCode.ScriptDocument));
         var wasModified = IsModified;
         SourceCode.Content = """
-            #include <iostream>
+                             #include <iostream>
 
-            int main() {
-                std::cout << "Hello World!";
-                return 0;
-            }
-            """;
+                             int main() {
+                                 std::cout << "Hello World!";
+                                 return 0;
+                             }
+                             """;
         IsModified = wasModified;
     }
 

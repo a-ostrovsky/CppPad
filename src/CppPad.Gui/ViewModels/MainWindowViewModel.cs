@@ -232,7 +232,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
     private void CreateNewEditorWithPlaceholderText()
     {
         var editor = CreateNewEditor();
-        editor.AddPlaceholderText();
+        editor.InitializeNewFile();
     }
 
     private EditorViewModel CreateNewEditor()
@@ -297,30 +297,30 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
 
     private async Task CloseEditorAsync(EditorViewModel editor)
     {
-        try
+        if (editor.IsModified)
         {
-            if (editor.IsModified)
+            var result = await _dialogs.ShowYesNoCancelDialogAsync(
+                "Do you want to save the changes?",
+                "Save Changes?"
+            );
+            if (result == null)
             {
-                var result = await _dialogs.ShowYesNoCancelDialogAsync(
-                    "Do you want to save the changes?",
-                    "Save Changes?"
-                );
-                if (result == null)
-                {
-                    return;
-                }
-
-                if (result == true)
-                {
-                    await OnSaveFileRequestedAsync(this, EventArgs.Empty);
-                    if (editor.IsModified)
-                    {
-                        // Save was canceled
-                        return;
-                    }
-                }
+                return;
             }
 
+            if (result == true)
+            {
+                await OnSaveFileRequestedAsync(this, EventArgs.Empty);
+                if (editor.IsModified)
+                {
+                    // Save was canceled
+                    return;
+                }
+            }
+        }
+
+        try
+        {
             var index = OpenEditors.Editors.IndexOf(editor);
             OpenEditors.Editors.Remove(editor);
 
@@ -344,6 +344,8 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
         }
         finally
         {
+            editor.CloseRequested -= OnCloseRequestedAsync;
+            editor.OnClose();
             editor.Dispose();
         }
     }
