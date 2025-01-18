@@ -14,6 +14,7 @@
     <ItemGroup>
       <ProjectReference Include="..\CppPad.Common\CppPad.Common.csproj" />
       <ProjectReference Include="..\CppPad.Logging\CppPad.Logging.csproj" />
+      <ProjectReference Include="..\CppPad.Scripting\CppPad.Scripting.csproj" />
       <ProjectReference Include="..\CppPad.SystemAdapter\CppPad.SystemAdapter.csproj" />
     </ItemGroup>
 

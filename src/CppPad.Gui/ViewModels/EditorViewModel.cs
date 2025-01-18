@@ -9,6 +9,7 @@ using CppPad.Common;
 using CppPad.Gui.AutoCompletion;
 using CppPad.Gui.Eventing;
 using CppPad.Gui.Input;
+using CppPad.LspClient.Model;
 using CppPad.Scripting;
 
 namespace CppPad.Gui.ViewModels;
@@ -109,7 +110,7 @@ public class EditorViewModel : ViewModelBase, IDisposable
         if (e.PropertyName == nameof(SourceCode.Content))
         {
             IsModified = true;
-            _eventBus.Publish(new SourceCodeChangedEvent(SourceCode.ScriptDocument, false));
+            _eventBus.Publish(new SourceCodeChangedEvent(new FullUpdate(SourceCode.ScriptDocument), false));
         }
     }
 

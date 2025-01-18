@@ -29,7 +29,7 @@ public class FakeCodeAssistant : ICodeAssistant
         return Task.FromResult(Array.Empty<PositionInFile>());
     }
 
-    public Task UpdateContentAsync(ScriptDocument document)
+    public Task UpdateContentAsync(IContentUpdate update)
     {
         return Task.CompletedTask;
     }

@@ -13,7 +13,7 @@ public interface ICodeAssistant
 
     Task<PositionInFile[]> GetDefinitionsAsync(ScriptDocument document, Position position);
 
-    Task UpdateContentAsync(ScriptDocument document);
+    Task UpdateContentAsync(IContentUpdate update);
 
     Task UpdateSettingsAsync(ScriptDocument document);
 
@@ -43,7 +43,7 @@ public class DummyCodeAssistant : ICodeAssistant
         return Task.FromResult(Array.Empty<PositionInFile>());
     }
 
-    public Task UpdateContentAsync(ScriptDocument document)
+    public Task UpdateContentAsync(IContentUpdate update)
     {
         return Task.CompletedTask;
     }

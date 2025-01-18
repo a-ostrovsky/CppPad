@@ -101,13 +101,13 @@ public class CodeAssistant : ICodeAssistant, IDisposable
         _documentVersions.Remove(path);
     }
 
-    public async Task UpdateContentAsync(ScriptDocument document)
+    public async Task UpdateContentAsync(IContentUpdate update)
     {
         await EnsureInitializedAsync();
-        var path = await _scriptLoader.CreateCppFileAsync(document);
+        var path = await _scriptLoader.CreateCppFileAsync(update.ScriptDocument);
 
         var version = GetNextDocumentVersion(path);
-        await _requestSender.SendDidChangeAsync(path, version, document.Script.Content);
+        await _requestSender.SendDidChangeAsync(path, version, update);
     }
 
     public void Dispose()

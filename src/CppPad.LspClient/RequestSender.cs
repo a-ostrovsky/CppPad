@@ -2,6 +2,7 @@
 using CppPad.LspClient.Model.Requests;
 using static CppPad.LspClient.Utils;
 using Position = CppPad.LspClient.Model.Requests.Position;
+using Range = CppPad.LspClient.Model.Requests.Range;
 
 namespace CppPad.LspClient;
 
@@ -18,7 +19,7 @@ public class RequestSender(LspProxy proxy)
         var initRequest = new InitializeRequest
         {
             Id = requestId,
-            Params = new InitializeParams { ProcessId = processId, RootUri = rootUri },
+            Params = new InitializeParams { ProcessId = processId, RootUri = rootUri }
         };
         await proxy.SendMessageAsync(initRequest);
         return requestId;
@@ -37,8 +38,8 @@ public class RequestSender(LspProxy proxy)
         {
             Params = new DidOpenParams
             {
-                TextDocument = new TextDocumentItem { Uri = uri, Text = content },
-            },
+                TextDocument = new TextDocumentItem { Uri = uri, Text = content }
+            }
         };
         return proxy.SendMessageAsync(didOpenNotification);
     }
@@ -49,24 +50,72 @@ public class RequestSender(LspProxy proxy)
         {
             Params = new DidChangeConfigurationParams
             {
-                Settings = new { compilationDatabaseChanges = settings },
-            },
+                Settings = new { compilationDatabaseChanges = settings }
+            }
         };
         return proxy.SendMessageAsync(didChangeConfigurationNotification);
     }
 
-    public Task SendDidChangeAsync(string fileName, int version, string text)
+    public Task SendDidChangeAsync(string fileName, int version, IContentUpdate update)
     {
         var uri = PathToUriFormat(fileName);
+        var evt = ToTextDocumentContentChangeEvent(update);
         var didChangeNotification = new DidChangeNotification
         {
             Params = new DidChangeParams
             {
                 TextDocument = new VersionedTextDocumentIdentifier { Uri = uri, Version = version },
-                ContentChanges = [new TextDocumentContentChangeEvent { Text = text }],
-            },
+                ContentChanges =
+                [
+                    evt
+                ]
+            }
         };
         return proxy.SendMessageAsync(didChangeNotification);
+    }
+
+    private static TextDocumentContentChangeEvent ToTextDocumentContentChangeEvent(IContentUpdate update)
+    {
+        return update switch
+        {
+            FullUpdate fullUpdate => new TextDocumentContentChangeEvent
+                { Text = fullUpdate.ScriptDocument.Script.Content },
+            AddTextUpdate addTextUpdate => new TextDocumentContentChangeEvent
+            {
+                Range = new Range
+                {
+                    Start = new Position
+                    {
+                        Line = addTextUpdate.Position.Line,
+                        Character = addTextUpdate.Position.Character
+                    },
+                    End = new Position
+                    {
+                        Line = addTextUpdate.Position.Line,
+                        Character = addTextUpdate.Position.Character
+                    }
+                },
+                Text = addTextUpdate.Text
+            },
+            RemoveTextUpdate removeTextUpdate => new TextDocumentContentChangeEvent
+            {
+                Range = new Range
+                {
+                    Start = new Position
+                    {
+                        Line = removeTextUpdate.Position.Line,
+                        Character = removeTextUpdate.Position.Character
+                    },
+                    End = new Position
+                    {
+                        Line = removeTextUpdate.Position.Line,
+                        Character = removeTextUpdate.Position.Character
+                    }
+                },
+                Text = string.Empty
+            },
+            _ => throw new ArgumentException("Invalid content update type")
+        };
     }
 
     public Task SendDidCloseAsync(string fileName)
@@ -74,7 +123,7 @@ public class RequestSender(LspProxy proxy)
         var uri = PathToUriFormat(fileName);
         var didCloseNotification = new DidCloseNotification
         {
-            Params = new DidCloseParams { TextDocument = new TextDocumentIdentifier { Uri = uri } },
+            Params = new DidCloseParams { TextDocument = new TextDocumentIdentifier { Uri = uri } }
         };
         return proxy.SendMessageAsync(didCloseNotification);
     }
@@ -92,9 +141,9 @@ public class RequestSender(LspProxy proxy)
                 Position = new Position
                 {
                     Line = positionInFile.Position.Line,
-                    Character = positionInFile.Position.Character,
-                },
-            },
+                    Character = positionInFile.Position.Character
+                }
+            }
         };
         await proxy.SendMessageAsync(completionRequest);
         return requestId;
@@ -113,9 +162,9 @@ public class RequestSender(LspProxy proxy)
                 Position = new Position
                 {
                     Line = positionInFile.Position.Line,
-                    Character = positionInFile.Position.Character,
-                },
-            },
+                    Character = positionInFile.Position.Character
+                }
+            }
         };
         await proxy.SendMessageAsync(definitionRequest);
         return requestId;

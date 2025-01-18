@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CppPad.CodeAssistance;
 using CppPad.Gui.Eventing;
+using CppPad.LspClient.Model;
 
 namespace CppPad.Gui.Observers;
 
@@ -59,7 +60,7 @@ public class CodeAssistanceObserver(ICodeAssistant codeAssistant, EventBus event
                     await codeAssistant.UpdateSettingsAsync(settingsChangedEvent.ScriptDocument);
                     break;
                 case SourceCodeChangedEvent sourceCodeChangedEvent:
-                    await codeAssistant.UpdateContentAsync(sourceCodeChangedEvent.ScriptDocument);
+                    await codeAssistant.UpdateContentAsync(sourceCodeChangedEvent.Update);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(e));
@@ -116,9 +117,13 @@ public class CodeAssistanceObserver(ICodeAssistant codeAssistant, EventBus event
                         break;
                     case SourceCodeChangedEvent e:
                         sendTimePoint = SendTimePoint.Deferred;
-                        _events.RemoveAll(evt => evt is SourceCodeChangedEvent sourceCodeChangedEvent &&
-                                                 sourceCodeChangedEvent.ScriptDocument.Identifier ==
-                                                 e.ScriptDocument.Identifier);
+                        if (e.Update is FullUpdate)
+                        {
+                            _events.RemoveAll(evt => evt is SourceCodeChangedEvent sourceCodeChangedEvent &&
+                                                     sourceCodeChangedEvent.Update.ScriptDocument.Identifier ==
+                                                     e.Update.ScriptDocument.Identifier);
+                        }
+
                         break;
                 }
 

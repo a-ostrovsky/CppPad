@@ -9,5 +9,5 @@ public class DidChangeParams
 
     [JsonPropertyName("contentChanges")]
     public TextDocumentContentChangeEvent[] ContentChanges { get; init; } =
-        new[] { new TextDocumentContentChangeEvent() };
+        [new TextDocumentContentChangeEvent()];
 }
