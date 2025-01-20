@@ -25,7 +25,19 @@ public class CMakeTest
 
         var scriptDocument = new ScriptDocument
         {
-            Script = new ScriptData { Content = "int main() { return 0; }" },
+            Script = new ScriptData
+            {
+                BuildSettings = new CppBuildSettings
+                {
+                    AdditionalIncludeDirs = new List<string> { "include/dir1" },
+                    LibSearchPaths = new List<string> { "lib/path1", "lib/path2" },
+                    AdditionalEnvironmentPaths = new List<string> { "env/path1" },
+                    LibFiles = new List<string> { "libfile1.lib" },
+                    CppStandard = CppStandard.Cpp17,
+                    OptimizationLevel = OptimizationLevel.O2,
+                },
+                Content = "int main() { return 0; }"
+            }
         };
 
         // Act
@@ -34,15 +46,13 @@ public class CMakeTest
             {
                 BuildMode = BuildMode.Debug,
                 ScriptDocument = scriptDocument,
-                ErrorReceived = (_, _) =>
-                {
-                    Assert.Fail("No error expected.");
-                },
-                ProgressReceived = (_, _) => { },
+                ErrorReceived = (_, _) => { Assert.Fail("No error expected."); },
+                ProgressReceived = (_, _) => { }
             },
             CMakeInstaller.Install(fileSystem)
         );
 
+        // Assert
         Assert.True(process.StartCalled);
         var createdFiles = await fileSystem.ListFilesAsync(
             fileSystem.SpecialFolders.TempFolder,
@@ -50,5 +60,12 @@ public class CMakeTest
             SearchOption.AllDirectories
         );
         Assert.Contains(createdFiles, f => f.Contains("CMakeLists.txt"));
+        var cmakeListsFile = createdFiles.First(f => f.Contains("CMakeLists.txt"));
+        var cmakeContent = await fileSystem.ReadAllTextAsync(cmakeListsFile);
+        Assert.Contains("set(CMAKE_CXX_STANDARD 17)", cmakeContent);
+        Assert.Contains("set(CMAKE_CXX_FLAGS \"${CMAKE_CXX_FLAGS} -O2\")", cmakeContent);
+        Assert.Contains("include_directories(include/dir1)", cmakeContent);
+        Assert.Contains("link_directories(lib/path1)", cmakeContent);
+        Assert.Contains("target_link_libraries(main libfile1.lib)", cmakeContent);
     }
 }
