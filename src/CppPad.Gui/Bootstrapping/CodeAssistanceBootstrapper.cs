@@ -10,7 +10,10 @@ public class CodeAssistanceBootstrapper
         LspProcess = new ClangdProcess(
             parent.SystemAdapterBootstrapper.Process,
             parent.SystemAdapterBootstrapper.FileSystem,
-            new ClangdProcessSettings()
+            new ClangdProcessSettings
+            {
+                VerboseLogging = false
+            }
         );
 
         LspProxy = new LspProxy(LspProcess);

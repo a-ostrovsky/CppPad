@@ -15,7 +15,7 @@ public class GoToLineTest : IDisposable
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
-        editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
+        editor.SourceCode.ResetContent("Line 1\nLine 2\nLine 3");
         _bootstrapper.Dialogs.WillReturnInputBoxResponse("2:3");
 
         // Act
@@ -31,7 +31,7 @@ public class GoToLineTest : IDisposable
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
-        editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
+        editor.SourceCode.ResetContent("Line 1\nLine 2\nLine 3");
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
         _bootstrapper.Dialogs.WillReturnInputBoxResponse("5:3");
@@ -49,7 +49,7 @@ public class GoToLineTest : IDisposable
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
-        editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
+        editor.SourceCode.ResetContent("Line 1\nLine 2\nLine 3");
         _bootstrapper.Dialogs.WillReturnInputBoxResponse("2:10");
 
         // Act
@@ -65,7 +65,7 @@ public class GoToLineTest : IDisposable
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
-        editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
+        editor.SourceCode.ResetContent("Line 1\nLine 2\nLine 3");
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
         _bootstrapper.Dialogs.WillReturnInputBoxResponse("");
@@ -83,7 +83,7 @@ public class GoToLineTest : IDisposable
     {
         // Arrange
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
-        editor.SourceCode.Content = "Line 1\nLine 2\nLine 3";
+        editor.SourceCode.ResetContent("Line 1\nLine 2\nLine 3");
         editor.SourceCode.CurrentLine = 1;
         editor.SourceCode.CurrentColumn = 1;
         _bootstrapper.Dialogs.WillReturnInputBoxResponse(null);

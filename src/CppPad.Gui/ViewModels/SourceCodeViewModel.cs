@@ -1,32 +1,35 @@
-﻿using AvaloniaEdit;
+﻿using System.Collections.Generic;
+using AvaloniaEdit;
 using CppPad.Gui.AutoCompletion;
+using CppPad.LspClient.Model;
 using CppPad.Scripting;
 
 namespace CppPad.Gui.ViewModels;
 
 public class SourceCodeViewModel(IAutoCompletionAdapter autoCompletionAdapter) : ViewModelBase
 {
-    private string _content = string.Empty;
+    private readonly List<ScriptDocumentChangeListener> _changeListeners = [];
     private int _currentColumn;
     private int _currentLine;
     private ScriptDocument _scriptDocument = new();
+    private string _content = string.Empty;
 
     public static SourceCodeViewModel DesignInstance { get; } =
         new(new DummyAutoCompletionAdapter())
         {
-            Content = """
-                #include <iostream>
-                void main() {
-                    std::cout << "Hello, World!";
+            ScriptDocument = new ScriptDocument
+            {
+                Script = new ScriptData
+                {
+                    Content = """
+                              #include <iostream>
+                              void main() {
+                                  std::cout << "Hello, World!";
+                              }
+                              """
                 }
-                """,
+            }
         };
-
-    public string Content
-    {
-        get => _content;
-        set => SetProperty(ref _content, value);
-    }
 
     public int CurrentLine
     {
@@ -39,16 +42,6 @@ public class SourceCodeViewModel(IAutoCompletionAdapter autoCompletionAdapter) :
         get => _currentColumn;
         set => SetProperty(ref _currentColumn, value);
     }
-    
-    public void InstallAutoCompletion(TextEditor textEditor)
-    { 
-        autoCompletionAdapter.Attach(textEditor, this);
-    }
-    
-    public void UninstallAutoCompletion()
-    {
-        autoCompletionAdapter.Detach();
-    }
 
     public ScriptDocument ScriptDocument
     {
@@ -56,7 +49,7 @@ public class SourceCodeViewModel(IAutoCompletionAdapter autoCompletionAdapter) :
         {
             _scriptDocument = _scriptDocument with
             {
-                Script = _scriptDocument.Script with { Content = Content },
+                Script = _scriptDocument.Script with { Content = _content },
             };
             return _scriptDocument;
         }
@@ -64,8 +57,63 @@ public class SourceCodeViewModel(IAutoCompletionAdapter autoCompletionAdapter) :
         {
             if (SetProperty(ref _scriptDocument, value))
             {
-                Content = _scriptDocument.Script.Content;
+                _content = _scriptDocument.Script.Content;
             }
         }
+    }
+
+    public void InstallAutoCompletion(TextEditor textEditor)
+    {
+        autoCompletionAdapter.Attach(textEditor, this);
+    }
+
+    public void UninstallAutoCompletion()
+    {
+        autoCompletionAdapter.Detach();
+    }
+
+    public void ApplySettings(CppBuildSettings settings)
+    {
+        ScriptDocument = ScriptDocument with
+        {
+            Script = ScriptDocument.Script with { BuildSettings = settings }
+        };
+    }
+
+    public void ResetDocument(ScriptDocument scriptDocument)
+    {
+        ScriptDocument = scriptDocument;
+        foreach (var changeListener in _changeListeners)
+        {
+            changeListener.Reset(ScriptDocument);
+        }
+    }
+    
+    public void ResetContent(string updatedContent)
+    {
+        _content = updatedContent;
+        foreach (var changeListener in _changeListeners)
+        {
+            changeListener.Reset(ScriptDocument);
+        }
+    }
+
+    public void SetContent(string updatedContent, Range range, string? insertedText = null)
+    {
+        _content = updatedContent;
+        foreach (var changeListener in _changeListeners)
+        {
+            changeListener.EditText(ScriptDocument, range, insertedText);
+        }
+    }
+
+    public void AddChangeListener(ScriptDocumentChangeListener changeListener)
+    {
+        _changeListeners.Add(changeListener);
+    }
+
+    public void RemoveChangeListener(ScriptDocumentChangeListener changeListener)
+    {
+        _changeListeners.Remove(changeListener);
     }
 }

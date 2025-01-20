@@ -86,7 +86,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
                 return;
             }
 
-            var lineCount = editor.SourceCode.Content.Split('\n').Length;
+            var lineCount = editor.SourceCode.ScriptDocument.Script.Content.Split('\n').Length;
             var currentLineAndColumn =
                 $"{editor.SourceCode.CurrentLine}:{editor.SourceCode.CurrentColumn}";
             var result = await _dialogs.InputBoxAsync(
@@ -118,7 +118,7 @@ public class MainWindowViewModel : ViewModelBase, IDisposable
                 && parsedColumn > 0
             )
             {
-                var lineContent = editor.SourceCode.Content.Split('\n')[line - 1];
+                var lineContent = editor.SourceCode.ScriptDocument.Script.Content.Split('\n')[line - 1];
                 column = Math.Min(parsedColumn, lineContent.Length);
             }
 

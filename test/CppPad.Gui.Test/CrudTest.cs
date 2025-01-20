@@ -111,7 +111,7 @@ public class CrudTest : IDisposable
             _bootstrapper.OpenEditorsViewModel.Editors[^1]
         );
         Assert.Equal(
-            _bootstrapper.OpenEditorsViewModel.CurrentEditor?.SourceCode.Content,
+            _bootstrapper.OpenEditorsViewModel.CurrentEditor?.SourceCode.ScriptDocument.Script.Content,
             scriptDocument.Script.Content
         );
         Assert.Contains("s.cpppad", _bootstrapper.OpenEditorsViewModel.CurrentEditor?.Title);
@@ -128,7 +128,7 @@ public class CrudTest : IDisposable
         // Arrange
         var scriptDocument = Fixture.CreateScriptDocument();
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
-        editor.SourceCode.ScriptDocument = scriptDocument;
+        editor.SourceCode.ResetDocument(scriptDocument);
         _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
 
         // Act
@@ -156,7 +156,7 @@ public class CrudTest : IDisposable
         // Arrange
         var scriptDocument = Fixture.CreateScriptDocument();
         var editor = _bootstrapper.OpenEditorsViewModel.CurrentEditor!;
-        editor.SourceCode.ScriptDocument = scriptDocument;
+        editor.SourceCode.ResetDocument(scriptDocument);
 
         // Act
         _bootstrapper.Dialogs.WillSelectFileWithName(@"C:\s.cpppad");
@@ -188,7 +188,8 @@ public class CrudTest : IDisposable
     {
         var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
         Assert.False(currentEditor.IsModified);
-        currentEditor.SourceCode.Content += "X";
+        var newContent = currentEditor.SourceCode.ScriptDocument.Script.Content + "X";
+        currentEditor.SourceCode.ResetContent(newContent);
         Assert.True(currentEditor.IsModified);
         Assert.Contains("*", currentEditor.Title);
     }
@@ -198,7 +199,8 @@ public class CrudTest : IDisposable
     {
         // Arrange
         var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
-        currentEditor.SourceCode.Content += "X";
+        var newContent = currentEditor.SourceCode.ScriptDocument.Script.Content + "X";
+        currentEditor.SourceCode.ResetContent(newContent);
         _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(true);
         _bootstrapper.Dialogs.WillSelectFileWithName("C:\\s.cpppad");
 
@@ -214,7 +216,8 @@ public class CrudTest : IDisposable
     {
         // Arrange
         var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
-        currentEditor.SourceCode.Content += "X";
+        var newContent = currentEditor.SourceCode.ScriptDocument.Script.Content + "X";
+        currentEditor.SourceCode.ResetContent(newContent);
         _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(false);
         _bootstrapper.Dialogs.WillSelectFileWithName("C:\\s.cpppad");
 
@@ -230,7 +233,8 @@ public class CrudTest : IDisposable
     {
         // Arrange
         var currentEditor = _bootstrapper.MainWindowViewModel.OpenEditors.CurrentEditor!;
-        currentEditor.SourceCode.Content += "X";
+        var newContent = currentEditor.SourceCode.ScriptDocument.Script.Content + "X";
+        currentEditor.SourceCode.ResetContent(newContent);
         _bootstrapper.Dialogs.WillReturnYesNoCancelResponse(null);
 
         // Act

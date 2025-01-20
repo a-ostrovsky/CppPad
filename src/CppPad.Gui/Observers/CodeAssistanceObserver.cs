@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using CppPad.CodeAssistance;
 using CppPad.Gui.Eventing;
-using CppPad.LspClient.Model;
 
 namespace CppPad.Gui.Observers;
 
@@ -104,32 +103,17 @@ public class CodeAssistanceObserver(ICodeAssistant codeAssistant, EventBus event
 
         public SendTimePoint AddEvent(IEvent @event)
         {
-            var sendTimePoint = SendTimePoint.Immediate;
+            var sendTimePoint = @event switch
+            {
+                SettingsChangedEvent => SendTimePoint.Deferred,
+                SourceCodeChangedEvent => SendTimePoint.Deferred,
+                _ => SendTimePoint.Immediate
+            };
             lock (_lock)
             {
-                switch (@event)
-                {
-                    case SettingsChangedEvent e:
-                        sendTimePoint = SendTimePoint.Deferred;
-                        _events.RemoveAll(evt => evt is SettingsChangedEvent settingsChangedEvent &&
-                                                 settingsChangedEvent.ScriptDocument.Identifier ==
-                                                 e.ScriptDocument.Identifier);
-                        break;
-                    case SourceCodeChangedEvent e:
-                        sendTimePoint = SendTimePoint.Deferred;
-                        if (e.Update is FullUpdate)
-                        {
-                            _events.RemoveAll(evt => evt is SourceCodeChangedEvent sourceCodeChangedEvent &&
-                                                     sourceCodeChangedEvent.Update.ScriptDocument.Identifier ==
-                                                     e.Update.ScriptDocument.Identifier);
-                        }
-
-                        break;
-                }
-
                 _events.Add(@event);
-                return sendTimePoint;
             }
+            return sendTimePoint;
         }
 
         public IEvent[] PopEvents()

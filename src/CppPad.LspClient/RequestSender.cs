@@ -86,13 +86,13 @@ public class RequestSender(LspProxy proxy)
                 {
                     Start = new Position
                     {
-                        Line = addTextUpdate.Position.Line,
-                        Character = addTextUpdate.Position.Character
+                        Line = addTextUpdate.Range.Start.Line,
+                        Character = addTextUpdate.Range.Start.Character
                     },
                     End = new Position
                     {
-                        Line = addTextUpdate.Position.Line,
-                        Character = addTextUpdate.Position.Character
+                        Line = addTextUpdate.Range.End.Line,
+                        Character = addTextUpdate.Range.End.Character
                     }
                 },
                 Text = addTextUpdate.Text
@@ -103,13 +103,13 @@ public class RequestSender(LspProxy proxy)
                 {
                     Start = new Position
                     {
-                        Line = removeTextUpdate.Position.Line,
-                        Character = removeTextUpdate.Position.Character
+                        Line = removeTextUpdate.Range.Start.Line,
+                        Character = removeTextUpdate.Range.Start.Character
                     },
                     End = new Position
                     {
-                        Line = removeTextUpdate.Position.Line,
-                        Character = removeTextUpdate.Position.Character
+                        Line = removeTextUpdate.Range.End.Line,
+                        Character = removeTextUpdate.Range.End.Character
                     }
                 },
                 Text = string.Empty

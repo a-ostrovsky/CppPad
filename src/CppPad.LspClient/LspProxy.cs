@@ -45,20 +45,17 @@ public class LspProxy(ILspProcess lspProcess)
 
     public async Task<JsonDocument?> ReadResponseAsync(int expectedId)
     {
-        return await Task.Run(() =>
+        while (true)
         {
-            while (true)
+            var response = await Task.Run(() => _responseQueue.Take());
+            if (
+                response.RootElement.TryGetProperty("id", out var idElement)
+                && idElement.GetInt32() == expectedId
+            )
             {
-                var response = _responseQueue.Take();
-                if (
-                    response.RootElement.TryGetProperty("id", out var idElement)
-                    && idElement.GetInt32() == expectedId
-                )
-                {
-                    return response;
-                }
+                return response;
             }
-        });
+        }
     }
 
     public async Task InitializeAsync()

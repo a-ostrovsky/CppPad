@@ -19,10 +19,10 @@ namespace CppPad.Gui.AutoCompletion;
 
 public class AutoCompletionAdapter : IAutoCompletionAdapter
 {
-    private static readonly TimeSpan AutoCompletionUpdateInterval = TimeSpan.FromMilliseconds(1000);
+    private static readonly TimeSpan AutoCompletionUpdateInterval = TimeSpan.FromMilliseconds(1_000);
     private readonly ICodeAssistant _codeAssistant;
     private readonly IDialogs _dialogs;
-    private readonly HashSet<char> _triggerCharacters = new();
+    private readonly HashSet<char> _triggerCharacters = [];
     private readonly ITimer _updateAutoCompletionTimer;
     private CompletionWindow? _completionWindow;
     private SourceCodeViewModel? _sourceCodeViewModel;
@@ -73,8 +73,14 @@ public class AutoCompletionAdapter : IAutoCompletionAdapter
 
             if (_triggerCharacters.Contains(singleEnteredChar))
             {
-                _completionWindow?.Close();
-                await ShowCompletionWindowAsync();
+                if (_completionWindow == null)
+                {
+                    await ShowCompletionWindowAsync();
+                }
+                else
+                {
+                    await UpdateCompletionWindowAsync(_completionWindow);
+                }
             }
         }
         catch (Exception ex)
@@ -154,12 +160,11 @@ public class AutoCompletionAdapter : IAutoCompletionAdapter
         {
             data.Add(new CompletionData(completion));
         }
-        
-        Console.WriteLine(previouslySelectedItem?.Text);
-        var selectedItem = previouslySelectedItem != null 
+
+        var selectedItem = previouslySelectedItem != null
             ? data.FirstOrDefault(d => Equals(d.Text, previouslySelectedItem.Text))
             : null;
-        
+
         if (selectedItem != null && data.Contains(selectedItem))
         {
             completionWindow.CompletionList.SelectedItem = selectedItem;
@@ -171,7 +176,7 @@ public class AutoCompletionAdapter : IAutoCompletionAdapter
     }
 
     private static bool HasChanged(
-        ICollection<ICompletionData> completionListCompletionData, 
+        ICollection<ICompletionData> completionListCompletionData,
         ICollection<AutoCompletionItem> autoCompletions)
     {
         if (completionListCompletionData.Count != autoCompletions.Count)
@@ -196,7 +201,7 @@ public class AutoCompletionAdapter : IAutoCompletionAdapter
                         {
                             return;
                         }
-                        
+
                         await UpdateCompletionWindowAsync(_completionWindow);
                         _updateAutoCompletionTimer.Change(AutoCompletionUpdateInterval, Timeout.InfiniteTimeSpan);
                     }
