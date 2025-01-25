@@ -7,6 +7,7 @@
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <LangVersion>default</LangVersion>
+        <ApplicationIcon>Assets\Icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
@@ -45,5 +46,9 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         <TargetPath>clangd-windows.zip</TargetPath>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Assets\" />
     </ItemGroup>
 </Project>
