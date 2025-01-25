@@ -28,6 +28,7 @@ The following features are still missing:
 
 ⏳ Speed up the auto-completion\
 ⏳ Provide built releases\
+⏳ Select compiler\
 ⏳ Benchmark functionality\
 ⏳ File templates\
 ⏳ Navigate to definition\
