@@ -26,8 +26,9 @@ For example, there is no need to save a file before compiling, as it will be sav
 
 The following features are still missing:
 
-⏳ Benchmark functionality\
 ⏳ Speed up the auto-completion\
+⏳ Provide built releases\
+⏳ Benchmark functionality\
 ⏳ File templates\
 ⏳ Navigate to definition\
 ⏳ Support for environments other than Windows and MSVC\
