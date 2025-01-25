@@ -20,7 +20,7 @@ For example, there is no need to save a file before compiling, as it will be sav
 
 ✅ Auto-completion\
 ✅ Configuration of include folders, static linked libraries, C++ standard, and other parameters\
-✅ Saving and loading files\
+✅ Saving and loading files
 
 ## Missing Features
 
@@ -36,7 +36,7 @@ The following features are still missing:
 ⏳ Automatically shelve the current document when closing the application\
 ⏳ Dark mode\
 ⏳ Show errors while editing\
-⏳ Debugging (probably much later...)\
+⏳ Debugging (probably much later...)
 
 ## Requirements
 
