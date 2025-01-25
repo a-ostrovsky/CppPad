@@ -1,3 +1,5 @@
+[![Build](https://github.com/a-ostrovsky/CppPad/actions/workflows/build.yml/badge.svg)](https://github.com/a-ostrovsky/CppPad/actions/workflows/build.yml)
+
 # CppPad
 
 A minimal GUI for compiling and running C++ code. This is designed to be a simple test workbench for C++ code.
